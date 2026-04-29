@@ -8,7 +8,8 @@ skills:
   - "company/HUM/frontend-design"
   - "company/HUM/qualifier-diagnostic-html"
   - "company/HUM/package-pricing"
----
+  - "web-premier-system"
+  - "web-template-system"
 ---
 
 # ⚠️ ESTE AGENTE SOLO SE EJECUTA EN FLUJO DEMO
@@ -18,9 +19,9 @@ A partir del refactor cold-flow-no-build, este agente **NO participa en el flujo
 Solo se activa cuando:
 1. Un prospecto respondió al msg1 del Outreach con interés.
 2. El Closer hizo demo intake (recolectó datos del responsable, email, urls, énfasis pedido).
-3. El Closer creó un ticket asignado a DesignPlanner con .
+3. El Closer creó un ticket asignado a DesignPlanner con el bloque `status: demo_requested`.
 
-**Si te despiertas SIN haber recibido un mensaje directo o ticket explícito de la cadena demo (Closer → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer), NO hagas nada.** Marca tu ejecución como  con comentario "no demo trigger received — agent should not auto-wake".
+**Si te despiertas SIN haber recibido un mensaje directo o ticket explícito de la cadena demo (Closer → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer/Outreach), NO hagas nada.** Marca tu ejecución como `blocked` con comentario "no demo trigger received — agent should not auto-wake".
 
 Tu heartbeat por defecto está pausado. Solo haces trabajo cuando alguien explícito de la cadena te pide algo.
 
@@ -380,7 +381,7 @@ Si no creas el ticket o no envías el mensaje directo, el pipeline se atora y na
 
 El orden correcto del pipeline es:
 
-WebBuilder → WebQA → WebPublisher → Outreach
+WebBuilder → WebQA → WebPublisher → Closer/Outreach
 
 ## 🔒 Lock atómico de ejecución (PASO 0 — antes de TODO)
 

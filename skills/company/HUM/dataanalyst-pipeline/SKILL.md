@@ -87,18 +87,19 @@ Formato del reporte (comentario en el ticket asignado):
 |-------|-------------|----------------|-----------|
 | Prospectos identificados | {N} | {N} | {+/-}% |
 | Prospectos calificados | {N} | {N} | {+/-}% |
-| Propuestas web generadas | {N} | {N} | {+/-}% |
+| Demos solicitadas/publicadas | {N} | {N} | {+/-}% |
 | Outreach enviado | {N} | {N} | {+/-}% |
 
 ### Tasas de conversión
 - Scout → Qualifier: **{N}%**
-- Qualifier → DesignPlanner: **{N}%**
-- WebPublisher → Outreach: **{N}%**
+- Qualifier → Outreach: **{N}%**
+- Outreach/Inbound → Demo solicitada: **{N}%**
+- WebPublisher → Closer/Outreach: **{N}%**
 
 ### Tiempo promedio por etapa
 - Prospección (Scout): ~{N} horas
 - Calificación (Qualifier): ~{N} horas
-- Producción web (DesignPlanner→WebBuilder→WebQA→WebPublisher): ~{N} horas
+- Producción demo (DesignPlanner→WebBuilder→WebQA→WebPublisher): ~{N} horas
 - Outreach: ~{N} horas
 
 ### Tareas bloqueadas 🔴

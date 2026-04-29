@@ -1,3 +1,13 @@
+---
+name: "web-premier-system"
+description: "Estándar de producción para propuestas web premier de Humanio cuando el prospecto ya pidió una demo o existe interés explícito."
+slug: "web-premier-system"
+metadata:
+  paperclip:
+    slug: "web-premier-system"
+    skillKey: "web-premier-system"
+---
+
 # web-premier-system
 
 ## Propósito

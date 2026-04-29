@@ -6,7 +6,7 @@ slug: humanio
 
 # Humanio — Inteligencia Artificial para negocios
 
-Consultora de Inteligencia Artificial que acompaña a pymes en su transformación digital. Operamos un pipeline automatizado de prospección, calificación, diseño web, outreach comercial, cierre de ventas y onboarding de clientes en México, Colombia, Perú y Argentina.
+Consultora de Inteligencia Artificial que acompaña a pymes en su transformación digital. Operamos dos rutas comerciales coordinadas: prospección outbound por giro y ciudad, e inbound por WhatsApp cuando un prospecto pide una propuesta. Trabajamos en México, Colombia, Perú y Argentina.
 
 > Humanio es una consultora de IA, NO una agencia de marketing. La web y el SEO son el punto de entrada (lead magnet), pero el negocio real es automatización, agentes de IA y chatbots.
 
@@ -22,10 +22,27 @@ Vendemos paquetes de suscripción mensual desde `https://www.humanio.digital/#pa
 
 ## Pipeline
 
-\`\`\`
-Scout → Qualifier → DesignPlanner → WebBuilder → WebQA → WebPublisher → Outreach → Closer → [PAGO humanio.digital/#paquetes] → Onboarding → Soporte
-                                                         ↗ DataAnalyst (métricas SaaS + inteligencia)
-\`\`\`
+### 1. Outbound por giro y ciudad
+
+Se activa cuando el Board/CEO pide algo como: "prospecta 10 dentistas en Guadalajara".
+
+```text
+CEO → Scout → Qualifier → Outreach → Closer
+                              ↘ DataAnalyst
+```
+
+En esta ruta NO se construye sitio ni se publica demo al inicio. Outreach envía WhatsApp/email con 3-4 hallazgos reales del Qualifier y un CTA hacia Humanio. Si el prospecto responde con interés, Closer hace intake y dispara la ruta de demo.
+
+### 2. Inbound o demo solicitada por WhatsApp
+
+Se activa cuando un prospecto contacta por WhatsApp, responde a un mensaje, o el bot Hannia/n8n crea un ticket urgente porque el prospecto quiere propuesta.
+
+```text
+WhatsApp/n8n → Closer urgente → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer/Outreach
+                                                                                         ↘ DataAnalyst
+```
+
+En esta ruta no trabaja Scout salvo que Closer necesite enriquecer información nueva. La demo se marca como `premier`, se construye una propuesta web, se publica, y Closer/Outreach entregan la URL y programan seguimiento comercial.
 
 ## Equipo de agentes
 
@@ -34,21 +51,25 @@ Scout → Qualifier → DesignPlanner → WebBuilder → WebQA → WebPublisher 
 | CEO | Coordinador | Asigna tareas, aprueba propuestas, monitorea pipeline |
 | Scout | Prospectador | Encuentra negocios sin presencia digital en LATAM |
 | Qualifier | Analista SEO | Califica prospectos (score 1-10), recomienda paquete óptimo |
-| DesignPlanner | Diseñador web | Crea propuestas web premium en HTML y las publica en Surge.sh |
-| Outreach | Comercial | Genera propuesta con 3 paquetes, envía por email y WhatsApp |
-| Closer | Cerrador de ventas | Seguimiento mensajes 2 y 3, manejo de objeciones, cierre consultivo |
+| DesignPlanner | Dirección creativa | Planifica demos solicitadas; no participa en cold sin interés |
+| WebBuilder | Constructor web | Construye demos/propuestas cuando Closer dispara el flujo |
+| WebQA | Auditor web | Valida propuesta, URLs, marca y contenido antes de publicar |
+| WebPublisher | Publicador | Publica demos aprobadas en Surge.sh y registra estado |
+| Outreach | Comercial | Envía primer contacto outbound y puede apoyar entrega/follow-up |
+| Closer | Cerrador de ventas | Manejo de respuestas, demo intake, seguimiento y cierre consultivo |
 | DataAnalyst | Analista de datos | Monitorea MRR, churn, LTV, conversión por paquete/país/giro |
 
 ## Flujo de trabajo
 
-1. CEO recibe solicitud: "prospectar {giro} en {ciudad}, {país}"
+1. CEO recibe solicitud outbound: "prospectar {giro} en {ciudad}, {país}"
 2. Scout investiga y genera lista de prospectos con datos de contacto
-3. Qualifier analiza presencia digital, genera score, y recomienda paquete óptimo (Starter/Pro/Business)
-4. DesignPlanner crea propuesta web + página de diagnóstico en Surge.sh
-5. Outreach genera propuesta con los 3 paquetes y link a `humanio.digital/#paquetes`, envía mensaje 1
-6. Closer envía mensaje 2 (día 3) y mensaje 3 (día 7) de seguimiento
-7. Closer escala a CEO si hay interés, o cierra el prospecto
-8. DataAnalyst genera reportes semanales de MRR, churn, conversión y recomendaciones
+3. Qualifier analiza presencia digital, genera score, paquete recomendado y hallazgos textuales
+4. Outreach envía primer contacto por WhatsApp/email con hallazgos y CTA
+5. Closer espera respuesta, maneja objeciones y solicita datos si el prospecto quiere demo
+6. Si hay demo o inbound urgente, Closer despierta a DesignPlanner y empieza el flujo web
+7. WebBuilder/WebQA/WebPublisher construyen, validan y publican la propuesta
+8. Closer/Outreach entregan la URL y programan seguimiento
+9. DataAnalyst genera reportes semanales de MRR, churn, conversión y recomendaciones
 
 ## Mercado objetivo
 

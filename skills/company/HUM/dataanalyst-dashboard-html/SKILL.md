@@ -44,8 +44,9 @@ Antes de generar el HTML, confirma que tienes:
 
 ### Tasas de Conversión entre etapas
 - `CONV_SCOUT_QUAL` — Scout → Qualifier (%)
-- `CONV_QUAL_DP` — Qualifier → DesignPlanner (%)
-- `CONV_WP_OUT` — WebPublisher → Outreach (%)
+- `CONV_QUAL_OUT` — Qualifier → Outreach (%)
+- `CONV_DEMO_REQ` — Outreach/Inbound → Demo solicitada (%)
+- `CONV_WP_HANDOFF` — WebPublisher → Closer/Outreach (%)
 - `CONV_OUT_CLOSE` — Outreach → Closer (%)
 - `CONV_CLOSE_WIN` — Closer → Ganado (%)
 
@@ -424,7 +425,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overf
         </div>
         <div class="stage-count">{N_QUALIFIER}</div>
       </div>
-      <div class="conv-rate" style="margin-left:140px">Conversión: {CONV_QUAL_DP}% → DesignPlanner</div>
+      <div class="conv-rate" style="margin-left:140px">Conversión: {CONV_QUAL_OUT}% → Outreach</div>
 
       <div class="funnel-stage aos">
         <div class="stage-label">🚀 WebPublisher</div>

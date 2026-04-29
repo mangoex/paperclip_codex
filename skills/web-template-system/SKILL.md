@@ -1,3 +1,13 @@
+---
+name: "web-template-system"
+description: "Sistema base de landing pages template para demos ligeras de Humanio, con variante futuristic-v1 y reglas de personalización controlada."
+slug: "web-template-system"
+metadata:
+  paperclip:
+    slug: "web-template-system"
+    skillKey: "web-template-system"
+---
+
 # web-template-system
 
 ## Propósito

@@ -8,7 +8,7 @@
 |---------|-------|
 | Agents | 10 |
 | Projects | 1 |
-| Skills | 51 |
+| Skills | 39 |
 | Tasks | 2 |
 
 ### Agents
@@ -36,29 +36,31 @@
 
 ## Pipeline — dos flujos separados
 
-### COLD (default — outbound prospecting)
+### 1. OUTBOUND por giro y ciudad
 
 ```
 CEO → Scout → Qualifier → Outreach → Closer (espera respuesta)
 ```
 
-NO se construye sitio. NO se publica nada en Surge. El Outreach manda WhatsApp template + email con 3-4 hallazgos del Qualifier y CTA → `humanio.digital/?ref={slug}`.
+Se activa cuando el Board/CEO pide prospectar un giro en una ciudad.
 
-### DEMO (solo cuando el prospecto pidió ver una propuesta)
+NO se construye sitio. NO se publica nada en Surge. El Outreach manda WhatsApp template + email con 3-4 hallazgos del Qualifier y CTA hacia Humanio. Si el prospecto muestra interés, una respuesta programada de WhatsApp/n8n despierta al Closer para intake y demo.
 
-Disparado por Closer cuando un prospecto respondió con interés y pidió ver algo:
+### 2. INBOUND / DEMO solicitada por WhatsApp
+
+Se activa cuando un cliente contacta directamente por WhatsApp, o cuando un prospecto outbound responde que quiere ver una propuesta.
 
 ```
-Closer (demo intake) → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer (entrega URL)
+WhatsApp/n8n → Closer urgente → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer/Outreach
 ```
 
-Esto SÍ construye sitio. Es 1 demo a la vez, no producción masiva. Los 4 agentes web tienen heartbeat **paused** — solo se activan por mensaje directo del Closer o del agente anterior en la cadena demo.
+Esto SÍ construye propuesta web. Scout no participa salvo enriquecimiento explícito de URLs/datos nuevos. La demo se trata como `premier`, se publica, se entrega al prospecto, y se programa seguimiento comercial. Los 4 agentes web tienen heartbeat **paused** — solo se activan por mensaje directo del Closer o del agente anterior en la cadena demo.
 
 ## WhatsApp Templates aprobados por Meta
 
 | Template | Uso | Variables body | Botón URL | Quick replies |
 |---|---|---|---|---|
-| `humanio_diagnostico_v1` | msg1 cold (Outreach) | {{1}}=Nombre, {{2}}=Negocio, {{3}}=Hallazgo, {{4}}=Oportunidad, {{5}}=Asesor | `https://www.humanio.digital` (estático) | `Sí, quiero verla` / `Después` |
+| `humanio_diagnostico_v1` | msg1 outbound (Outreach) | {{1}}=Nombre, {{2}}=Negocio, {{3}}=Hallazgo, {{4}}=Oportunidad | `https://www.humanio.digital` (estático) | `Sí, quiero verla` / `Después` |
 | `humanio_seguimiento_1` | msg2 día 3 (Closer) | {{1}}=Nombre, {{2}}=Empresa, {{3}}=Objetivo | `https://humanio.surge.sh/{{1}}` | — |
 | `humanio_seguimiento_2` | msg3 día 7 (Closer) | {{1}}=Nombre, {{2}}=Empresa | `https://humanio.surge.sh/{{1}}` | — |
 
@@ -80,15 +82,16 @@ Esto SÍ construye sitio. Es 1 demo a la vez, no producción masiva. Los 4 agent
    SURGE_TOKEN=$SURGE_TOKEN surge . humanio.surge.sh
    ```
 2. Configurar env vars en cada agente del panel de Paperclip — ver `.paperclip.yaml`.
+3. Usar `.env.example` como checklist de secretos antes de activar agentes con envío real.
 
 ## Skills
 
-51 skills incluyendo: alert-manager, backlink-analyzer, competitor-analysis, content-gap-analysis, content-quality-auditor, content-refresher, domain-authority-auditor, entity-optimizer, geo-content-optimizer, internal-linking-optimizer, keyword-research, memory-management, meta-tags-optimizer, on-page-seo-auditor, performance-reporter, rank-tracker, schema-markup-generator, seo-content-writer, serp-analysis, technical-seo-checker, frontend-design, outreach-proposals, qualifier-prospect-auditor, qualifier-seo, scout-prospector, frontend-design-review, frontend-ui-dark-ts, closer-sales, sales-copywriting, dataanalyst-pipeline, web-qa, qualifier-diagnostic-html, package-pricing, package-outreach, saas-metrics, retention-playbook, ui-ux-pro-max, paperclip-create-agent, paperclip-create-plugin, paperclip, para-memory-files, objection-handling, social-selling, cold-outreach, lead-qualification, web-scraping, web-template-system, web-premier-system, layout-blueprints, design-styles, dataanalyst-dashboard-html
+39 skills vendorizadas o propias, incluyendo: frontend-design, outreach-proposals, qualifier-prospect-auditor, qualifier-seo, scout-prospector, frontend-design-review, frontend-ui-dark-ts, closer-sales, sales-copywriting, dataanalyst-pipeline, web-qa, qualifier-diagnostic-html, package-pricing, package-outreach, saas-metrics, retention-playbook, ui-ux-pro-max, paperclip-create-agent, paperclip-create-plugin, paperclip, para-memory-files, objection-handling, social-selling, cold-outreach, lead-qualification, web-scraping, web-template-system, web-premier-system, layout-blueprints, design-styles, dataanalyst-dashboard-html.
 
 ## Getting Started
 
 ```bash
-pnpm paperclipai company import https://github.com/mangoex/paperclip_prospect.git
+pnpm paperclipai company import <URL_DE_TU_FORK_PRIVADO>
 ```
 
 See [Paperclip](https://paperclip.ing) for more information.

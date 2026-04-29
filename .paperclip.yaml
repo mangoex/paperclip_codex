@@ -3,7 +3,7 @@ schema: "paperclip/v1"
 agents:
   ceo:
     role: "ceo"
-    capabilities: "CEO de Humanio. Coordina Scout, Qualifier, DesignPlanner, WebBuilder, WebQA, WebPublisher, Outreach, Closer y DataAnalyst. Asigna tareas de prospección, aprueba propuestas, monitorea pipeline. Cuando recibe 'prospectar {giro} en {ciudad}', crea ticket para Scout."
+    capabilities: "CEO de Humanio. Coordina dos rutas: outbound por giro/ciudad (Scout → Qualifier → Outreach → Closer) e inbound/demo urgente por WhatsApp (Closer → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer/Outreach). Preserva requested_count, evita demos sin interés explícito y monitorea pipeline."
     adapter:
       config:
         model: "claude-sonnet-4-5-20250929"
@@ -12,6 +12,7 @@ agents:
     runtime:
       heartbeat:
         enabled: true
+        intervalSec: 300
       maxConcurrentRuns: 1
     permissions:
       canCreateAgents: true
@@ -26,6 +27,7 @@ agents:
       type: "claude_local"
     runtime:
       heartbeat:
+        enabled: true
         intervalSec: 300
       maxConcurrentRuns: 1
     inputs:
@@ -48,7 +50,7 @@ agents:
 
   qualifier:
     role: "general"
-    capabilities: "Analista SEO y calificador de prospectos de Humanio. Recibe reportes de Scout, evalúa presencia digital de cada negocio, calcula score de oportunidad (1-10), genera PROSPECT_BRIEF con delivery_mode (template|premier) y crea ticket para DesignPlanner."
+    capabilities: "Analista SEO y calificador de prospectos outbound de Humanio. Recibe reportes de Scout, evalúa presencia digital, calcula score de oportunidad (1-10), genera PROSPECT_BRIEF textual con hallazgos y paquete recomendado, respeta activation_limit y crea ticket para Outreach. No despierta al equipo web en cold."
     adapter:
       config:
         model: "claude-sonnet-4-5-20250929"
@@ -56,6 +58,7 @@ agents:
       type: "claude_local"
     runtime:
       heartbeat:
+        enabled: true
         intervalSec: 300
       maxConcurrentRuns: 1
     inputs:
@@ -78,7 +81,7 @@ agents:
 
   designplanner:
     role: "general"
-    capabilities: "Planificador de dirección creativa web de Humanio. Recibe PROSPECT_BRIEF del Qualifier y emite TEMPLATE_SPEC (modo template, variante futuristic-v1) o DESIGN_SPEC (modo premier). Crea ticket para WebBuilder."
+    capabilities: "Planificador de dirección creativa web de Humanio para demos solicitadas. Recibe demo_request de Closer o inbound urgente, emite DESIGN_SPEC premier y crea ticket para WebBuilder. No participa en outbound frío sin interés explícito."
     adapter:
       config:
         model: "claude-sonnet-4-5-20250929"
@@ -86,12 +89,13 @@ agents:
       type: "claude_local"
     runtime:
       heartbeat:
+        enabled: false
         intervalSec: 300
       maxConcurrentRuns: 1
 
   webbuilder:
     role: "general"
-    capabilities: "Constructor de activos web de Humanio. Instancia el template futuristic-v1 (modo template) o construye experiencia premier según DESIGN_SPEC. Genera 3 páginas (index, propuesta, reporte) en /tmp/proposal-{slug}/ y entrega a WebQA."
+    capabilities: "Constructor de activos web de Humanio para demos solicitadas. Construye experiencia premier según DESIGN_SPEC, genera 3 páginas (index, propuesta, reporte) en /tmp/proposal-{slug}/ y entrega a WebQA. No construye sitios para cold leads sin interés."
     adapter:
       config:
         model: "claude-sonnet-4-5-20250929"
@@ -99,15 +103,16 @@ agents:
       type: "claude_local"
     runtime:
       heartbeat:
+        enabled: false
         intervalSec: 300
       maxConcurrentRuns: 1
     inputs:
       env:
         PEXELS_API_KEY:
-          description: "Pexels API key para video hero del template — pexels.com/api"
+          description: "Pexels API key para video hero opcional — si falta, WebBuilder usa fallback visual sin bloquear"
           kind: "secret"
           default: ""
-          requirement: "required"
+          requirement: "optional"
         TWENTY_FIRST_API_KEY:
           description: "21st.dev API key para componentes UI premium opcionales (modo premier)"
           kind: "secret"
@@ -116,7 +121,7 @@ agents:
 
   webqa:
     role: "general"
-    capabilities: "Auditor técnico, comercial y de marca de los activos web. Audita /tmp/proposal-{slug}/ contra reglas de URL, paquetes, marca y delivery_mode. Emite PASS o FAIL. En PASS, hace handoff a WebPublisher."
+    capabilities: "Auditor técnico, comercial y de marca de demos solicitadas. Audita /tmp/proposal-{slug}/ contra reglas de URL, paquetes, marca y delivery_mode. Emite PASS o FAIL. En PASS, hace handoff a WebPublisher."
     adapter:
       config:
         model: "claude-sonnet-4-5-20250929"
@@ -124,12 +129,13 @@ agents:
       type: "claude_local"
     runtime:
       heartbeat:
+        enabled: false
         intervalSec: 300
       maxConcurrentRuns: 1
 
   webpublisher:
     role: "general"
-    capabilities: "Operador de release web. Publica el árbol completo en humanio.surge.sh/{slug}/, verifica HTTP 200 en las 3 URLs, registra en Supabase y hace handoff a Outreach (outbound) o Closer (inbound)."
+    capabilities: "Operador de release web para demos aprobadas. Publica el árbol completo en humanio.surge.sh/{slug}/, verifica HTTP 200 en las 3 URLs, registra en Supabase y hace handoff a Closer/Outreach para entrega y seguimiento."
     adapter:
       config:
         model: "claude-sonnet-4-5-20250929"
@@ -137,6 +143,7 @@ agents:
       type: "claude_local"
     runtime:
       heartbeat:
+        enabled: false
         intervalSec: 300
       maxConcurrentRuns: 1
     inputs:
@@ -159,7 +166,7 @@ agents:
 
   outreach:
     role: "general"
-    capabilities: "Especialista en comunicación comercial de Humanio. Recibe prospectos calificados con site publicado en Surge.sh, genera materiales de contacto personalizados (email, WhatsApp, script de llamada), los sube a Google Drive y crea ticket para Closer con mensaje directo."
+    capabilities: "Especialista en comunicación comercial outbound de Humanio. Recibe PROSPECT_BRIEF del Qualifier, envía primer contacto por WhatsApp/email con hallazgos reales y CTA hacia Humanio, registra evidencia en Supabase y crea ticket bloqueado para Closer. Puede apoyar entrega/follow-up de demos cuando Closer o WebPublisher lo pidan."
     adapter:
       config:
         model: "claude-sonnet-4-5-20250929"
@@ -167,6 +174,7 @@ agents:
       type: "claude_local"
     runtime:
       heartbeat:
+        enabled: true
         intervalSec: 300
       maxConcurrentRuns: 1
     inputs:
@@ -208,26 +216,6 @@ agents:
           requirement: "optional"
         TELEFONO_MIGUEL_DISPLAY:
           description: "Número de Miguel en formato display (ej. +52 667 123 4567)"
-          kind: "secret"
-          default: ""
-          requirement: "optional"
-        GOOGLE_CLIENT_ID:
-          description: "Google OAuth client ID para Drive"
-          kind: "secret"
-          default: ""
-          requirement: "optional"
-        GOOGLE_CLIENT_SECRET:
-          description: "Google OAuth client secret para Drive"
-          kind: "secret"
-          default: ""
-          requirement: "optional"
-        GOOGLE_REFRESH_TOKEN:
-          description: "Google OAuth refresh token para Drive"
-          kind: "secret"
-          default: ""
-          requirement: "optional"
-        GOOGLE_DRIVE_FOLDER_ID:
-          description: "ID de la carpeta raíz en Google Drive"
           kind: "secret"
           default: ""
           requirement: "optional"
@@ -279,7 +267,7 @@ agents:
 
   closer:
     role: "general"
-    capabilities: "Cerrador de ventas de Humanio. Recibe prospectos contactados por Outreach y ejecuta secuencia de seguimiento: genera todos los archivos (msg2 + msg3 + log) el día 3, los sube a Drive, envía msg2 y programa msg3 para día 7 si no hay respuesta. Maneja objeciones con IA y escala a CEO para cierre."
+    capabilities: "Cerrador de ventas de Humanio. Recibe prospectos contactados por Outreach, espera respuestas, clasifica interés, hace demo intake, orquesta demos inbound urgentes con el equipo web, envía seguimientos permitidos y escala cierres al CEO."
     adapter:
       config:
         model: "claude-sonnet-4-5-20250929"
@@ -287,6 +275,7 @@ agents:
       type: "claude_local"
     runtime:
       heartbeat:
+        enabled: true
         intervalSec: 300
       maxConcurrentRuns: 1
     inputs:
@@ -328,26 +317,6 @@ agents:
           requirement: "optional"
         TELEFONO_MIGUEL_DISPLAY:
           description: "Número de Miguel en formato display"
-          kind: "secret"
-          default: ""
-          requirement: "optional"
-        GOOGLE_CLIENT_ID:
-          description: "Google OAuth client ID para Drive"
-          kind: "secret"
-          default: ""
-          requirement: "optional"
-        GOOGLE_CLIENT_SECRET:
-          description: "Google OAuth client secret para Drive"
-          kind: "secret"
-          default: ""
-          requirement: "optional"
-        GOOGLE_REFRESH_TOKEN:
-          description: "Google OAuth refresh token para Drive"
-          kind: "secret"
-          default: ""
-          requirement: "optional"
-        GOOGLE_DRIVE_FOLDER_ID:
-          description: "ID de la carpeta raíz en Google Drive"
           kind: "secret"
           default: ""
           requirement: "optional"
@@ -408,12 +377,23 @@ agents:
       type: "claude_local"
     runtime:
       heartbeat:
+        enabled: true
         intervalSec: 300
       maxConcurrentRuns: 1
     inputs:
       env:
         SURGE_TOKEN:
           description: "Surge.sh deploy token — para publicar dashboards HTML como humanio-dashboard-{fecha}.surge.sh"
+          kind: "secret"
+          default: ""
+          requirement: "required"
+        SUPABASE_URL:
+          description: "Supabase project URL — fuente primaria de métricas del pipeline"
+          kind: "secret"
+          default: ""
+          requirement: "required"
+        SUPABASE_SERVICE_KEY:
+          description: "Supabase service role key — lectura de métricas y eventos"
           kind: "secret"
           default: ""
           requirement: "required"

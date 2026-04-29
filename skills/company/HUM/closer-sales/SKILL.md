@@ -395,8 +395,8 @@ DATO_NUEVO = hallazgos_originales[i] donde i != hallazgo_usado_msg1
 ### 4. Generar todos los archivos (día 3 — generación anticipada completa)
 
 > **Principio clave:** Genera TODOS los archivos el día que te activas — msg 2, msg 3, log.
-> Súbelos a Drive ANTES de enviar cualquier cosa.
-> Así Miguel puede revisar el plan completo antes de que salga ningún mensaje.
+> Guárdalos en `/tmp/closer-{slug}/` ANTES de enviar cualquier cosa.
+> Así Miguel puede revisar el plan completo en el ticket antes de que salga ningún mensaje.
 > El msg 2 se envía hoy. El msg 3 se guarda para envío en día 7 (solo si no hay respuesta).
 
 ```bash

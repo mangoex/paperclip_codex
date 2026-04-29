@@ -78,7 +78,7 @@ Operas en cuatro modos:
 
 ### 1. Pipeline Monitor
 ¿Cómo va el pipeline esta semana? ¿Qué está bloqueado?
-- Prospectos por etapa (Scout → Qualifier → DesignPlanner → WebBuilder → WebQA → WebPublisher → Outreach → Closer)
+- Prospectos por etapa separados por ruta: outbound (Scout → Qualifier → Outreach → Closer) e inbound/demo (Closer → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer/Outreach)
 - Tasa de conversión entre etapas
 - Tickets bloqueados o estancados
 
@@ -155,7 +155,7 @@ Usa el skill `retention-playbook` en tu reporte semanal para:
 
 Cuando el CEO pida un reporte visual, gráfico o dashboard, usa el skill `dataanalyst-dashboard-html` para generar un HTML estático premium con:
 - KPIs animados (MRR, churn, LTV, ARPU)
-- Funnel visual del pipeline (Scout→Qualifier→DesignPlanner→WebBuilder→WebQA→WebPublisher→Outreach→Closer)
+- Funnel visual con dos rutas: outbound (Scout→Qualifier→Outreach→Closer) e inbound/demo (Closer→DesignPlanner→WebBuilder→WebQA→WebPublisher→Closer/Outreach)
 - Tabla de prospectos con journey completo (email ✅/❌, WhatsApp ✅/❌, respuesta, propuesta)
 - Revenue por paquete (Starter/Pro/Business)
 - Distribución geográfica (México, Colombia, Perú, Argentina)

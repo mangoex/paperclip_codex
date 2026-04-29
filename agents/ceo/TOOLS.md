@@ -7,7 +7,7 @@ Tu herramienta principal. Toda la delegación, seguimiento y comunicación pasa 
 - **Crear tickets**: `POST /api/issues` con `parentId`, `goalId`, y asignación al agente correcto
 - **Checkout**: `POST /api/issues/{id}/checkout` — SIEMPRE antes de trabajar un ticket. Nunca reintentar 409.
 - **Comentar**: `POST /api/issues/{id}/comments` — Actualiza status, comparte URLs, escala decisiones
-- **Mensajes directos**: Para despertar agentes (Scout→Qualifier, Qualifier→DesignPlanner, etc.)
+- **Mensajes directos**: Para despertar agentes según ruta: Scout→Qualifier→Outreach→Closer en outbound; Closer→DesignPlanner→WebBuilder→WebQA→WebPublisher→Closer/Outreach en inbound/demo.
 - **Header obligatorio**: Incluir `X-Paperclip-Run-Id` en toda llamada mutante
 
 ## Chatwoot (CRM y comunicación inbound)
@@ -61,7 +61,7 @@ Cuando Closer escala un cierre exitoso, verifica el pago antes de activar onboar
 
 ## Surge.sh (verificación de deploys)
 
-Cuando DesignPlanner notifica una URL publicada:
+Cuando WebPublisher notifica una URL publicada:
 - Verificar que `https://humanio.surge.sh/{slug}` carga correctamente (NO `humanio-{slug}.surge.sh`)
 - Verificar que `/propuesta` y `/reporte` son accesibles
 - Compartir la URL al Board como comentario en el ticket original
