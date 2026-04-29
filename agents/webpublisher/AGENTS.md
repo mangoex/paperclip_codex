@@ -247,6 +247,16 @@ Este agente solo publica demos solicitadas. Por default el siguiente agente es `
 
 Usa `outreach` solo si el ticket original o Closer piden explícitamente apoyo de Outreach para entrega por email, secuencia comercial o seguimiento operativo.
 
+### Pre-check anti-duplicado de entrega
+
+Antes de crear un ticket para Closer/Outreach o enviar mensaje directo:
+
+1. Busca tickets existentes con el mismo `prospect_id`/`slug` y título `Closer: entregar demo...` u `Outreach: apoyar entrega de demo...`.
+2. Consulta Supabase `outreach_log` por el mismo `prospect_id`/`slug` y `tipo in ('demo_sent','demo_delivered')`.
+3. Si ya existe una entrega registrada, NO crees ticket nuevo. Comenta "demo ya entregada — handoff suppressed" y marca tu ticket como `cancelled`.
+4. Si ya existe un ticket de entrega en `todo`, `in_progress` o `done`, NO crees otro. Comenta "handoff ya existe — duplicate suppressed" y marca tu ticket como `cancelled`.
+5. Solo si no existe entrega registrada ni ticket de entrega previo, continúa con la acción obligatoria.
+
 ### Acción obligatoria
 
 1. **Crea un ticket nuevo asignado al agente correcto** con:
@@ -435,7 +445,8 @@ REPORTE=$(curl -s -o /dev/null -w "%{http_code}" "https://humanio.surge.sh/{slug
 ```
 
 - Si los 3 responden `200` → ya está publicado. **NO** re-publiques.
-  - PERO verifica si existe ticket de Outreach (o Closer) para este `prospect_id`. Si NO existe → tu trabajo no terminó: crea el ticket de Outreach/Closer con TODOS los campos del brief y manda mensaje directo. Después marca tu ticket como `done`.
+  - PERO verifica si existe `outreach_log.tipo=demo_sent|demo_delivered` para este `prospect_id`/`slug`. Si SÍ existe → todo está hecho; NO crees handoff.
+  - Si no hay entrega registrada, verifica si existe ticket de Outreach (o Closer) para este `prospect_id`/`slug`. Si NO existe → tu trabajo no terminó: crea el ticket de Outreach/Closer con TODOS los campos del brief y manda mensaje directo. Después marca tu ticket como `done`.
   - Si SÍ existe ticket de Outreach/Closer → todo está hecho. Comenta y márcate como `cancelled` (duplicado).
 - Si CUALQUIERA responde != 200 → procede con el deploy.
 

@@ -205,7 +205,11 @@ Marca tu ticket actual como `cancelled` con comentario "demo handoff a DesignPla
 WebPublisher te despertará con `url_principal` lista. Tu trabajo es:
 
 1. Validar HTTP 200 de la URL.
-2. Mandar el link al prospecto vía WhatsApp (ya estás en ventana abierta — usa `type: text`):
+2. Antes de enviar nada, consulta Supabase `outreach_log` y los tickets activos para el mismo `prospect_id`/`slug`.
+   - Si ya existe `tipo=demo_sent` o `tipo=demo_delivered` para ese `prospect_id`/`slug`, NO mandes WhatsApp ni email. Comenta "demo ya entregada — duplicate delivery suppressed" y marca tu ticket como `cancelled`.
+   - Si existe otro ticket `Closer: entregar demo...` para el mismo `prospect_id`/`slug` en `in_progress` o `done` creado antes que el tuyo, NO mandes. Marca el tuyo como `cancelled` con "duplicate of {ticket_id}".
+   - Si no hay evidencia de entrega ni ticket anterior, continúa.
+3. Mandar el link al prospecto vía WhatsApp (ya estás en ventana abierta — usa `type: text`):
 
 ```
 [nombre], aquí está la demo que preparé para {nombre_negocio}:
@@ -216,9 +220,9 @@ Eché toda la carne al asador en lo que pediste sobre {enfasis_pedido}. Échale 
 — Miguel, Humanio
 ```
 
-3. Mandar el link también por email.
-4. Registrar en `outreach_log` con `tipo=demo_sent`.
-5. Pasar a MODO B (esperar respuesta).
+4. Mandar el link también por email.
+5. Registrar inmediatamente en `outreach_log` con `tipo=demo_sent`, `prospect_id`, `slug`, `url_principal`, `provider_message_id` real y `canal`.
+6. Pasar a MODO B (esperar respuesta).
 
 ## Reglas de honestidad
 
@@ -237,6 +241,10 @@ Después de cada envío real:
 - INSERT en `outreach_log` con `provider_message_id` real
 - Update etapa solo con evidencia
 - Clasifica respuestas como: `en_seguimiento`, `demo_solicitada`, `en_negociacion`, `cerrado_ganado`, `cerrado_perdido`
+
+Antes de cualquier envío real de demo:
+- SELECT en `outreach_log` por `prospect_id`/`slug` y `tipo in ('demo_sent','demo_delivered')`
+- Si hay cualquier fila, NO reenvíes. La idempotencia gana sobre el impulso comercial.
 
 ## Restricciones
 
