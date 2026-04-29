@@ -91,7 +91,20 @@ Esto S√ç construye propuesta web. Scout no participa salvo enriquecimiento expl√
 ## Getting Started
 
 ```bash
-pnpm paperclipai company import <URL_DE_TU_FORK_PRIVADO>
+pnpm paperclipai company import \
+  --from https://github.com/mangoex/paperclip_codex/tree/codex/import-readiness-audit \
+  --target new \
+  --new-company-name "Humanio Codex" \
+  --include company,agents,projects,tasks,skills
+```
+
+Alternative via Agent Companies CLI:
+
+```bash
+npx companies.sh add \
+  https://github.com/mangoex/paperclip_codex/tree/codex/import-readiness-audit \
+  --target new \
+  --include company,agents,projects,tasks,skills
 ```
 
 See [Paperclip](https://paperclip.ing) for more information.
