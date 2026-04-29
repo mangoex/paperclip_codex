@@ -29,3 +29,26 @@ El paquete esta preparado para importarse como organizacion Humanio con dos ruta
 - Cargar secretos reales en Paperclip: WhatsApp, Chatwoot, Supabase, Surge y SMTP si se usara email.
 - Probar primero con `contact_override` para evitar contactar prospectos reales.
 - Activar agentes web solo via mensajes directos del flujo demo.
+
+## Comando recomendado de importacion
+
+Usa la sintaxis nueva con `--from`. Evita el formato antiguo `paperclipai company import <url>`, porque puede llamar rutas legacy como `/company/import`.
+
+```bash
+pnpm paperclipai company import \
+  --from https://github.com/mangoex/paperclip_codex/tree/codex/import-readiness-audit \
+  --target new \
+  --new-company-name "Humanio Codex" \
+  --include company,agents,projects,tasks,skills
+```
+
+Preview sin escribir:
+
+```bash
+pnpm paperclipai company import \
+  --from https://github.com/mangoex/paperclip_codex/tree/codex/import-readiness-audit \
+  --target new \
+  --new-company-name "Humanio Codex" \
+  --include company,agents,projects,tasks,skills \
+  --dry-run
+```
