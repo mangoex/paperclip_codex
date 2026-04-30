@@ -6,6 +6,7 @@ metadata:
   paperclip:
     slug: "dataanalyst-pipeline"
     skillKey: "company/HUM/dataanalyst-pipeline"
+    paperclipSkillKey: "company/HUM/dataanalyst-pipeline"
   skillKey: "company/HUM/dataanalyst-pipeline"
 key: "company/HUM/dataanalyst-pipeline"
 ---

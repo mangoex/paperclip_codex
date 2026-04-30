@@ -1,6 +1,6 @@
 ---
 name: "paperclip-create-agent"
-description: ">"
+description: "Vendor stub for creating Paperclip agents. Kept for import compatibility; CEO may reference it for administrative setup."
 slug: "paperclip-create-agent"
 metadata:
   sources:
@@ -13,4 +13,3 @@ metadata:
       url: "https://github.com/paperclipai/paperclip/tree/master/skills/paperclip-create-agent"
 key: "paperclipai/paperclip/paperclip-create-agent"
 ---
-

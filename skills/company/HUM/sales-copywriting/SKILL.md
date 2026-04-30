@@ -8,6 +8,7 @@ metadata:
     slug: "sales-copywriting"
     skillKey: "company/HUM/sales-copywriting"
   paperclipSkillKey: "company/HUM/sales-copywriting"
+key: "company/HUM/sales-copywriting"
 ---
 
 # Sales Copywriting - Comunicacion Comercial | Humanio

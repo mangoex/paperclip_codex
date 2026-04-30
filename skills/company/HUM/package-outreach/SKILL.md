@@ -9,6 +9,7 @@ metadata:
     paperclipSkillKey: "company/HUM/package-outreach"
   skillKey: "company/HUM/package-outreach"
   key: "company/HUM/package-outreach"
+key: "company/HUM/package-outreach"
 ---
 
 # Package Outreach — Legacy Compatibility

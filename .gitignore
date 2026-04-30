@@ -4,3 +4,9 @@
 !.env.example
 node_modules/
 .DS_Store
+.surge
+*.tmp
+*.log
+__pycache__/
+.venv/
+venv/

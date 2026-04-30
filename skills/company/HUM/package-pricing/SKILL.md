@@ -9,6 +9,7 @@ metadata:
     paperclipSkillKey: "company/HUM/package-pricing"
   skillKey: "company/HUM/package-pricing"
   key: "company/HUM/package-pricing"
+key: "company/HUM/package-pricing"
 ---
 
 # Package Pricing — Asignador de Paquetes | Humanio

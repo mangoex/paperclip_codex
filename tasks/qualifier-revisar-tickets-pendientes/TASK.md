@@ -5,7 +5,9 @@ project: "onboarding"
 recurring: true
 ---
 
-Revisa tu inbox y TODOS los tickets en backlog asignados a ti.
+Esta task es de recuperacion. La routine esta pausada por defecto porque el pipeline normal se activa por mensajes directos entre agentes.
+
+Usala solo si el Qualifier quedo cortado, bloqueado por timeout o con tickets huérfanos. Revisa tu inbox y TODOS los tickets en backlog asignados a ti.
 
 **IMPORTANTE: Procesa TODOS los prospectos en este mismo run — no te detengas después del primero.**
 

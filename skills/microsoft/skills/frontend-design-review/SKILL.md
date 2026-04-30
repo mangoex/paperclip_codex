@@ -1,6 +1,6 @@
 ---
 name: "frontend-design-review"
-description: ">"
+description: "Vendor stub for Microsoft frontend design review guidance. Kept for import compatibility; not used by the active Humanio pipeline."
 slug: "frontend-design-review"
 metadata:
   sources:
@@ -13,4 +13,3 @@ metadata:
       url: "https://github.com/microsoft/skills.git"
 key: "microsoft/skills/frontend-design-review"
 ---
-

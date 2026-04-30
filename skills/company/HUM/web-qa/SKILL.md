@@ -8,6 +8,7 @@ metadata:
     slug: "web-qa"
     skillKey: "company/HUM/web-qa"
   paperclipSkillKey: "company/HUM/web-qa"
+key: "company/HUM/web-qa"
 ---
 
 # Web QA — Validación de HTML antes de publicar | Humanio

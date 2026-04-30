@@ -1,5 +1,6 @@
 ---
 name: "outreach-proposals"
+description: "Outreach cold msg1 para Humanio: envia WhatsApp template y email con hallazgos reales, registra evidencia y crea handoff bloqueado para Closer."
 slug: "outreach-proposals"
 metadata:
   paperclip:

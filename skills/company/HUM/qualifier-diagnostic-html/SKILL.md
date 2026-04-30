@@ -6,6 +6,7 @@ metadata:
   paperclip:
     slug: "qualifier-diagnostic-html"
     skillKey: "company/HUM/qualifier-diagnostic-html"
+    paperclipSkillKey: "company/HUM/qualifier-diagnostic-html"
   skillKey: "company/HUM/qualifier-diagnostic-html"
 key: "company/HUM/qualifier-diagnostic-html"
 ---

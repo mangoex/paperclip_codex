@@ -1,6 +1,6 @@
 ---
 name: "paperclip"
-description: ">"
+description: "Vendor stub for Paperclip issue, agent, and project coordination. Kept because most Humanio agents reference it."
 slug: "paperclip"
 metadata:
   sources:
@@ -13,4 +13,3 @@ metadata:
       url: "https://github.com/paperclipai/paperclip/tree/master/skills/paperclip"
 key: "paperclipai/paperclip/paperclip"
 ---
-

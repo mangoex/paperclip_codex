@@ -9,6 +9,7 @@ metadata:
     paperclipSkillKey: "company/HUM/saas-metrics"
   skillKey: "company/HUM/saas-metrics"
   key: "company/HUM/saas-metrics"
+key: "company/HUM/saas-metrics"
 ---
 
 # SaaS Metrics — Métricas de Suscripción | Humanio

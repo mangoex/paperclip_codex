@@ -9,6 +9,7 @@ metadata:
     paperclipSkillKey: "company/HUM/retention-playbook"
   skillKey: "company/HUM/retention-playbook"
   key: "company/HUM/retention-playbook"
+key: "company/HUM/retention-playbook"
 ---
 
 # Retention Playbook — Anti-Churn | Humanio

@@ -8,6 +8,7 @@ metadata:
     slug: "scrapling-official"
     skillKey: "company/HUM/scrapling-official"
   paperclipSkillKey: "company/HUM/scrapling-official"
+key: "company/HUM/scrapling-official"
 ---
 
 # Scrapling — Scraping Web Avanzado | Humanio

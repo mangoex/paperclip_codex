@@ -7,6 +7,7 @@ metadata:
     slug: "closer-sales"
     skillKey: "company/HUM/closer-sales"
   paperclipSkillKey: "company/HUM/closer-sales"
+key: "company/HUM/closer-sales"
 ---
 
 # Closer Sales - Humanio

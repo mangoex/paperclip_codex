@@ -1,6 +1,6 @@
 ---
 name: "para-memory-files"
-description: ">"
+description: "Vendor stub for PARA-style memory files. Kept because several Humanio agents reference it for workspace organization."
 slug: "para-memory-files"
 metadata:
   sources:
@@ -13,4 +13,3 @@ metadata:
       url: "https://github.com/paperclipai/paperclip/tree/master/skills/para-memory-files"
 key: "paperclipai/paperclip/para-memory-files"
 ---
-
