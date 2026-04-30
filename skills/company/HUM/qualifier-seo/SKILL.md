@@ -122,7 +122,7 @@ Tambien debes buscar en el ticket o contexto:
 
 Antes de decidir telefono/email del brief, revisa ticket actual, parent y comentarios recientes. La instruccion explicita mas reciente del CEO/Board gana sobre reportes locales, adjuntos, memoria de corridas previas y comentarios anteriores.
 
-Si el comentario mas reciente dice `NO lleva contact_override`, `sin override`, `usar datos reales`, `ignorar mangoex@gmail.com` o `ignorar 5216672013019`, trata el run como produccion:
+Si el comentario mas reciente dice `NO lleva contact_override`, `sin override`, `usar datos reales`, `ignorar TEST_EMAIL`, `ignorar TEST_PHONE` o equivalente, trata el run como produccion:
 
 - No incluyas `contact_override`.
 - No uses datos heredados de prueba.

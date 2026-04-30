@@ -346,7 +346,7 @@ Usa la Paperclip API si está disponible:
 PAPERCLIP_BASE="${PAPERCLIP_API_URL:-${PAPERCLIP_URL:-http://localhost:3100}}"
 AUTH_HEADER="Authorization: Bearer ${PAPERCLIP_API_KEY:-$PAPERCLIP_AGENT_TOKEN}"
 RUN_HEADER="X-Paperclip-Run-Id: ${PAPERCLIP_RUN_ID:-webpublisher-handoff}"
-CLOSER_AGENT_ID="${CLOSER_AGENT_ID:-21092e14-eb98-4c26-a5b1-9050bd22db85}"
+: "${CLOSER_AGENT_ID:?Define CLOSER_AGENT_ID con el id del agente Closer de esta compania antes de crear handoffs de demo}"
 
 curl -s -X POST "$PAPERCLIP_BASE/api/companies/${COMPANY_ID}/issues" \
   -H "$AUTH_HEADER" \

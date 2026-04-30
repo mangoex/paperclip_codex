@@ -35,7 +35,7 @@ Si falta cualquiera de los críticos (`telefono`, `email`, `nombre_negocio`, `re
 
 Antes de enviar, revisa el ticket actual, el parent y los comentarios recientes del CEO/Board.
 
-Si el ultimo comentario explicito dice `NO lleva contact_override`, `sin override`, `usar datos reales`, `ignorar mangoex@gmail.com` o `ignorar 5216672013019`, pero el brief actual trae datos de prueba o `TEST RUN`, bloquea:
+Si el ultimo comentario explicito dice `NO lleva contact_override`, `sin override`, `usar datos reales`, `ignorar TEST_EMAIL`, `ignorar TEST_PHONE` o equivalente, pero el brief actual trae datos de prueba o `TEST RUN`, bloquea:
 
 ```yaml
 status: outreach_blocked

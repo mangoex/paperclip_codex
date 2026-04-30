@@ -71,7 +71,7 @@ Checklist de validación
 - [ ] El reporte SEO está accesible como sección del sitio o como /reporte/
 - [ ] Ambas secciones están en el navbar como links
 - [ ] El estilo visual de propuesta y reporte es consistente con el sitio principal
-- [ ] La propuesta incluye los 3 tiers de precios (Presencia Digital, Dominio Digital, Transformación IA)
+- [ ] La propuesta incluye los 3 paquetes canonicos vigentes: Starter (USD 27/mes), Pro (USD 47/mes), Business (USD 97/mes)
 
 8. JAVASCRIPT
 - [ ] Librería AOS cargada correctamente (CDN link válido)

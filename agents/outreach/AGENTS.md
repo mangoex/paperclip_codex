@@ -89,7 +89,7 @@ Si falta cualquier campo crítico (telefono, email, nombre_negocio, ref_slug, ci
 
 ### Validación adicional — contact_override
 
-Antes de enviar, revisa también el ticket padre y comentarios recientes del CEO/Board. Si el último comentario explícito dice que el run NO lleva `contact_override`, o que deben ignorarse datos de prueba como `mangoex@gmail.com` / `5216672013019`, pero el brief actual todavía contiene esos datos o `TEST RUN`, bloquea con:
+Antes de enviar, revisa también el ticket padre y comentarios recientes del CEO/Board. Si el último comentario explícito dice que el run NO lleva `contact_override`, o que deben ignorarse datos de prueba como `TEST_EMAIL` / `TEST_PHONE`, pero el brief actual todavía contiene esos datos o `TEST RUN`, bloquea con:
 
 ```yaml
 status: outreach_blocked

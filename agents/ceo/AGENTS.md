@@ -114,8 +114,8 @@ DEBES extraer el `contact_override` y propagarlo OBLIGATORIAMENTE en TODOS los t
 ```yaml
 contact_override:
   is_test_run: true
-  forced_telefono: "{telefono_e164_sin_+}"   # ej: 5216672013019
-  forced_email: "{email}"                     # ej: mangoex@gmail.com
+  forced_telefono: "{telefono_e164_sin_+}"   # ej: valor de TEST_PHONE
+  forced_email: "{email}"                     # ej: valor de TEST_EMAIL
   reason: "Board solicitó usar estos datos en lugar de los reales del prospecto. NO contactar al prospecto real."
 ```
 
@@ -134,13 +134,13 @@ Si el Board corrige una corrida y dice algo como:
 - "este run NO lleva contact_override"
 - "ignora el override anterior"
 - "usa datos reales"
-- "ignorar mangoex@gmail.com"
-- "ignorar 5216672013019"
+- "ignorar TEST_EMAIL"
+- "ignorar TEST_PHONE"
 
 entonces debes tratar el run como PRODUCCIÓN y hacer esto antes de despertar agentes downstream:
 
 1. Eliminar `contact_override` de los nuevos tickets.
-2. Eliminar `TEST RUN`, `forced_telefono`, `forced_email`, `mangoex@gmail.com`, `5216672013019` y cualquier dato de prueba del brief.
+2. Eliminar `TEST RUN`, `forced_telefono`, `forced_email`, valores de `TEST_EMAIL`/`TEST_PHONE` y cualquier dato de prueba del brief.
 3. Usar solo teléfono/email reales verificados del prospecto.
 4. Cancelar o bloquear tickets downstream contaminados por el override viejo.
 5. Crear un ticket canónico nuevo si ya se generó un brief contradictorio.

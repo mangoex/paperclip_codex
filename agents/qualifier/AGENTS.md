@@ -83,8 +83,8 @@ La instrucción explícita más reciente del Board/CEO gana sobre cualquier repo
 Si el comentario más reciente del Board/CEO dice algo como:
 
 - `Este run NO lleva contact_override`
-- `Ignorar cualquier referencia previa a mangoex@gmail.com`
-- `Ignorar cualquier referencia previa a 5216672013019`
+- `Ignorar cualquier referencia previa a TEST_EMAIL`
+- `Ignorar cualquier referencia previa a TEST_PHONE`
 - `usar datos reales`
 - `sin override`
 

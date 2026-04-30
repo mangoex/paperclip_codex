@@ -14,7 +14,7 @@ Tu herramienta principal. Toda la delegación, seguimiento y comunicación pasa 
 
 Lectura de conversaciones con prospectos que nos contactan directamente.
 
-- **URL**: `$CHATWOOT_API_URL` (normalmente `https://n8n-humanio-chatwoot.yroec7.easypanel.host`)
+- **URL**: `$CHATWOOT_API_URL`
 - **Inbox de email**: ID 2 (`contacto@humanio.digital`)
 - **Listar conversaciones**: `GET /api/v1/accounts/{ACCOUNT_ID}/conversations?inbox_id=2&status=open`
 - **Leer mensajes**: `GET /api/v1/accounts/{ACCOUNT_ID}/conversations/{CONV_ID}/messages`
@@ -33,7 +33,7 @@ Gestión de contexto persistente entre sesiones.
 
 Todos los agentes escriben a Supabase. Úsalo para ver el estado real del pipeline:
 
-- **URL:** `$SUPABASE_URL` (`https://nloytkdjbhoozjrhrpxq.supabase.co`)
+- **URL:** `$SUPABASE_URL`
 - **Tablas:** `prospects`, `proposals`, `outreach_log`, `pipeline_events`
 - **Auth:** headers `apikey: $SUPABASE_SERVICE_KEY` + `Authorization: Bearer $SUPABASE_SERVICE_KEY`
 
