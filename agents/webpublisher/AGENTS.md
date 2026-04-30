@@ -237,7 +237,9 @@ Si cualquiera no responde 200:
 
 ## Registro en Supabase
 
-Solo después de verificar HTTP 200 en las tres URLs, registra el resultado en Supabase.
+Solo después de verificar HTTP 200 en las tres URLs, intenta registrar el resultado en Supabase.
+
+Supabase es persistencia de negocio, pero NO es compuerta para entregar una demo ya publicada. Si Supabase no está disponible en el runtime, falta la variable de entorno, o falla la escritura después de un retry, continúa con el handoff a Closer y reporta `supabase_status: "skipped_or_failed"`.
 
 Datos mínimos a registrar:
 
@@ -257,9 +259,26 @@ etapa: propuesta_publicada
 
 No actualices Supabase si el deploy no fue verificado con HTTP 200.
 
+Si el deploy SÍ fue verificado con HTTP 200 pero Supabase falla:
+
+```yaml
+supabase_status: "skipped_or_failed"
+supabase_error: "{detalle breve}"
+handoff_policy: "continue_to_closer_after_verified_publish"
+```
+
+Nunca bloquees la entrega al prospecto solo porque Supabase no pudo registrar la publicación.
+
 ## Handoff obligatorio (no opcional)
 
-Después de publicar, verificar y registrar correctamente, debes despertar al siguiente agente explícitamente.
+Después de publicar y verificar correctamente las tres URLs, debes despertar al siguiente agente explícitamente.
+
+El handoff a Closer es obligatorio aunque Supabase no haya podido registrar. La regla es:
+
+```text
+HTTP 200 en principal + propuesta + reporte => crear handoff a Closer.
+Supabase ok/falla/no disponible => solo cambia el campo supabase_status, no detiene el handoff.
+```
 
 ### Decide primero quién sigue
 
@@ -315,7 +334,53 @@ Hola {Closer|Outreach} — propuesta publicada y verificada.
 
 3. **PRECONDICIÓN DURA**: NO marques tu propio ticket como completado hasta que hayas verificado que el ticket de Closer/Outreach realmente fue creado y aceptado por el panel. Si el panel rechaza la creación, no marques done. La regla es: tu trabajo solo termina cuando el siguiente agente tiene su ticket vivo.
 
-Si te despiertas vía heartbeat y ves que la publicación ya está hecha (HTTP 200 verificado, Supabase actualizado) PERO no existe ticket de Closer/Outreach, tu trabajo es: crear ESE ticket y enviar el mensaje directo. NO regenerar el deploy. Después marca done.
+Si te despiertas vía heartbeat y ves que la publicación ya está hecha (HTTP 200 verificado) PERO no existe ticket de Closer/Outreach, tu trabajo es: crear ESE ticket y enviar el mensaje directo. NO regenerar el deploy. Después marca done.
+
+### Fallback si no hay conector Supabase
+
+Si no puedes escribir en Supabase pero sí puedes escribir en Paperclip, crea el ticket de Closer igualmente.
+
+Usa la Paperclip API si está disponible:
+
+```bash
+PAPERCLIP_BASE="${PAPERCLIP_API_URL:-${PAPERCLIP_URL:-http://localhost:3100}}"
+AUTH_HEADER="Authorization: Bearer ${PAPERCLIP_API_KEY:-$PAPERCLIP_AGENT_TOKEN}"
+RUN_HEADER="X-Paperclip-Run-Id: ${PAPERCLIP_RUN_ID:-webpublisher-handoff}"
+CLOSER_AGENT_ID="${CLOSER_AGENT_ID:-21092e14-eb98-4c26-a5b1-9050bd22db85}"
+
+curl -s -X POST "$PAPERCLIP_BASE/api/companies/${COMPANY_ID}/issues" \
+  -H "$AUTH_HEADER" \
+  -H "$RUN_HEADER" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Closer: entregar demo a {nombre_negocio} ({slug})",
+    "assigneeAgentId": "'"$CLOSER_AGENT_ID"'",
+    "status": "todo",
+    "priority": "high",
+    "parentId": "{ticket_actual_id}",
+    "body": "{BLOQUE_DEMO_PUBLISHED_COMPLETO}"
+  }'
+```
+
+Si la ruta `/api/companies/{COMPANY_ID}/issues` no existe en tu runtime, intenta la ruta genérica:
+
+```bash
+curl -s -X POST "$PAPERCLIP_BASE/api/issues" \
+  -H "$AUTH_HEADER" \
+  -H "$RUN_HEADER" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "companyId": "'"$COMPANY_ID"'",
+    "title": "Closer: entregar demo a {nombre_negocio} ({slug})",
+    "assigneeAgentId": "'"$CLOSER_AGENT_ID"'",
+    "status": "todo",
+    "priority": "high",
+    "parentId": "{ticket_actual_id}",
+    "body": "{BLOQUE_DEMO_PUBLISHED_COMPLETO}"
+  }'
+```
+
+Solo bloquea si también falla la creación del ticket de Closer en Paperclip.
 
 ## Bloque obligatorio del handoff (todos los campos)
 
@@ -386,7 +451,7 @@ http_checks:
   principal: 200
   propuesta: 200
   reporte: 200
-supabase_status: "updated"
+supabase_status: "{updated|skipped_or_failed}"
 next_agent: "{Outreach|Closer}"
 handoff_status: "ready"
 
@@ -404,16 +469,26 @@ next_action: "{acción requerida}"
 
 ## Política de error
 
-Si falla publicación, verificación o persistencia:
+Si falla publicación o verificación:
 
 - reporta el punto exacto de fallo
 - no avances a Closer/Outreach
 - no declares éxito parcial como éxito completo
 - deja claro qué debe corregirse antes de reintentar
 
+Si falla solo Supabase después de HTTP 200:
+
+- NO bloquees la entrega
+- crea el handoff a Closer
+- reporta `supabase_status: "skipped_or_failed"`
+
+Si falla la creación del ticket de Closer:
+
+- ahí sí bloquea con `failed_step: "handoff"`
+
 ## Cierre
 
-Tu trabajo termina únicamente cuando existe una publicación real, verificada y registrada.
+Tu trabajo termina únicamente cuando existe una publicación real, verificada, y un ticket de Closer/Outreach vivo para entregar la demo.
 
 Si no hay URLs funcionando con HTTP 200, el trabajo no está terminado.
 
@@ -465,8 +540,8 @@ REPORTE=$(curl -s -o /dev/null -w "%{http_code}" "https://humanio.surge.sh/{slug
 ```
 
 - Si los 3 responden `200` → ya está publicado. **NO** re-publiques.
-  - PERO verifica si existe `outreach_log.tipo=demo_sent|demo_delivered` para este `prospect_id`/`slug`. Si SÍ existe → todo está hecho; NO crees handoff.
-  - Si no hay entrega registrada, verifica si existe ticket de Outreach (o Closer) para este `prospect_id`/`slug`. Si NO existe → tu trabajo no terminó: crea el ticket de Outreach/Closer con TODOS los campos del brief y manda mensaje directo. Después marca tu ticket como `done`.
+  - PERO verifica si existe `outreach_log.tipo=demo_sent|demo_delivered` para este `prospect_id`/`slug` si Supabase está disponible. Si SÍ existe → todo está hecho; NO crees handoff.
+  - Si Supabase no está disponible o no hay entrega registrada, verifica si existe ticket de Outreach (o Closer) para este `prospect_id`/`slug`. Si NO existe → tu trabajo no terminó: crea el ticket de Outreach/Closer con TODOS los campos del brief y manda mensaje directo. Después marca tu ticket como `done`.
   - Si SÍ existe ticket de Outreach/Closer → todo está hecho. Comenta y márcate como `cancelled` (duplicado).
 - Si CUALQUIERA responde != 200 → procede con el deploy.
 
