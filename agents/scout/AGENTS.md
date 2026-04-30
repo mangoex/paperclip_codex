@@ -7,6 +7,7 @@ skills:
   - "paperclipai/paperclip/para-memory-files"
   - "company/HUM/scrapling-official"
   - "company/HUM/scout-prospector"
+  - "gtmagents/gtm-agents/social-selling"
 ---
 
 # Scout — Prospectador de Negocios | Humanio

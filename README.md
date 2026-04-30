@@ -88,7 +88,7 @@ Esto S√ç construye propuesta web. Scout no participa salvo enriquecimiento expl√
 
 ## Skills
 
-39 skills vendorizadas o propias, incluyendo: frontend-design, outreach-proposals, qualifier-prospect-auditor, qualifier-seo, scout-prospector, frontend-design-review, frontend-ui-dark-ts, closer-sales, sales-copywriting, dataanalyst-pipeline, web-qa, qualifier-diagnostic-html, package-pricing, package-outreach, saas-metrics, retention-playbook, ui-ux-pro-max, paperclip-create-agent, paperclip-create-plugin, paperclip, para-memory-files, objection-handling, social-selling, cold-outreach, lead-qualification, web-scraping, web-template-system, web-premier-system, layout-blueprints, design-styles, dataanalyst-dashboard-html.
+39 skills vendorizadas o propias, incluyendo: frontend-design, outreach-proposals, qualifier-prospect-auditor, qualifier-seo, scout-prospector, frontend-design-review, frontend-ui-dark-ts, closer-sales, sales-copywriting, dataanalyst-pipeline, web-qa, qualifier-diagnostic-html, package-pricing, package-outreach (legacy compatibility), saas-metrics, retention-playbook, ui-ux-pro-max, paperclip-create-agent, paperclip-create-plugin, paperclip, para-memory-files, objection-handling, social-selling, cold-outreach, lead-qualification, web-scraping, web-template-system, web-premier-system, layout-blueprints, design-styles, dataanalyst-dashboard-html.
 
 ## Getting Started
 

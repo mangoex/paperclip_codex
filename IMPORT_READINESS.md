@@ -17,6 +17,7 @@ El paquete esta preparado para importarse como organizacion Humanio con dos ruta
 ## Guardrails aplicados
 
 - Los agentes web estan pausados por heartbeat en `.paperclip.yaml`.
+- `.paperclip.yaml` usa adaptador `codex_local` con modelo `openai/gpt-5.4` como base de importacion.
 - Qualifier ya no despierta a DesignPlanner en cold.
 - Outreach ya no espera sitio publicado para msg1.
 - Google Drive quedo fuera del manifiesto de variables.
@@ -25,7 +26,7 @@ El paquete esta preparado para importarse como organizacion Humanio con dos ruta
 
 ## Pendiente despues de importar
 
-- Cambiar adaptadores/modelos de `claude_local` a la configuracion Codex/OpenAI que uses en tu instancia de Paperclip.
+- Verificar en Paperclip UI que cada agente quedo en Codex local / OpenAI con el modelo deseado.
 - Cargar secretos reales en Paperclip: WhatsApp, Chatwoot, Supabase, Surge y SMTP si se usara email.
 - Probar primero con `contact_override` para evitar contactar prospectos reales.
 - Activar agentes web solo via mensajes directos del flujo demo.

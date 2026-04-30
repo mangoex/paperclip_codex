@@ -6,9 +6,9 @@ agents:
     capabilities: "CEO de Humanio. Coordina dos rutas: outbound por giro/ciudad (Scout → Qualifier → Outreach → Closer) e inbound/demo urgente por WhatsApp (Closer → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer/Outreach). Preserva requested_count, evita demos sin interés explícito y monitorea pipeline."
     adapter:
       config:
-        model: "claude-sonnet-4-5-20250929"
+        model: "openai/gpt-5.4"
         dangerouslySkipPermissions: true
-      type: "claude_local"
+      type: "codex_local"
     runtime:
       heartbeat:
         enabled: true
@@ -22,9 +22,9 @@ agents:
     capabilities: "Especialista en prospección de negocios locales de Humanio. Recibe país, ciudad y giro comercial, realiza investigación exhaustiva en Google Maps, directorios, redes sociales y web para generar listas detalladas de prospectos con todos sus datos de contacto. Al terminar crea ticket para Qualifier y le envía mensaje directo."
     adapter:
       config:
-        model: "claude-sonnet-4-5-20250929"
+        model: "openai/gpt-5.4"
         dangerouslySkipPermissions: true
-      type: "claude_local"
+      type: "codex_local"
     runtime:
       heartbeat:
         enabled: true
@@ -53,9 +53,9 @@ agents:
     capabilities: "Analista SEO y calificador de prospectos outbound de Humanio. Recibe reportes de Scout, evalúa presencia digital, calcula score de oportunidad (1-10), genera PROSPECT_BRIEF textual con hallazgos y paquete recomendado, respeta activation_limit y crea ticket para Outreach. No despierta al equipo web en cold."
     adapter:
       config:
-        model: "claude-sonnet-4-5-20250929"
+        model: "openai/gpt-5.4"
         dangerouslySkipPermissions: true
-      type: "claude_local"
+      type: "codex_local"
     runtime:
       heartbeat:
         enabled: true
@@ -84,9 +84,9 @@ agents:
     capabilities: "Planificador de dirección creativa web de Humanio para demos solicitadas. Recibe demo_request de Closer o inbound urgente, emite DESIGN_SPEC premier y crea ticket para WebBuilder. No participa en outbound frío sin interés explícito."
     adapter:
       config:
-        model: "claude-sonnet-4-5-20250929"
+        model: "openai/gpt-5.4"
         dangerouslySkipPermissions: true
-      type: "claude_local"
+      type: "codex_local"
     runtime:
       heartbeat:
         enabled: false
@@ -98,9 +98,9 @@ agents:
     capabilities: "Constructor de activos web de Humanio para demos solicitadas. Construye experiencia premier según DESIGN_SPEC, genera 3 páginas (index, propuesta, reporte) en /tmp/proposal-{slug}/ y entrega a WebQA. No construye sitios para cold leads sin interés."
     adapter:
       config:
-        model: "claude-sonnet-4-5-20250929"
+        model: "openai/gpt-5.4"
         dangerouslySkipPermissions: true
-      type: "claude_local"
+      type: "codex_local"
     runtime:
       heartbeat:
         enabled: false
@@ -124,9 +124,9 @@ agents:
     capabilities: "Auditor técnico, comercial y de marca de demos solicitadas. Audita /tmp/proposal-{slug}/ contra reglas de URL, paquetes, marca y delivery_mode. Emite PASS o FAIL. En PASS, hace handoff a WebPublisher."
     adapter:
       config:
-        model: "claude-sonnet-4-5-20250929"
+        model: "openai/gpt-5.4"
         dangerouslySkipPermissions: true
-      type: "claude_local"
+      type: "codex_local"
     runtime:
       heartbeat:
         enabled: false
@@ -138,9 +138,9 @@ agents:
     capabilities: "Operador de release web para demos aprobadas. Publica el árbol completo en humanio.surge.sh/{slug}/, verifica HTTP 200 en las 3 URLs, registra en Supabase y hace handoff a Closer/Outreach para entrega y seguimiento."
     adapter:
       config:
-        model: "claude-sonnet-4-5-20250929"
+        model: "openai/gpt-5.4"
         dangerouslySkipPermissions: true
-      type: "claude_local"
+      type: "codex_local"
     runtime:
       heartbeat:
         enabled: false
@@ -163,15 +163,20 @@ agents:
           kind: "secret"
           default: ""
           requirement: "required"
+        CLOSER_AGENT_ID:
+          description: "ID del agente Closer de esta compania — requerido para crear handoffs de demo verificados"
+          kind: "secret"
+          default: ""
+          requirement: "required"
 
   outreach:
     role: "general"
     capabilities: "Especialista en comunicación comercial outbound de Humanio. Recibe PROSPECT_BRIEF del Qualifier, envía primer contacto por WhatsApp/email con hallazgos reales y CTA hacia Humanio, registra evidencia en Supabase y crea ticket bloqueado para Closer. Puede apoyar entrega/follow-up de demos cuando Closer o WebPublisher lo pidan."
     adapter:
       config:
-        model: "claude-sonnet-4-5-20250929"
+        model: "openai/gpt-5.4"
         dangerouslySkipPermissions: true
-      type: "claude_local"
+      type: "codex_local"
     runtime:
       heartbeat:
         enabled: true
@@ -270,9 +275,9 @@ agents:
     capabilities: "Cerrador de ventas de Humanio. Recibe prospectos contactados por Outreach, espera respuestas, clasifica interés, hace demo intake, orquesta demos inbound urgentes con el equipo web, envía seguimientos permitidos y escala cierres al CEO."
     adapter:
       config:
-        model: "claude-sonnet-4-5-20250929"
+        model: "openai/gpt-5.4"
         dangerouslySkipPermissions: true
-      type: "claude_local"
+      type: "codex_local"
     runtime:
       heartbeat:
         enabled: true
@@ -372,9 +377,9 @@ agents:
     capabilities: "Experto en evaluación y análisis de datos, creación de reportes y tableros de control, indicadores, OKRs. Identifica oportunidades de mercado a través de análisis de datos del pipeline de Humanio."
     adapter:
       config:
-        model: "claude-sonnet-4-5-20250929"
+        model: "openai/gpt-5.4"
         dangerouslySkipPermissions: true
-      type: "claude_local"
+      type: "codex_local"
     runtime:
       heartbeat:
         enabled: true
@@ -383,7 +388,7 @@ agents:
     inputs:
       env:
         SURGE_TOKEN:
-          description: "Surge.sh deploy token — para publicar dashboards HTML como humanio-dashboard-{fecha}.surge.sh"
+          description: "Surge.sh deploy token — para publicar dashboards HTML como humanio.surge.sh/dashboard-{fecha}/"
           kind: "secret"
           default: ""
           requirement: "required"

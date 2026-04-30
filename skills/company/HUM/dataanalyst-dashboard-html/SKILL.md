@@ -18,7 +18,7 @@ key: "company/HUM/dataanalyst-dashboard-html"
 
 Tienes todos los datos agregados del pipeline (de Paperclip issues API). Ahora conviertes esos datos en un dashboard HTML visual interactivo.
 
-El archivo resultante (`index.html`) se despliega en Surge.sh como `humanio-dashboard-{YYYY-MM-DD}.surge.sh` y se entrega al CEO.
+El archivo resultante (`index.html`) se despliega en Surge.sh dentro del root compartido como `https://humanio.surge.sh/dashboard-{YYYY-MM-DD}-{SUFFIX}/` y se entrega al CEO.
 
 ## Inputs requeridos
 
@@ -778,14 +778,20 @@ ls -la /tmp/dashboard-{YYYY-MM-DD}/index.html
 ```bash
 # Sufijo aleatorio para que la URL no sea adivinable (dashboards tienen datos internos).
 SUFFIX=$(openssl rand -hex 4)
-DOMAIN="humanio-dashboard-{YYYY-MM-DD}-$SUFFIX.surge.sh"
+DASHBOARD_SLUG="dashboard-{YYYY-MM-DD}-$SUFFIX"
+ROOT_DIR="/tmp/humanio-root"
+SRC_DIR="/tmp/dashboard-{YYYY-MM-DD}"
 
 # NUNCA pases el token como argumento (--token) porque queda en `ps`/historial.
 # `SURGE_TOKEN` debe estar exportado como variable de entorno.
-cd /tmp/dashboard-{YYYY-MM-DD}
-npx surge . "$DOMAIN"
+rm -rf "$ROOT_DIR"
+mkdir -p "$ROOT_DIR"
+surge fetch humanio.surge.sh "$ROOT_DIR" || true
+rm -rf "$ROOT_DIR/$DASHBOARD_SLUG"
+cp -R "$SRC_DIR" "$ROOT_DIR/$DASHBOARD_SLUG"
+surge "$ROOT_DIR" humanio.surge.sh
 
-echo "✅ Dashboard desplegado en: https://$DOMAIN"
+echo "✅ Dashboard desplegado en: https://humanio.surge.sh/$DASHBOARD_SLUG/"
 echo "⚠️  Guarda esta URL — no es adivinable desde fuera."
 ```
 
@@ -796,7 +802,7 @@ echo "⚠️  Guarda esta URL — no es adivinable desde fuera."
 
 ```
 ✅ Dashboard generado y desplegado:
-https://humanio-dashboard-{YYYY-MM-DD}.surge.sh
+https://humanio.surge.sh/dashboard-{YYYY-MM-DD}-{SUFFIX}/
 
 Período: {PERIODO}
 Prospectos activos: {TOTAL_PROSPECTOS}
@@ -811,7 +817,7 @@ MRR: ${MRR_ACTUAL} (target: ${MRR_TARGET})
 - **Validar MRR:** REV_STARTER + REV_PRO + REV_BUSINESS ≈ MRR_ACTUAL (dentro de tolerancia de ±2%)
 - **Validar geografía:** N_MEXICO + N_COLOMBIA + N_PERU + N_ARGENTINA ≈ TOTAL_PROSPECTOS
 - **Valores porcentuales:** Todas las tasas (conversión, churn, apertura, respuesta) deben estar entre 0-100%
-- **URL de Surge.sh:** Formato exacto: `humanio-dashboard-YYYY-MM-DD.surge.sh` (sin barras ni caracteres especiales)
+- **URL de Surge.sh:** Formato exacto: `https://humanio.surge.sh/dashboard-YYYY-MM-DD-SUFFIX/`
 - **Timestamp:** Incluir fecha y hora exacta de generación en el footer en formato ISO 8601
 - **Si no hay datos para una sección:** Mostrar "Sin datos disponibles para este período" en lugar de dejar vacío
 - **Responsividad:** El dashboard debe verse bien en móvil (< 768px) y escritorio
@@ -821,7 +827,7 @@ MRR: ${MRR_ACTUAL} (target: ${MRR_TARGET})
 El flujo de despliegue es:
 
 1. DataAnalyst ejecuta este skill → genera HTML en `/tmp/dashboard-{fecha}/index.html`
-2. DataAnalyst corre con `SURGE_TOKEN` exportado en env: `cd /tmp/dashboard-{fecha} && npx surge . humanio-dashboard-{fecha}-$(openssl rand -hex 4).surge.sh` (el token se lee del entorno, nunca se pasa como argumento)
+2. DataAnalyst corre con `SURGE_TOKEN` exportado en env, hace `surge fetch humanio.surge.sh /tmp/humanio-root`, copia `/tmp/dashboard-{fecha}` a `/tmp/humanio-root/dashboard-{fecha}-{suffix}` y publica `surge /tmp/humanio-root humanio.surge.sh`
 3. Retorna la URL al CEO vía Paperclip
 
 **Surge.sh setup:**

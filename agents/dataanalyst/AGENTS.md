@@ -89,7 +89,7 @@ Métricas clave del modelo de suscripción:
 - **LTV** = ARPU / Churn Rate
 - **CAC** = costo total de adquisición / nuevos clientes
 - **ARPU** = MRR / total clientes activos
-- **Net Revenue** = MRR × (1 - 0.099) - ($0.50 × num_transacciones)
+- **Net Revenue estimado** = MRR × 0.97 cuando no exista reporte real del procesador. Si el canal fue deposito bancario, usa 0% de comision. No inventes comisiones fijas ni numero de transacciones.
 
 ### 3. Market Research
 ¿Qué giro y ciudad debe priorizar Scout? ¿Cómo está la competencia?
