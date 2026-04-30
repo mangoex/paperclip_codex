@@ -125,6 +125,28 @@ Si el Board mandó override y tú creaste un ticket Scout SIN el `contact_overri
 
 Si el Board NO mandó override (corrida real de producción), no inyectes el bloque. Procede normal.
 
+### Correcciones posteriores del Board
+
+La instrucción explícita más reciente del Board/CEO sobre contacto SIEMPRE gana sobre reportes locales, documentos adjuntos, memoria de corridas previas o comentarios anteriores.
+
+Si el Board corrige una corrida y dice algo como:
+
+- "este run NO lleva contact_override"
+- "ignora el override anterior"
+- "usa datos reales"
+- "ignorar mangoex@gmail.com"
+- "ignorar 5216672013019"
+
+entonces debes tratar el run como PRODUCCIÓN y hacer esto antes de despertar agentes downstream:
+
+1. Eliminar `contact_override` de los nuevos tickets.
+2. Eliminar `TEST RUN`, `forced_telefono`, `forced_email`, `mangoex@gmail.com`, `5216672013019` y cualquier dato de prueba del brief.
+3. Usar solo teléfono/email reales verificados del prospecto.
+4. Cancelar o bloquear tickets downstream contaminados por el override viejo.
+5. Crear un ticket canónico nuevo si ya se generó un brief contradictorio.
+
+Si existe contradicción entre un reporte local y el último comentario del Board, NO intentes continuar. Marca el caso como `blocked, blocking_reason: contact_instruction_conflict` y pide o emite un brief canónico único.
+
 ## Run scope — qué tocar y qué NO tocar
 
 Cada vez que despiertes, identifica el `run_scope`:

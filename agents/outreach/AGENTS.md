@@ -89,6 +89,16 @@ Si falta cualquier campo crítico (telefono, email, nombre_negocio, ref_slug, ci
 
 ### Validación adicional — contact_override
 
+Antes de enviar, revisa también el ticket padre y comentarios recientes del CEO/Board. Si el último comentario explícito dice que el run NO lleva `contact_override`, o que deben ignorarse datos de prueba como `mangoex@gmail.com` / `5216672013019`, pero el brief actual todavía contiene esos datos o `TEST RUN`, bloquea con:
+
+```yaml
+status: outreach_blocked
+blocking_reason: stale_contact_override_contamination
+detail: "El ultimo comentario del CEO indica produccion sin override, pero el brief trae datos de prueba heredados. NO ENVIAR."
+```
+
+No intentes corregir el contacto tú. El owner de desbloqueo es Qualifier/CEO con un brief canónico nuevo.
+
 Si el PROSPECT_BRIEF (o el ticket padre) incluye `contact_override.is_test_run: true`:
 
 1. Verifica que `telefono` del brief coincida con `contact_override.forced_telefono`

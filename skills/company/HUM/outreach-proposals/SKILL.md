@@ -31,6 +31,20 @@ Si falta cualquiera de los críticos (`telefono`, `email`, `nombre_negocio`, `re
 
 ## Validación pre-envío (idempotencia)
 
+### Validación de contacto canónico
+
+Antes de enviar, revisa el ticket actual, el parent y los comentarios recientes del CEO/Board.
+
+Si el ultimo comentario explicito dice `NO lleva contact_override`, `sin override`, `usar datos reales`, `ignorar mangoex@gmail.com` o `ignorar 5216672013019`, pero el brief actual trae datos de prueba o `TEST RUN`, bloquea:
+
+```yaml
+status: outreach_blocked
+blocking_reason: stale_contact_override_contamination
+detail: "Produccion sin override solicitada, pero brief contiene datos de prueba heredados."
+```
+
+No envies WhatsApp ni SMTP y no crees handoff a Closer. El desbloqueo corresponde a Qualifier/CEO con un brief canonico limpio.
+
 Verifica que NO existe ya un msg1 intentado por canal real:
 
 ```sql

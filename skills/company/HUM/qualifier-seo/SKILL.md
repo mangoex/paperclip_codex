@@ -114,8 +114,25 @@ Tambien debes buscar en el ticket o contexto:
 - `activation_limit`
 - `contact_override`
 - `is_test_run`
+- comentarios recientes del CEO/Board sobre si el run lleva o no lleva override
 
 ## Contact Override
+
+### Fuente de verdad
+
+Antes de decidir telefono/email del brief, revisa ticket actual, parent y comentarios recientes. La instruccion explicita mas reciente del CEO/Board gana sobre reportes locales, adjuntos, memoria de corridas previas y comentarios anteriores.
+
+Si el comentario mas reciente dice `NO lleva contact_override`, `sin override`, `usar datos reales`, `ignorar mangoex@gmail.com` o `ignorar 5216672013019`, trata el run como produccion:
+
+- No incluyas `contact_override`.
+- No uses datos heredados de prueba.
+- No escribas `TEST RUN`.
+- Usa solo telefono/email reales verificados del prospecto.
+- Si el reporte del Scout o archivo local contradice esto y trae datos de prueba, bloquea con `qualification_blocked, blocking_reason: stale_contact_override_contamination`.
+
+Si el comentario mas reciente confirma `contact_override.is_test_run: true`, trata el run como prueba y aplica forced telefono/email.
+
+Nunca mezcles datos reales con datos de prueba. Si no puedes determinar una sola politica de contacto, bloquea y pide brief canonico.
 
 Si el ticket contiene:
 

@@ -72,6 +72,51 @@ Y del ticket o contexto:
 - approval_required_for_extras
 - override de contacto si CEO mandó (telefono/email de prueba)
 
+## Fuente de verdad para contacto
+
+Antes de crear cualquier ticket Outreach, lee el ticket actual, el parent del CEO/Scout y los comentarios recientes. Determina una sola politica de contacto.
+
+La instrucción explícita más reciente del Board/CEO gana sobre cualquier reporte local, archivo adjunto, memoria de corrida previa o comentario anterior.
+
+### Producción sin override
+
+Si el comentario más reciente del Board/CEO dice algo como:
+
+- `Este run NO lleva contact_override`
+- `Ignorar cualquier referencia previa a mangoex@gmail.com`
+- `Ignorar cualquier referencia previa a 5216672013019`
+- `usar datos reales`
+- `sin override`
+
+entonces:
+
+1. NO incluyas `contact_override`.
+2. NO uses emails o teléfonos de prueba heredados.
+3. NO escribas `TEST RUN`.
+4. Usa únicamente teléfono/email reales verificados del prospecto.
+5. Si tu reporte de Scout contradice esta instrucción y todavía trae datos de prueba, bloquea con:
+
+```yaml
+status: qualification_blocked
+blocking_reason: stale_contact_override_contamination
+detail: "El ultimo comentario del CEO indica produccion sin override, pero el reporte/brief contiene datos de prueba heredados."
+```
+
+No crees ticket Outreach hasta tener un brief canónico limpio.
+
+### Test run con override
+
+Si el comentario más reciente del Board/CEO confirma `contact_override.is_test_run: true`, entonces sí aplica la regla dura de override: usa `forced_telefono` y `forced_email` en el brief, y marca `observaciones: TEST RUN - override de contacto aplicado`.
+
+### Prohibición de mezcla
+
+Nunca mezcles datos reales del prospecto con datos de prueba. Un PROSPECT_BRIEF debe ser una de estas dos cosas:
+
+- Producción: teléfono/email reales, sin `contact_override`, sin `TEST RUN`.
+- Prueba: teléfono/email forzados, con bloque `contact_override` completo y `TEST RUN`.
+
+Si no puedes decidir cuál aplica, bloquea. No inventes y no despiertes Outreach.
+
 ## Regla de cantidad solicitada
 
 Si el encargo dice "1 prospecto", "un negocio", `requested_count: N`, etc — solo activas esa cantidad EXACTA. Scout puede listar más; tú no escalas.
