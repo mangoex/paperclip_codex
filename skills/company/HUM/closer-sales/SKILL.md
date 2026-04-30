@@ -124,12 +124,12 @@ Lee el último mensaje del prospecto y clasifícalo:
 
 ### B2. Generar respuesta de cierre
 
-Redacta la respuesta según la clasificación. **Siempre en primera persona como Miguel González.**
+Redacta la respuesta según la clasificación. La voz externa debe ser Hannia/Humanio: cálida, breve y comercial. No firmes como Miguel ni uses el nombre del prospecto como firma.
 
 **CTA estándar (reemplaza cualquier "llamada de 15 minutos"):**
 1. Comparte `https://humanio.digital/#paquetes` para que revise los paquetes
 2. Recomienda UN paquete específico según el perfil (giro / tamaño del negocio / hallazgos del Qualifier)
-3. Cierra con: *"Si prefieres que te contactemos nosotros, ¿te queda mejor por la mañana o por la tarde?"*
+3. Cierra con: *"Si prefieres que alguien del equipo te ayude a elegir, con gusto te conecto."*
 
 **Nunca** propongas agendar una videollamada ni pidas que el prospecto "aparte 15 minutos". El prospecto no quiere reservar tiempo; queremos que (a) revise los paquetes solo o (b) nos deje un hueco suave para llamarle.
 
@@ -153,9 +153,9 @@ https://humanio.digital/#paquetes
 
 Por tu perfil, el que mejor te puede funcionar es **{PAQUETE_RECOMENDADO}** — {RAZON_PAQUETE_EN_UNA_LINEA}.
 
-Revísalo con calma. Si prefieres que te contactemos nosotros para resolver dudas, ¿te queda mejor por la mañana o por la tarde?
+Revísalo con calma. Si prefieres que alguien del equipo te ayude a resolver dudas, con gusto te conecto.
 
-Miguel González | Humanio
+Humanio
 ```
 
 **Template PREGUNTA_TECNICA:**
@@ -168,9 +168,9 @@ Aquí puedes ver cómo se ve aplicado en los paquetes que tenemos: https://human
 
 Para {NOMBRE_NEGOCIO}, el que más sentido hace es **{PAQUETE_RECOMENDADO}** — {RAZON_PAQUETE_EN_UNA_LINEA}.
 
-Si quieres que te llame para aclarar algo, dime si prefieres que te marque por la mañana o por la tarde.
+Si quieres que alguien del equipo te aclare algo, con gusto te conecto.
 
-Miguel González | Humanio
+Humanio
 ```
 
 **Template OBJECION_PRECIO:**
@@ -184,9 +184,9 @@ https://humanio.digital/#paquetes
 
 Para {NOMBRE_NEGOCIO} te recomiendo arrancar con **Presencia Esencial** — es el punto de entrada y nos permite resolver la base sin comprometer presupuesto grande.
 
-Si quieres que te platique los números con más detalle, ¿prefieres que te contacte por la mañana o por la tarde?
+Si quieres que alguien del equipo te platique los números con más detalle, con gusto te conecto.
 
-Miguel González | Humanio
+Humanio
 ```
 
 **Template OBJECION_TIEMPO:**
@@ -200,9 +200,9 @@ https://humanio.digital/#paquetes
 
 Por tu perfil, **{PAQUETE_RECOMENDADO}** sería el que menos tiempo te consume de tu lado.
 
-Si quieres que te lo explique yo mismo, ¿te queda mejor una llamada rápida por la mañana o por la tarde?
+Si quieres que alguien del equipo te lo explique, con gusto te conecto.
 
-Miguel González | Humanio
+Humanio
 ```
 
 **Template OBJECION_PROVEEDOR:**
@@ -217,9 +217,9 @@ Revisa los paquetes para ver qué podría sumar: https://humanio.digital/#paquet
 
 Para {NOMBRE_NEGOCIO}, **{PAQUETE_RECOMENDADO}** es el que mejor complementa lo que ya tienen.
 
-Si quieres que te explique cómo encaja, ¿prefieres que te contactemos por la mañana o por la tarde?
+Si quieres que te expliquemos cómo encaja, con gusto te conecto con alguien del equipo.
 
-Miguel González | Humanio
+Humanio
 ```
 
 **Template RECHAZO:**
@@ -230,7 +230,7 @@ Con todo gusto, lo entiendo perfectamente. Si en algún momento el contexto camb
 
 Le deseo mucho éxito a {NOMBRE_NEGOCIO}.
 
-Miguel González | Humanio
+Humanio
 ```
 
 ### B3. Enviar respuesta vía SMTP
@@ -256,8 +256,8 @@ const responseHTML = `<!DOCTYPE html>
 <div class="container">
   {CONTENIDO_RESPUESTA_HTML}
   <div class="signature">
-    <p><strong>Miguel González</strong><br>
-    Humanio — Inteligencia Artificial para negocios<br>
+    <p><strong>Humanio</strong><br>
+    Inteligencia Artificial para negocios<br>
     contacto@humanio.digital · humanio.digital<br>
     {TELEFONO_MIGUEL_DISPLAY}</p>
   </div>
@@ -269,7 +269,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const mailOpts = {
-  from: '"Miguel González | Humanio" <contacto@humanio.digital>',
+  from: '"Humanio" <contacto@humanio.digital>',
   to: '{EMAIL_PROSPECTO}',
   subject: 'Re: Análisis digital de {NOMBRE_NEGOCIO}',
   html: responseHTML
@@ -396,7 +396,7 @@ DATO_NUEVO = hallazgos_originales[i] donde i != hallazgo_usado_msg1
 
 > **Principio clave:** Genera TODOS los archivos el día que te activas — msg 2, msg 3, log.
 > Guárdalos en `/tmp/closer-{slug}/` ANTES de enviar cualquier cosa.
-> Así Miguel puede revisar el plan completo en el ticket antes de que salga ningún mensaje.
+> Así el equipo puede revisar el plan completo en el ticket antes de que salga ningún mensaje.
 > El msg 2 se envía hoy. El msg 3 se guarda para envío en día 7 (solo si no hay respuesta).
 
 ```bash
@@ -406,14 +406,14 @@ mkdir -p /tmp/closer-{slug}
 #### 4a. Mensaje 2 — WhatsApp
 
 Sigue el framework VALOR del skill `sales-copywriting` → "WHATSAPP — Mensaje 2":
-- Abre con nombre del contacto (no con "Hola 👋" ni "Soy Miguel")
+- Abre con nombre del contacto (no con "Hola" genérico ni una presentación larga)
 - Aporta UN dato nuevo que no estaba en el mensaje 1
 - Semilla de IA opcional solo si fluye naturalmente con el dato
 - Pregunta abierta de micro-compromiso
 - Máximo 8 líneas
 
 ```bash
-WA_MSG2="{NOMBRE_CONTACTO}, soy Miguel de Humanio.
+WA_MSG2="{NOMBRE_CONTACTO}.
 
 Te escribí hace unos días sobre {NOMBRE_NEGOCIO}.
 {DATO_NUEVO_DE_VALOR}
@@ -422,7 +422,7 @@ Te escribí hace unos días sobre {NOMBRE_NEGOCIO}.
 {PROPUESTA_URL}
 
 Si tienes alguna duda, aquí estoy.
-— Miguel"
+Humanio"
 
 echo "$WA_MSG2" > /tmp/closer-{slug}/seguimiento-2-whatsapp.txt
 echo "✅ seguimiento-2-whatsapp.txt generado"
@@ -456,10 +456,10 @@ const email2HTML = `<!DOCTYPE html>
   <p>{DATO_NUEVO_DE_VALOR}</p>
   <p>La propuesta sigue disponible aquí: <a href="{PROPUESTA_URL}">{PROPUESTA_URL}</a></p>
   <p>Si tienes alguna pregunta, me puedes escribir por aquí o por WhatsApp.</p>
-  <p>Saludos,<br>Miguel</p>
+  <p>Saludos,<br>Humanio</p>
   <div class="signature">
-    <p><strong>Miguel González</strong><br>
-    Humanio &mdash; Inteligencia Artificial para negocios<br>
+    <p><strong>Humanio</strong><br>
+    Inteligencia Artificial para negocios<br>
     contacto@humanio.digital &middot; humanio.digital<br>
     {TELEFONO_MIGUEL_DISPLAY}</p>
   </div>
@@ -506,7 +506,7 @@ let email2MsgId  = null;
 
 try {
   const mailOpts = {
-    from: '"Miguel González | Humanio" <contacto@humanio.digital>',
+    from: '"Humanio" <contacto@humanio.digital>',
     to: '{EMAIL_PROSPECTO}',
     subject: 'Re: Análisis digital de {NOMBRE_NEGOCIO}',
     html: email2HTML
@@ -560,7 +560,7 @@ El análisis sigue disponible cuando quieras:
 {PROPUESTA_URL}
 
 Éxito con todo.
-— Miguel"
+Humanio"
 
 echo "$WA_MSG3" > /tmp/closer-{slug}/seguimiento-3-whatsapp.txt
 echo "✅ seguimiento-3-whatsapp.txt generado (programado para día 7 si no hay respuesta)"
@@ -590,9 +590,9 @@ const email3HTML = `<!DOCTYPE html>
   <p>Hola {NOMBRE_CONTACTO},</p>
   <p>No quiero ser insistente &mdash; sé que el día a día de {NOMBRE_NEGOCIO} es lo primero.</p>
   <p>Tu análisis y propuesta siguen disponibles aquí: <a href="{PROPUESTA_URL}">{PROPUESTA_URL}</a></p>
-  <p>Si en algún momento te interesa explorarlo, me encuentras en este correo o por WhatsApp ({TELEFONO_MIGUEL_DISPLAY}).</p>
+  <p>Si en algún momento te interesa explorarlo, me encuentras en este correo o por WhatsApp.</p>
   <p>Te deseo mucho éxito.</p>
-  <p>Miguel González<br>Humanio &mdash; Inteligencia Artificial para negocios</p>
+  <p>Humanio &mdash; Inteligencia Artificial para negocios</p>
 </div>
 </body>
 </html>`;
@@ -815,7 +815,7 @@ const ACCOUNT_ID = process.env.CHATWOOT_ACCOUNT_ID;
     auth: { user: process.env.SMTP_USER || 'contacto@humanio.digital', pass: process.env.SMTP_PASS }
   });
   const mailOpts = {
-    from: '\"Miguel González | Humanio\" <contacto@humanio.digital>',
+    from: '\"Humanio\" <contacto@humanio.digital>',
     to: '{EMAIL_PROSPECTO}',
     subject: 'Re: Análisis digital de {NOMBRE_NEGOCIO}',
     html: email3HTML
