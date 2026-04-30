@@ -282,6 +282,15 @@ Regla: `etapa = "contactado"` solo si hay AL MENOS un `provider_message_id` real
 
 Solo si la fila se insertó, actualiza `prospects.etapa = 'contactado'`.
 
+Nota de esquema Supabase: `outreach_log.status` no acepta `accepted_by_meta`. Para WhatsApp aceptado por Meta, registra la fila con `status: "sent"` y guarda la semántica real en `error_detail` o metadatos equivalentes:
+
+```yaml
+provider_semantic_status: accepted_by_meta
+delivery_status: pending_webhook
+```
+
+El ticket/handoff a Closer SÍ debe seguir usando `whatsapp_status: accepted_by_meta` y `delivery_status: pending_webhook`.
+
 ## Handoff a Closer
 
 Solo si hubo envío real:

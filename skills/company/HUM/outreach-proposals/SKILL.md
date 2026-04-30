@@ -56,7 +56,7 @@ ORDER BY created_at DESC LIMIT 1;
 
 | Resultado | Acción |
 |---|---|
-| `status=accepted_by_meta` o `status=sent` con `provider_message_id` real | YA intentado por canal real. Comenta y márcate `cancelled` (duplicado real), salvo que el CEO pida reintento explícito. |
+| `status=sent` con `provider_message_id` real | YA intentado por canal real. Comenta y márcate `cancelled` (duplicado real), salvo que el CEO pida reintento explícito. Si el canal es WhatsApp, revisa `error_detail` para distinguir `accepted_by_meta` / `pending_webhook`. |
 | `status=failed` | Intento previo falló. Reintenta. |
 | Sin filas | Procede. |
 
@@ -297,10 +297,12 @@ NUNCA hagas `if WA failed: skip SMTP`. NUNCA hagas `if SMTP failed: skip WA`. Lo
 
 ### INSERT en outreach_log
 
+Nota de esquema Supabase: `outreach_log.status` no acepta `accepted_by_meta`. Para WhatsApp aceptado por Meta, registra `status: "sent"` y guarda la semantica real en `error_detail`.
+
 ```bash
 STATUS_FOR_LOG="sent"
-if [ "$CANAL" = "whatsapp" ] && [ -n "$WA_MSG_ID" ]; then
-  STATUS_FOR_LOG="accepted_by_meta"
+if [ "$CANAL" = "whatsapp" ] && [ -n "$WA_MSG_ID" ] && [ -z "${ERROR_DETAIL:-}" ]; then
+  ERROR_DETAIL='{"provider_semantic_status":"accepted_by_meta","delivery_status":"pending_webhook"}'
 fi
 
 LOG_ROW=$(curl -s -X POST "$SUPABASE_URL/rest/v1/outreach_log" \
