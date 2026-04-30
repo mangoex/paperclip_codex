@@ -31,7 +31,7 @@ Si falta cualquiera de los críticos (`telefono`, `email`, `nombre_negocio`, `re
 
 ## Validación pre-envío (idempotencia)
 
-Verifica que NO existe ya un msg1 enviado:
+Verifica que NO existe ya un msg1 intentado por canal real:
 
 ```sql
 SELECT id, status, provider_message_id, error_detail
@@ -42,7 +42,7 @@ ORDER BY created_at DESC LIMIT 1;
 
 | Resultado | Acción |
 |---|---|
-| `status=sent` con `provider_message_id` real | YA enviado. Comenta y márcate `cancelled` (duplicado real). |
+| `status=accepted_by_meta` o `status=sent` con `provider_message_id` real | YA intentado por canal real. Comenta y márcate `cancelled` (duplicado real), salvo que el CEO pida reintento explícito. |
 | `status=failed` | Intento previo falló. Reintenta. |
 | Sin filas | Procede. |
 
@@ -151,6 +151,15 @@ JSON
 
 Pega la respuesta JSON cruda en tu output. Extrae `messages[0].id` como `WA_MSG_ID`. Sin esa prueba, el envío NO ocurrió.
 
+Si Meta devuelve `messages[0].id`, registra:
+
+```yaml
+WA_STATUS: accepted_by_meta
+delivery_status: pending_webhook
+```
+
+No registres WhatsApp como `sent`, `delivered` o `read` desde esta respuesta. Esos estados solo vienen después por webhook de Meta/n8n/Chatwoot. `accepted_by_meta` significa que Meta aceptó el mensaje para procesamiento.
+
 ## 2. Email — SMTP directo
 
 > ⚠️ NUNCA Chatwoot API para email — bug v4.11.
@@ -258,15 +267,15 @@ Tras envío, registra en Chatwoot SOLO como CRM:
 
 | WA | SMTP | Acción |
 |---|---|---|
-| `sent` (con WA_MSG_ID real) | `sent` (con messageId real) | ✅ INSERT outreach_log con AMBOS ids + handoff Closer |
-| `sent` (con WA_MSG_ID real) | `failed` (o sin email) | ✅ INSERT outreach_log con WA_MSG_ID + handoff Closer (registra el fallo SMTP en `error_detail`) |
+| `accepted_by_meta` (con WA_MSG_ID real) | `sent` (con messageId real) | ✅ INSERT outreach_log con AMBOS ids + handoff Closer |
+| `accepted_by_meta` (con WA_MSG_ID real) | `failed` (o sin email) | ✅ INSERT outreach_log con WA_MSG_ID + handoff Closer (registra el fallo SMTP en `error_detail`) |
 | `failed` (o sin telefono) | `sent` (con messageId real) | ✅ INSERT outreach_log con messageId + handoff Closer (registra el fallo WA en `error_detail`) |
 | `failed` (o sin telefono) | `failed` (o sin email) | 🛑 NO registres. NO crees Closer. `outreach_blocked, both_channels_failed` |
 | sin telefono | sin email | 🛑 `outreach_blocked, no_contact_data` — escalar al CEO |
 
 ### Orden de ejecución obligatorio
 
-1. **Intenta WhatsApp primero**. Captura resultado en variables `WA_STATUS`, `WA_MSG_ID`, `WA_ERROR`.
+1. **Intenta WhatsApp primero**. Captura resultado en variables `WA_STATUS`, `WA_MSG_ID`, `WA_ERROR`. Si Meta responde 200 con `messages[0].id`, usa `WA_STATUS=accepted_by_meta`.
 2. **Después intenta SMTP independientemente del resultado de WhatsApp**. Captura `SMTP_STATUS`, `SMTP_MSG_ID`, `SMTP_ERROR`.
 3. **Solo después** evalúa la tabla de arriba para decidir si haces handoff o bloqueas.
 
@@ -275,6 +284,11 @@ NUNCA hagas `if WA failed: skip SMTP`. NUNCA hagas `if SMTP failed: skip WA`. Lo
 ### INSERT en outreach_log
 
 ```bash
+STATUS_FOR_LOG="sent"
+if [ "$CANAL" = "whatsapp" ] && [ -n "$WA_MSG_ID" ]; then
+  STATUS_FOR_LOG="accepted_by_meta"
+fi
+
 LOG_ROW=$(curl -s -X POST "$SUPABASE_URL/rest/v1/outreach_log" \
   -H "apikey: $SUPABASE_SERVICE_KEY" \
   -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
@@ -287,7 +301,7 @@ LOG_ROW=$(curl -s -X POST "$SUPABASE_URL/rest/v1/outreach_log" \
     \"enviado_at\":               \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
     \"provider_message_id\":      \"$MSG_ID\",
     \"chatwoot_conversation_id\": ${CONV_ID:-null},
-    \"status\":                   \"sent\",
+    \"status\":                   \"$STATUS_FOR_LOG\",
     \"error_detail\":             ${ERROR_DETAIL:-null}
   }")
 
@@ -318,6 +332,8 @@ diagnostico_hallazgos: [...]
 paquete_recomendado: "{paquete}"
 msg1:
   whatsapp_id: "{WA_MSG_ID|null}"
+  whatsapp_status: "{accepted_by_meta|failed|n/a}"
+  delivery_status: "{pending_webhook|delivered|read|failed|n/a}"
   email_id: "{messageId|null}"
   enviado_at: "{ISO}"
 next_step: "Esperar respuesta. Si llega, demo intake."
@@ -325,8 +341,8 @@ next_step: "Esperar respuesta. Si llega, demo intake."
 
 Mensaje directo al Closer:
 ```
-Hola Closer — msg1 enviado a {nombre_negocio}.
-WA: {WA_MSG_ID} | SMTP: {messageId}
+Hola Closer — msg1 procesado para {nombre_negocio}.
+WA: {WA_MSG_ID} (accepted_by_meta, pending webhook) | SMTP: {messageId}
 Ticket: {nuevo_id}.
 ```
 
@@ -346,7 +362,7 @@ SUPABASE_URL, SUPABASE_SERVICE_KEY
 - Email SIEMPRE vía SMTP directo.
 - URLs en email apuntan SIEMPRE a `https://www.humanio.digital`. NUNCA surge.sh.
 - Hallazgos del brief, NUNCA inventados.
-- `etapa=contactado` solo con `provider_message_id` real.
+- `etapa=contactado` solo con `provider_message_id` real. Para WhatsApp, `provider_message_id` significa aceptado por Meta, no entrega final.
 - Subject email ≤ 6 palabras, sin emojis.
 - NO upload a Drive en cold (eso era del flujo viejo).
 - NO script de llamada en cold.
