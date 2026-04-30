@@ -20,6 +20,8 @@
 </style>
 </head>
 <body>
+<div class="scroll-progress" aria-hidden="true"></div>
+<div class="cursor-spotlight" aria-hidden="true"></div>
 
 <nav class="nav">
   <div class="brand"><span class="dot"></span> Humanio</div>
@@ -39,6 +41,7 @@
            muted playsinline preload="metadata"></video>
   </div>
   <div class="hero__video-overlay"></div>
+  <div class="hero__grid" aria-hidden="true"></div>
 
   <div class="container hero__content">
     <span class="hero__eyebrow"><span class="pulse"></span> Análisis preparado para {{NOMBRE_NEGOCIO}}</span>
@@ -51,6 +54,20 @@
     <div class="cta-row">
       <a class="btn btn--primary" href="./propuesta/">Ver propuesta <span class="arrow">→</span></a>
       <a class="btn btn--ghost" href="./reporte/">Ver diagnóstico</a>
+    </div>
+    <div class="hero__proof" aria-label="Resumen del diagnóstico">
+      <div>
+        <strong>{{STAT_1_VALUE}}</strong>
+        <span>{{STAT_1_LABEL}}</span>
+      </div>
+      <div>
+        <strong>{{STAT_2_VALUE}}</strong>
+        <span>{{STAT_2_LABEL}}</span>
+      </div>
+      <div>
+        <strong>{{PAQUETE_RECOMENDADO_NOMBRE}}</strong>
+        <span>paquete sugerido</span>
+      </div>
     </div>
   </div>
 

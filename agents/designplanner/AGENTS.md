@@ -98,11 +98,14 @@ Por eso el `TEMPLATE_SPEC` es deliberadamente corto (ahorro de tokens):
 - hero_subhead
 - diagnostic_lead
 - proposal_focus     # qué resaltar de la propuesta
+- motion_note        # cómo debe sentirse el video/scroll/mouse sin explicar efectos al usuario
 - notes_for_builder  # cualquier detalle que el WebBuilder deba saber
 
 Nada más. No agregues campos que el template no use.
 
 Para elegir paleta usa la tabla por giro del MANIFEST (`templates/futuristic-v1/MANIFEST.md`).
+
+Para `hero_video_query`, evita queries genéricas como `technology` o `business` si existe una imagen más concreta del giro. Prefiere escenas reales: `restaurant kitchen`, `advisor meeting`, `dental clinic`, `beauty salon`, etc.
 
 ### Si `delivery_mode = premier`
 Debes producir `DESIGN_SPEC` con esta estructura mínima:
@@ -145,6 +148,7 @@ Debes producir `DESIGN_SPEC` con esta estructura mínima:
 7. Usa `interaction_level` con uno de estos valores:
    - low
    - medium
+8. Conserva el estándar Humanio: hero con video, progreso de scroll, spotlight de mouse y reveal suave. No expliques esos efectos en el copy.
 
 ## Reglas de decisión para modo `premier`
 
@@ -154,6 +158,7 @@ Debes producir `DESIGN_SPEC` con esta estructura mínima:
 4. Evita repetir combinaciones recientes de estilo y blueprint cuando sea posible
 5. No conviertas complejidad en adorno innecesario
 6. Usa `interaction_profile` para describir el nivel de sofisticación visual esperado
+7. Inspírate en Humanio/Asistto y MotionSites para ritmo, video y movimiento, pero aterriza el resultado al giro del prospecto.
 
 ## Reglas de selección visual
 

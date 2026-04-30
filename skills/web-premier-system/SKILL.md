@@ -65,6 +65,17 @@ En modo premier sí puedes variar:
 - riqueza del sistema tipográfico
 - uso de imagen y composición
 
+## Referencia de movimiento y calidad visual
+
+Toma como referencia el nivel de interacción de Humanio/Asistto y sitios tipo MotionSites:
+- hero con video real o composición visual de alto impacto
+- control visual por scroll cuando aporte claridad
+- respuesta sutil al mouse en desktop
+- revelado progresivo de secciones
+- composición con profundidad, sin saturar de efectos
+
+El balance correcto es: moderno y memorable, pero todavía usable como propuesta comercial genérica personalizada por cliente.
+
 ## Límites
 
 No hagas esto:
@@ -73,6 +84,7 @@ No hagas esto:
 - parecer agencia genérica
 - prometer resultados no sustentados
 - romper claridad por querer impresionar
+- usar fondos abstractos genéricos cuando exista material visual específico del giro
 
 ## Estándar esperado
 

@@ -1,6 +1,6 @@
 # futuristic-v1 — MANIFEST
 
-Template moderno con hero de video Pexels (parallax scroll-scrubbed en desktop, loop en móvil).
+Template moderno con hero de video Pexels (parallax scroll-scrubbed en desktop, loop en móvil), spotlight de mouse, progreso de scroll y revelado suave de secciones.
 
 ## Archivos
 
@@ -11,7 +11,7 @@ futuristic-v1/
   reporte/index.html      # Diagnóstico digital
   assets/
     styles.css            # Sistema visual completo
-    scroll-video.js       # Scroll-scrub del video (con fallback mobile)
+    scroll-video.js       # Scroll-scrub del video + mouse/scroll/reveal effects
   MANIFEST.md             # Este archivo
 ```
 
@@ -32,7 +32,7 @@ WebBuilder copia toda la carpeta a `/tmp/proposal-{slug}/` y reemplaza los place
 | `{{PALETTE_ACCENT}}` | spec.palette.accent (HEX) | "#2dd4bf" |
 | `{{PALETTE_ACCENT_2}}` | spec.palette.accent_2 (HEX) | "#818cf8" |
 | `{{PALETTE_ACCENT_GLOW_RGB}}` | accent → "R, G, B" sin '#' | "45, 212, 191" |
-| `{{TELEFONO_MIGUEL_E164}}` | env TELEFONO_MIGUEL | "5216671234567" |
+| `{{TELEFONO_MIGUEL_E164}}` | env TELEFONO_MIGUEL o número comercial de Humanio | "5216671234567" |
 
 ## Placeholders — index.html (landing)
 
@@ -94,7 +94,15 @@ WebBuilder copia toda la carpeta a `/tmp/proposal-{slug}/` y reemplaza los place
 
 WebBuilder llama a `https://api.pexels.com/videos/search` con header `Authorization: $PEXELS_API_KEY`.
 
-Query: derivado del giro del prospecto (ej: "dental clinic", "hair salon", "restaurant kitchen", "city street", "abstract technology"). DesignPlanner provee `hero_video_query` en el TEMPLATE_SPEC.
+Query: derivado del giro del prospecto (ej: "dental clinic", "hair salon", "restaurant kitchen", "city street", "advisor meeting"). DesignPlanner provee `hero_video_query` en el TEMPLATE_SPEC.
+
+La query debe favorecer video real y útil para el negocio, no fondos genéricos. Buenas queries:
+- restaurante: `restaurant kitchen`, `tacos cooking`, `waiter serving`
+- seguros/servicios profesionales: `business consultation`, `city business`, `advisor meeting`
+- salud: `modern clinic`, `dental clinic`, `doctor consultation`
+- belleza: `beauty salon`, `makeup studio`, `hair stylist`
+
+Evita queries demasiado vagas como `technology`, `business`, `abstract`, salvo que el giro realmente no tenga imagen directa.
 
 Filtros recomendados:
 - `orientation=landscape`
@@ -103,6 +111,18 @@ Filtros recomendados:
 - De `video_files[]`, elegir el que tenga `quality="hd"` y `width<=1920`
 
 **Importante**: `<video preload="metadata">` para que el scroll-scrub no descargue todo de inmediato. El navegador descarga solo lo necesario al ir scrolleando.
+
+## Interacciones incluidas
+
+`scroll-video.js` activa:
+- progreso superior de scroll
+- spotlight suave siguiendo el mouse en desktop
+- hover luminoso en cards y paquetes
+- reveal por scroll de secciones principales
+- scrub del video hero en desktop
+- autoplay loop en móvil, touch y reduced-motion
+
+No agregues texto visible que explique estos efectos. Deben sentirse como parte natural del sitio.
 
 ## Paleta — sugerencias por giro
 

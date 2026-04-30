@@ -116,7 +116,7 @@ Esto evita que un problema operativo de Pexels detenga toda la cadena.
 
 4. Reemplaza TODOS los `{{PLACEHOLDER}}` listados en el MANIFEST en los 3 archivos HTML usando los valores del PROSPECT_BRIEF + TEMPLATE_SPEC + datos derivados (paleta, fecha, etc.).
 
-5. NO modifiques `assets/styles.css` ni `assets/scroll-video.js`. La personalización visual va por las CSS vars `--accent`, `--accent-2`, `--accent-glow` que ya están inyectadas via `<style>` en los `<head>` de cada HTML.
+5. NO modifiques `assets/styles.css` ni `assets/scroll-video.js` durante la instancia de un prospecto. Esos archivos contienen el estándar visual Humanio: video scroll-scrub, progreso de scroll, spotlight de mouse, hover luminoso y reveal suave. La personalización visual va por las CSS vars `--accent`, `--accent-2`, `--accent-glow` que ya están inyectadas via `<style>` en los `<head>` de cada HTML.
 
 6. Genera UNA palabra clave principal (`KEYWORD_PRINCIPAL`) y métricas reales del Qualifier para el reporte. NUNCA inventes cifras.
 
@@ -134,6 +134,8 @@ Aquí sí puedes elevar:
 La complejidad debe servir al negocio, no al lucimiento.
 
 Para `premier` no estás obligado a usar el template `futuristic-v1`, aunque puedes tomarlo como base.
+
+Si tomas `futuristic-v1` como base en premier, conserva sus interacciones principales y eleva la personalización en copy, video, composición y secciones. No reduzcas la experiencia a HTML estático básico si el lead pidió demo.
 
 ## Entradas obligatorias
 

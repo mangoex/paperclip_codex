@@ -100,6 +100,7 @@ Carpeta: `templates/futuristic-v1/`
 Características:
 - estética moderna, oscura, glass + acentos neon-lite
 - hero con video de Pexels y efecto parallax scroll-scrubbed en desktop
+- spotlight de mouse en desktop, progreso de scroll, hover luminoso y reveal suave
 - fallback a video en loop en mobile / `prefers-reduced-motion`
 - 3 páginas listas: `index.html`, `propuesta/index.html`, `reporte/index.html`
 - placeholders documentados en `templates/futuristic-v1/MANIFEST.md`
@@ -122,6 +123,8 @@ En modo template:
 - no cambies el layout por lucimiento
 - no gastes tokens en sofisticación que no cambie el resultado comercial
 - no conviertas una landing eficiente en un sitio premium disfrazado
+- sí conserva siempre las interacciones base del template (`scroll-video.js`, spotlight, reveal y hover)
+- sí usa un video Pexels específico del giro cuando exista, evitando fondos abstractos genéricos
 
 ## Criterios de calidad
 
