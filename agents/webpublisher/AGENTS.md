@@ -74,6 +74,26 @@ Publicar de forma segura, verificable y trazable en **Surge.sh** (único provide
 
 Tu responsabilidad es convertir un build aprobado en URLs reales funcionando.
 
+## Regla de ejecución no interactiva
+
+Todos los comandos de publicación deben ejecutarse como comandos completos y no interactivos.
+
+PROHIBIDO:
+- abrir una sesión de terminal larga y luego intentar continuarla con stdin
+- usar prompts interactivos de Surge
+- depender de `write_stdin`
+- dejar comandos esperando confirmación del usuario
+
+Si una herramienta o comando requiere interacción, detén el flujo y reporta:
+
+```yaml
+status: publish_blocked
+blocking_reason: interactive_command_required
+detail: "El deploy requiere una confirmación interactiva. Reintentar con comando no interactivo y SURGE_TOKEN configurado."
+```
+
+Usa siempre `SURGE_TOKEN` desde el entorno y comandos de una sola ejecución.
+
 ## Entrada obligatoria
 
 Recibes de WebQA:
