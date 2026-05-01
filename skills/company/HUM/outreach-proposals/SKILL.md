@@ -1,6 +1,6 @@
 ---
 name: "outreach-proposals"
-description: "Outreach cold msg1 para Humanio: envia WhatsApp template y email con hallazgos reales, registra evidencia y crea handoff bloqueado para Closer."
+description: "Outreach cold msg1 para Humanio: envia por WhatsApp y/o email segun canales disponibles, registra evidencia y crea handoff bloqueado para Closer."
 slug: "outreach-proposals"
 metadata:
   paperclip:
@@ -25,10 +25,37 @@ Recibes handoff del **Qualifier** con un PROSPECT_BRIEF que incluye:
 ```yaml
 prospect_id, nombre_negocio, nombre_contacto, ref_slug, ciudad, giro,
 especialidad, keyword_principal, diagnostico_hallazgos[], paquete_recomendado,
-telefono (E.164 sin '+'), email
+telefono (E.164 sin '+') y/o email
 ```
 
-Si falta cualquiera de los críticos (`telefono`, `email`, `nombre_negocio`, `ref_slug`, `ciudad`, `keyword_principal`, `diagnostico_hallazgos`), bloquea con `outreach_blocked, blocking_reason: incomplete_brief`.
+## Regla definitiva de contacto y canales
+
+Campos críticos de identidad/contexto:
+- `nombre_negocio`
+- `ref_slug`
+- `ciudad`
+- `keyword_principal`
+- `diagnostico_hallazgos`
+
+Campos críticos de contacto:
+- Al menos UNO de estos debe existir y ser utilizable: `telefono` o `email`.
+
+Normaliza valores ausentes antes de validar. Estos valores significan "canal ausente", NO brief incompleto por sí solos:
+- `null`
+- `"null"`
+- `""`
+- `"No encontrado"`
+- `"N/A"`
+- `"na"`
+- `"sin email"`
+- `"sin telefono"`
+
+Reglas:
+- Si hay `telefono` válido: envía WhatsApp aunque `email` sea ausente.
+- Si hay `email` válido y no hay `telefono`: envía email only.
+- Si hay ambos: intenta ambos canales de forma independiente.
+- Si faltan ambos: bloquea con `outreach_blocked, blocking_reason: no_contact_data`.
+- Usa `incomplete_brief` solo cuando falte identidad/contexto crítico o el brief sea ambiguo.
 
 ## Validación pre-envío (idempotencia)
 
@@ -272,7 +299,7 @@ Tras envío, registra en Chatwoot SOLO como CRM:
 
 > ⚠️ **REGLA DURA — los canales WhatsApp y Email son INDEPENDIENTES.**
 >
-> Si WhatsApp falla, **DEBES intentar SMTP de todas formas**. Si SMTP falla, debes intentar WhatsApp de todas formas. La falla de un canal NO bloquea el otro.
+> Si WhatsApp falla, **DEBES intentar SMTP de todas formas cuando hay email utilizable**. Si SMTP falla, debes intentar WhatsApp de todas formas cuando hay telefono utilizable. La falla de un canal NO bloquea el otro.
 >
 > Solo bloquea el envío completo cuando BOTH canales fallaron O cuando faltan datos para ambos.
 >
@@ -290,11 +317,11 @@ Tras envío, registra en Chatwoot SOLO como CRM:
 
 ### Orden de ejecución obligatorio
 
-1. **Intenta WhatsApp primero**. Captura resultado en variables `WA_STATUS`, `WA_MSG_ID`, `WA_ERROR`. Si Meta responde 200 con `messages[0].id`, usa `WA_STATUS=accepted_by_meta`.
-2. **Después intenta SMTP independientemente del resultado de WhatsApp**. Captura `SMTP_STATUS`, `SMTP_MSG_ID`, `SMTP_ERROR`.
+1. **Si hay telefono válido, intenta WhatsApp primero**. Captura resultado en variables `WA_STATUS`, `WA_MSG_ID`, `WA_ERROR`. Si Meta responde 200 con `messages[0].id`, usa `WA_STATUS=accepted_by_meta`. Si no hay telefono válido, usa `WA_STATUS=skipped_no_phone`.
+2. **Si hay email válido, después intenta SMTP independientemente del resultado de WhatsApp**. Captura `SMTP_STATUS`, `SMTP_MSG_ID`, `SMTP_ERROR`. Si no hay email válido, usa `SMTP_STATUS=skipped_no_email`.
 3. **Solo después** evalúa la tabla de arriba para decidir si haces handoff o bloqueas.
 
-NUNCA hagas `if WA failed: skip SMTP`. NUNCA hagas `if SMTP failed: skip WA`. Los dos se intentan SIEMPRE (si hay datos disponibles para cada uno).
+NUNCA hagas `if WA failed: skip SMTP` cuando hay email utilizable. NUNCA hagas `if SMTP failed: skip WA` cuando hay telefono utilizable. Cada canal disponible se intenta de forma independiente.
 
 ### INSERT en outreach_log
 
@@ -352,6 +379,7 @@ msg1:
   whatsapp_status: "{accepted_by_meta|failed|n/a}"
   delivery_status: "{pending_webhook|delivered|read|failed|n/a}"
   email_id: "{messageId|null}"
+  email_status: "{sent|failed|skipped_no_email|n/a}"
   enviado_at: "{ISO}"
 next_step: "Esperar respuesta. Si llega, demo intake."
 ```

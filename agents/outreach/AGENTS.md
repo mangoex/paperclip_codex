@@ -68,7 +68,7 @@ Scout → Qualifier → Outreach → Closer (espera respuesta)
 Recibes del **Qualifier**, NO del WebPublisher (ya no existe ese handoff porque NO se construye sitio en cold).
 
 Tu trabajo termina cuando:
-1. Enviaste WhatsApp template + email con evidencia real de aceptación/envío
+1. Enviaste por al menos un canal disponible con evidencia real de aceptación/envío (WhatsApp, email o ambos)
 2. Registraste en `outreach_log`
 3. Creaste handoff a Closer
 
@@ -83,9 +83,34 @@ PROSPECT_BRIEF con:
 - ciudad, giro, especialidad, keyword_principal
 - diagnostico_hallazgos (3-4 strings)
 - paquete_recomendado, oportunidad_comercial
-- telefono (E.164 sin '+'), email
+- telefono (E.164 sin '+') y/o email
 
-Si falta cualquier campo crítico (telefono, email, nombre_negocio, ref_slug, ciudad, keyword_principal), bloquea con `status: outreach_blocked, blocking_reason: incomplete_brief`.
+Campos críticos de identidad/contexto:
+- `nombre_negocio`
+- `ref_slug`
+- `ciudad`
+- `keyword_principal`
+- `diagnostico_hallazgos`
+
+Campos críticos de contacto:
+- Al menos UNO de estos debe existir y ser utilizable: `telefono` o `email`.
+
+Normaliza valores ausentes antes de validar. Estos valores significan "canal ausente", NO brief incompleto por sí solos:
+- `null`
+- `"null"`
+- `""`
+- `"No encontrado"`
+- `"N/A"`
+- `"na"`
+- `"sin email"`
+- `"sin telefono"`
+
+Regla definitiva de canales:
+- Si hay `telefono` válido: intenta WhatsApp aunque `email` sea ausente.
+- Si hay `email` válido y no hay `telefono`: intenta email only.
+- Si hay ambos: intenta ambos canales de forma independiente.
+- Si faltan ambos: bloquea con `status: outreach_blocked, blocking_reason: no_contact_data`.
+- Solo usa `incomplete_brief` cuando falte identidad/contexto crítico (`nombre_negocio`, `ref_slug`, `ciudad`, `keyword_principal`, `diagnostico_hallazgos`) o el brief sea ambiguo.
 
 ### Validación adicional — contact_override
 
@@ -259,7 +284,7 @@ Si SMTP falla, captura el error real. NO inventes éxito.
 
 ## GATE crítico — registro post-envío
 
-> ⚠️ **CANALES INDEPENDIENTES**: el fallo de WhatsApp NO bloquea Email. El fallo de Email NO bloquea WhatsApp. Los dos se intentan SIEMPRE (si hay datos disponibles).
+> ⚠️ **CANALES INDEPENDIENTES**: el fallo de WhatsApp NO bloquea Email. El fallo de Email NO bloquea WhatsApp. Intenta cada canal que tenga dato disponible.
 >
 > PROHIBIDO inventar reglas como "cascade block" / "si WA falla bloqueo email por integridad". No existen.
 
@@ -269,11 +294,11 @@ Si SMTP falla, captura el error real. NO inventes éxito.
 | accepted_by_meta (WA_MSG_ID real) | failed o sin email | ✅ INSERT con WA_MSG_ID + handoff Closer (error SMTP en `error_detail`) |
 | failed o sin telefono | sent (messageId real) | ✅ INSERT con messageId + handoff Closer (error WA en `error_detail`) |
 | failed o sin telefono | failed o sin email | 🛑 NO registres. NO crees Closer. `outreach_blocked, both_channels_failed` |
-| sin telefono | sin email | 🛑 escalar al CEO — fallo del Qualifier |
+| sin telefono | sin email | 🛑 `outreach_blocked, no_contact_data` — escalar al CEO |
 
 ### Orden obligatorio
-1. Intenta WhatsApp → captura `WA_STATUS`, `WA_MSG_ID`, `WA_ERROR`. Si Meta responde 200 con `messages[0].id`, `WA_STATUS=accepted_by_meta`.
-2. Intenta SMTP **sin importar el resultado de WhatsApp** → captura `SMTP_STATUS`, `SMTP_MSG_ID`, `SMTP_ERROR`
+1. Si hay `telefono` válido, intenta WhatsApp → captura `WA_STATUS`, `WA_MSG_ID`, `WA_ERROR`. Si Meta responde 200 con `messages[0].id`, `WA_STATUS=accepted_by_meta`. Si no hay telefono válido, usa `WA_STATUS=skipped_no_phone`.
+2. Si hay `email` válido, intenta SMTP **sin importar el resultado de WhatsApp** → captura `SMTP_STATUS`, `SMTP_MSG_ID`, `SMTP_ERROR`. Si no hay email válido, usa `SMTP_STATUS=skipped_no_email`.
 3. SOLO después evalúa la tabla → decide handoff o block
 
 Regla: `etapa = "contactado"` solo si hay AL MENOS un `provider_message_id` real. Para WhatsApp, eso significa aceptado por Meta, no necesariamente entregado al usuario.
@@ -309,7 +334,7 @@ msg1:
   whatsapp_status: "{accepted_by_meta|failed|n/a}"
   delivery_status: "{pending_webhook|delivered|read|failed|n/a}"
   whatsapp_id: "{WA_MSG_ID|null}"
-  email_status: "{sent|failed|n/a}"
+  email_status: "{sent|failed|skipped_no_email|n/a}"
   email_id: "{messageId|null}"
   enviado_at: "{ISO timestamp}"
 next_step: "Esperar respuesta del prospecto. Si responde, demo intake."
