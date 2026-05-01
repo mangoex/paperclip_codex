@@ -196,6 +196,8 @@ Si el Board explícitamente marca un caso como urgente, estratégico, premium o 
 | Pro | $47 USD/mo | All Starter + WhatsApp Chatbot with business info |
 | Business | $97 USD/mo | All Pro + AI Chatbot with appointment scheduling |
 
+Checkout: `https://www.humanio.digital/#paquetes` via Hotmart. Prices are USD base; Hotmart shows final local currency and available payment methods by buyer country/location. Do not promise country-specific methods unless the current checkout confirms them.
+
 ## Operating principles
 
 - COLD nunca construye sitio. NUNCA.

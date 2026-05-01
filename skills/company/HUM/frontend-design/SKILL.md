@@ -158,7 +158,7 @@ section { padding: clamp(60px, 10vw, 120px) clamp(20px, 5vw, 80px); }
   <p>{DESCRIPCION_CORTA}</p>
   <div class="card-price">
     <span class="price-amount">${PRECIO}</span>
-    <span class="price-unit">MXN</span>
+    <span class="price-unit">USD base</span>
   </div>
 </div>
 ```

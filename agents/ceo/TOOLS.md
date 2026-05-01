@@ -52,11 +52,11 @@ curl -s "$SUPABASE_URL/rest/v1/prospects?origen=eq.inbound_whatsapp&order=create
 
 ## Pagos (verificación)
 
-Los prospectos pagan en `https://www.humanio.digital/#paquetes` (tarjeta de crédito, débito, depósito bancario).
+Los prospectos pagan en `https://www.humanio.digital/#paquetes`. El checkout lo procesa Hotmart: precio base USD, moneda local y métodos disponibles según país/ubicación del comprador.
 
 Cuando Closer escala un cierre exitoso, verifica el pago antes de activar onboarding:
-- Revisar el procesador de pagos configurado en humanio.digital
-- Para depósitos bancarios, confirmar el comprobante recibido
+- Revisar Hotmart / procesador configurado en humanio.digital
+- No asumir ningún método local específico salvo que Hotmart o el comprobante lo confirme
 - Actualizar `prospects.etapa = 'cerrado_ganado'` en Supabase
 
 ## Surge.sh (verificación de deploys)

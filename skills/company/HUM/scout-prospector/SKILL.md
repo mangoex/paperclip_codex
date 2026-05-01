@@ -47,6 +47,19 @@ Extrae del ticket:
 * Giro comercial (ej: estéticas, restaurantes, dentistas)
 * Cantidad de prospectos solicitada (default: 20)
 
+Mercados soportados:
+
+* México por defecto cuando el ticket no especifique país.
+* Colombia, Perú y Argentina si el CEO los pide explícitamente.
+* Otros países de Latinoamérica solo con instrucción explícita del CEO.
+
+Regla internacional:
+
+* Siempre incluye `pais` y `ciudad` en el reporte y en el handoff a Qualifier.
+* No asumas formato telefónico mexicano fuera de México.
+* Conserva el teléfono original y normalízalo a E.164 solo si puedes verificar el código de país.
+* Si hay conflicto de teléfono/email entre fuentes, documenta el conflicto y no lo ocultes.
+
 ### 2. Búsqueda en Google Maps y web
 
 Usa **Scrapling** (`StealthyFetcher` o `DynamicFetcher`) para buscar:
@@ -54,6 +67,8 @@ Usa **Scrapling** (`StealthyFetcher` o `DynamicFetcher`) para buscar:
 * "{giro} en {ciudad}"
 * "{giro} {ciudad} {país}"
 * "{giro} cerca de {ciudad}"
+
+Complementa con directorios locales del país/ciudad objetivo, Facebook/Instagram y directorios verticales del giro (por ejemplo Doctoralia en salud/estética) cuando sean relevantes.
 
 Ejemplo mínimo:
 
@@ -176,4 +191,3 @@ Esto activa al Qualifier sin necesidad de intervención manual.
 * Reporta al CEO si encuentras más de 50 prospectos potenciales en un giro
 * Siempre guarda el reporte como documento antes de crear el ticket para Qualifier
 * El ticket para Qualifier debe incluir todos los datos necesarios para que pueda trabajar sin buscar información adicional
-

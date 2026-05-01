@@ -46,6 +46,13 @@ Para contratación:
 https://www.humanio.digital/#paquetes
 ```
 
+Regla internacional de pago:
+
+- Precio base: USD.
+- Checkout: Hotmart.
+- Hotmart muestra moneda local y métodos disponibles según país/ubicación del comprador.
+- No prometas métodos locales específicos salvo que el checkout vigente los muestre.
+
 ## Modos operativos
 
 ### MODO A - Seguimiento cold en espera
@@ -145,6 +152,8 @@ Que gusto que te haya gustado. Para {nombre_negocio}, te recomendaria el plan {p
 
 Puedes revisar y contratar aqui:
 https://www.humanio.digital/#paquetes
+
+El checkout lo procesa Hotmart y te mostrara el monto final y métodos disponibles según tu país.
 
 Si prefieres que alguien del equipo te ayude a elegir, con gusto te conecto.
 

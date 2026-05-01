@@ -22,18 +22,15 @@ key: "company/HUM/saas-metrics"
 | Pro | $47 USD/mes | ~$45.59 |
 | Business | $97 USD/mes | ~$94.09 |
 
-*Neto aproximado después de ~3% de comisiones promedio del procesador (TC/TD). Depósito bancario: 0% comisión. Pagos desde `www.humanio.digital/#paquetes`.*
+*Neto aproximado solo para modelado cuando no exista reporte real. El checkout se procesa con Hotmart desde `www.humanio.digital/#paquetes`; usa comisiones reales de Hotmart cuando estén disponibles.*
 
 ## Métricas clave
 
 ### 1. MRR (Monthly Recurring Revenue)
 MRR = (clientes_starter x $27) + (clientes_pro x $47) + (clientes_business x $97)
-MRR_neto_estimado = MRR x 0.97
+MRR_neto_estimado = MRR - comisiones_reales_hotmart
 
-Usa `MRR_neto_estimado` solo como aproximacion cuando no exista reporte real del procesador. Si conoces el canal de pago, aplica:
-- Tarjeta credito/debito: MRR x 0.97 aproximado
-- Deposito bancario: MRR x 1.00
-- Comisiones fijas por transaccion: agregalas solo si el dato existe; no las inventes.
+Usa `MRR_neto_estimado` solo cuando tengas reporte real de Hotmart. Si no existe reporte real, reporta MRR bruto y marca net revenue como "pendiente de conciliacion". No inventes comisiones, numero de transacciones ni metodos de pago.
 
 ### 2. Churn Rate (Tasa de cancelación)
 Churn Rate = clientes_perdidos_mes / clientes_inicio_mes x 100
@@ -85,7 +82,7 @@ El reporte semanal debe incluir:
 ### Meta de madurez
 - 175 clientes (100 Starter + 50 Pro + 25 Business)
 - MRR bruto: $7,475 USD/mes
-- MRR neto estimado: ~$7,251 USD/mes (post-comisiones procesador ~3%)
+- MRR neto estimado: pendiente de conciliacion con Hotmart
 
 ## Reglas
 

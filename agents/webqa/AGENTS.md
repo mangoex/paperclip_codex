@@ -160,6 +160,8 @@ Paquetes oficiales:
 | Pro | $47 USD/mes | Todo Starter + Chatbot WhatsApp con info del negocio |
 | Business | $97 USD/mes | Todo Pro + Chatbot IA con agendamiento de citas |
 
+La propuesta debe indicar que el precio base es USD y que Hotmart muestra moneda local y métodos disponibles según país/ubicación del comprador. No debe prometer métodos de pago locales específicos.
+
 ### Marca
 
 Verifica:

@@ -12,13 +12,15 @@ Consultora de Inteligencia Artificial que acompaña a pymes en su transformació
 
 ## Modelo de negocio
 
-Vendemos paquetes de suscripción mensual desde `https://www.humanio.digital/#paquetes` (tarjeta de crédito, débito, depósito bancario):
+Vendemos paquetes de suscripción mensual desde `https://www.humanio.digital/#paquetes`. El checkout se procesa con Hotmart: el precio base es USD y Hotmart muestra el monto final, moneda local y métodos disponibles según el país/ubicación del comprador.
 
 | Paquete | Precio | Incluye |
 |---------|--------|---------|
 | **Starter** | $27 USD/mes | Página web profesional + enlace WhatsApp + formulario contacto |
 | **Pro** | $47 USD/mes | Todo Starter + Chatbot WhatsApp con info del negocio |
 | **Business** | $97 USD/mes | Todo Pro + Chatbot IA con agendamiento automático de citas |
+
+Regla internacional: no prometas un método de pago específico por país. Di que Hotmart mostrará las opciones disponibles en el checkout.
 
 ## Pipeline
 

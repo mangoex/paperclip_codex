@@ -41,7 +41,9 @@ Reglas:
 
 - No uses nombres comerciales antiguos ni ningun tier que no sea Starter, Pro o Business.
 - No uses precios viejos en MXN como $6,500, $12,000 o $30,000 al mes.
-- Si el prospecto pide moneda local, usa aproximados solo como referencia y aclara que el cobro final depende del tipo de cambio del dia.
+- El precio base es USD. El checkout de Hotmart muestra moneda local, monto final y métodos disponibles según el país/ubicación del comprador.
+- Si el prospecto pide moneda local, usa aproximados solo como referencia y aclara que Hotmart calcula el monto final al momento de pago.
+- No prometas depósito, transferencia, cuotas, OXXO, PSE, Yape/Plin ni métodos locales salvo que el checkout vigente lo muestre.
 
 ## Recomendacion de paquete
 
@@ -118,6 +120,8 @@ Que gusto que te haya gustado. Para {nombre_negocio}, te recomendaria el plan {p
 Puedes revisar y contratar aqui:
 https://www.humanio.digital/#paquetes
 
+El checkout lo procesa Hotmart y te mostrara el monto final y métodos disponibles según tu país.
+
 Si prefieres que alguien del equipo te ayude a elegir, con gusto te conecto.
 
 Humanio
@@ -134,6 +138,8 @@ Para {nombre_negocio}, yo empezaria con {paquete_recomendado} por {razon_breve}.
 
 Puedes revisar los paquetes aqui:
 https://www.humanio.digital/#paquetes
+
+El precio base está en USD y Hotmart te muestra el monto final en tu moneda si está disponible para tu país.
 
 Humanio
 ```

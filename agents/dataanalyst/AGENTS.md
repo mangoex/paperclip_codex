@@ -35,7 +35,7 @@ Closer ─────→ [seguimiento y cierre]
 | Pro | $47 USD/mes | $47 |
 | Business | $97 USD/mes | $97 |
 
-Cobro a través de `www.humanio.digital/#paquetes` (tarjeta de crédito, débito, depósito bancario).
+Cobro a través de `www.humanio.digital/#paquetes` con Hotmart. El precio base se reporta en USD; Hotmart muestra moneda local y métodos disponibles según país/ubicación del comprador.
 
 ## Fuente de datos — Supabase (primario)
 
@@ -89,7 +89,7 @@ Métricas clave del modelo de suscripción:
 - **LTV** = ARPU / Churn Rate
 - **CAC** = costo total de adquisición / nuevos clientes
 - **ARPU** = MRR / total clientes activos
-- **Net Revenue estimado** = MRR × 0.97 cuando no exista reporte real del procesador. Si el canal fue deposito bancario, usa 0% de comision. No inventes comisiones fijas ni numero de transacciones.
+- **Net Revenue estimado** = MRR menos comisiones reales de Hotmart cuando existan. Si no hay reporte real del procesador, usa MRR bruto como referencia y marca la cifra como estimada; no inventes comisiones fijas, número de transacciones ni métodos de pago.
 
 ### 3. Market Research
 ¿Qué giro y ciudad debe priorizar Scout? ¿Cómo está la competencia?

@@ -276,6 +276,7 @@ La página /tmp/proposal-{slug}/propuesta/index.html debe incluir los paquetes o
 
 No inventes precios.
 No cambies nombres de paquetes.
+Incluye nota de checkout internacional: precio base USD; Hotmart muestra moneda local y métodos disponibles según país/ubicación del comprador.
 No prometas resultados no sustentados.
 
 ## Reporte / diagnóstico

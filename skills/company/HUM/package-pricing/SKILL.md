@@ -52,9 +52,15 @@ Marcar cuando:
 - Score < 6 en la evaluación del Qualifier
 - No se detecta necesidad clara de los servicios de Humanio
 
-## Equivalencia en moneda local
+## Precio internacional y moneda local
 
-Al presentar precios, siempre incluir equivalencia aproximada:
+Precio base oficial: USD.
+
+Checkout: Hotmart desde `https://www.humanio.digital/#paquetes`.
+
+Hotmart muestra el monto final, moneda local y métodos disponibles según el país/ubicación del comprador. No prometas un método específico por país.
+
+Si el prospecto pide moneda local, puedes dar equivalencias aproximadas solo como orientación:
 
 | Paquete  | USD | MXN (~) | COP (~)   | PEN (~) | ARS (~)  |
 |----------|-----|---------|-----------|---------|----------|
@@ -62,14 +68,15 @@ Al presentar precios, siempre incluir equivalencia aproximada:
 | Pro      | $47 | $940    | $188,000  | S/175   | $47,000  |
 | Business | $97 | $1,940  | $388,000  | S/360   | $97,000  |
 
-*Tipo de cambio referencial: 1 USD ≈ 20 MXN ≈ 4,000 COP ≈ 3.7 PEN ≈ 1,000 ARS. Actualizar esta tabla si el FX se mueve >5%.*
+*Equivalencias referenciales, no cotización final. Hotmart calcula el monto final al momento de pago.*
 
 ## Pasarela de pago
 
 - **Página de pago:** `https://www.humanio.digital/#paquetes`
-- **Medios:** tarjeta de crédito, tarjeta de débito, depósito bancario
-- Multi-país, multi-moneda
-- El prospecto selecciona paquete y medio de pago en la página
+- **Procesador:** Hotmart
+- **Precio base:** USD
+- **Moneda y métodos:** Hotmart los adapta según país/ubicación del comprador
+- **Regla:** no prometas depósito, cuotas, transferencia, OXXO, PSE, Yape/Plin ni métodos locales salvo que el checkout vigente lo muestre.
 
 ## Formato de recomendación
 
@@ -79,7 +86,8 @@ Al incluir la recomendación en un ticket, usar este formato:
 ## Recomendación de paquete
 
 **Paquete:** {Starter/Pro/Business}
-**Precio:** ${precio} USD/mes (~{equivalencia} {moneda local})
+**Precio base:** ${precio} USD/mes
+**Moneda local:** Hotmart mostrará el monto final y métodos disponibles según tu país.
 **Razón:** {justificación en 1-2 líneas basada en hallazgos reales}
 **Link de pago:** https://www.humanio.digital/#paquetes
 ```

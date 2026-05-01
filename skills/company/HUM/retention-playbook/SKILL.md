@@ -25,7 +25,7 @@ El churn promedio en SaaS LATAM para pymes es 8.2% mensual. El objetivo de Human
 ### Riesgo alto (intervenir en 24h)
 - Cliente solicita cancelación
 - No ha visitado su web en 30+ días
-- Rechazó el cobro recurrente (tarjeta declinada o depósito no realizado)
+- Rechazó o falló el cobro recurrente en Hotmart
 - Expresó insatisfacción directa
 - No respondió a los últimos 2 mensajes
 
@@ -79,9 +79,9 @@ El churn promedio en SaaS LATAM para pymes es 8.2% mensual. El objetivo de Human
 
 4. Si insiste — Respetar la decisión, agradecer, dejar puerta abierta
 
-### Si el cobro falla (tarjeta declinada)
-- Día 0: Notificación automática por WhatsApp
-- Día 2: Segundo intento de cobro
+### Si el cobro falla en Hotmart
+- Día 0: Notificación automática por WhatsApp con link al checkout/actualización de pago
+- Día 2: Verificar en Hotmart si el pago se recuperó o sigue pendiente
 - Día 3: Mensaje personal de ayuda
 - Día 5: Tercer intento + email
 - Día 7: Último aviso antes de suspensión

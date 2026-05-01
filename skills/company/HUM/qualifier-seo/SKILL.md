@@ -407,6 +407,8 @@ Precios orientativos:
 - Pro: USD 47/mes
 - Business: USD 97/mes
 
+Precio base en USD. Hotmart muestra el monto final, moneda local y métodos disponibles según el país/ubicación del comprador. No prometas métodos locales específicos desde el brief.
+
 Nunca mezcles setups fijos con suscripcion mensual en la misma propuesta.
 
 ## Persistencia

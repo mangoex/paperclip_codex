@@ -580,19 +580,19 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overf
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.75rem;text-align:center">
         <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Escenario Conservador</div>
         <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:1rem">Captura del 3% del tráfico objetivo</div>
-        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#f59e0b">${PERDIDA_MES_MIN} MXN</div>
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#f59e0b">{MONEDA_LOCAL} {PERDIDA_MES_MIN}</div>
         <div style="font-size:.8rem;color:rgba(255,255,255,.3);margin-top:.25rem">valor mensual no captado</div>
       </div>
       <div style="background:var(--bg2);border:1px solid rgba(var(--accent-rgb),.2);border-radius:16px;padding:1.75rem;text-align:center">
         <div style="font-size:.72rem;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Escenario Optimista</div>
         <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:1rem">Captura del 10% del tráfico objetivo</div>
-        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent)">${PERDIDA_MES_MAX} MXN</div>
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent)">{MONEDA_LOCAL} {PERDIDA_MES_MAX}</div>
         <div style="font-size:.8rem;color:rgba(255,255,255,.3);margin-top:.25rem">valor mensual no captado</div>
       </div>
       <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:16px;padding:1.75rem;text-align:center">
         <div style="font-size:.72rem;color:#ef4444;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Valor Anual Estimado</div>
         <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:1rem">No captado por falta de presencia digital</div>
-        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#ef4444">${PERDIDA_ANUAL} MXN</div>
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#ef4444">{MONEDA_LOCAL} {PERDIDA_ANUAL}</div>
         <div style="font-size:.8rem;color:rgba(255,255,255,.3);margin-top:.25rem">valor anual no captado</div>
       </div>
     </div>

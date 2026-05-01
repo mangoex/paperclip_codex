@@ -409,9 +409,9 @@ Estimado de clientes potenciales perdidos por mes:
 
 - Si captura el 10% del tráfico objetivo: ~[N] leads/mes
 
-- Ticket promedio estimado del giro: $[X] MXN
+- Ticket promedio estimado del giro: [MONEDA_LOCAL] [X]
 
-- Valor mensual estimado no captado: $[X] – $[Y] MXN
+- Valor mensual estimado no captado: [MONEDA_LOCAL] [X] - [Y]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

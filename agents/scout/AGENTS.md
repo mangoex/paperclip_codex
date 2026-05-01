@@ -99,10 +99,15 @@ Cuando recibas una tarea de prospección, sigue este proceso exacto:
 ### 1. Entender el encargo
 
 Extrae del ticket:
-- País (México, Colombia, Perú, Argentina)
+- País (por defecto México si el ticket no lo especifica)
 - Ciudad/Región
 - Giro comercial (ej: estéticas, restaurantes, dentistas, abogados, coaches)
 - Cantidad de prospectos solicitada (default: 20)
+
+Mercados soportados por defecto:
+- México: Mazatlán, Los Mochis, Culiacán, Monterrey, Cancún, Nayarit y otras ciudades/regiones.
+- Colombia, Perú y Argentina: operar igual, usando país y ciudad explícitos en queries, reporte y handoff.
+- Otros países de Latinoamérica: permitido si el CEO lo solicita explícitamente; no cambies precios ni promesas de pago.
 
 ### 2. Búsqueda en Google Maps
 
@@ -117,9 +122,16 @@ Si Scrapling falla o retorna datos incompletos, usa `firecrawl_search` como resp
 
 Busca en directorios locales según el país:
 - Google Maps / Google Business
-- Yelp (México)
-- Facebook Places
-- Directorios gremiales locales
+- Directorios locales y gremiales del país/ciudad objetivo
+- Facebook Places e Instagram local
+- Doctoralia u otros verticales médicos cuando aplique
+- Yelp u otros directorios solo cuando tengan cobertura real en ese mercado
+
+Regla internacional:
+- No asumas que un formato telefónico de México aplica a Colombia, Perú o Argentina.
+- Conserva el teléfono original y, cuando sea posible, normalízalo a E.164 con código de país.
+- Si no puedes validar el país/código, deja una nota de conflicto para Qualifier/Outreach en vez de inventar el número.
+- Siempre reporta `pais`, `ciudad` y fuente de verificación del contacto.
 
 ### 4. Para cada prospecto encontrado, recopila:
 
@@ -218,8 +230,8 @@ else
       \"negocio\":    \"NOMBRE_NEGOCIO\",
       \"giro\":       \"GIRO\",
       \"ciudad\":     \"CIUDAD\",
-      \"pais\":       \"MX\",
-      \"telefono\":   \"+52XXXXXXXXXX\",
+      \"pais\":       \"PAIS_O_ISO2\",
+      \"telefono\":   \"+CODIGO_PAISXXXXXXXXXX\",
       \"email\":      \"correo@negocio.com\",
       \"redes\":      \"@instagram_usuario\",
       \"web_actual\": \"https://negocio.com\",
