@@ -81,7 +81,7 @@ Esto SÍ construye propuesta web. Scout no participa salvo enriquecimiento expl�
 1. Deploy del redirect shim:
    ```bash
    cd scripts/surge-redirect/
-   SURGE_TOKEN=$SURGE_TOKEN surge . humanio.surge.sh
+   SURGE_LOGIN=mangoex@gmail.com SURGE_TOKEN=$SURGE_TOKEN surge . humanio.surge.sh
    ```
 2. Configurar env vars en cada agente del panel de Paperclip — ver `.paperclip.yaml`.
 3. Usar `.env.example` como checklist de secretos antes de activar agentes con envío real.

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Humanio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<style>
+  body{font-family:Inter,system-ui,sans-serif;background:#03070d;color:#f5f7fb;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px}
+  .box{max-width:400px}
+  .pulse{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2dd4bf;box-shadow:0 0 20px #2dd4bf;animation:p 1.5s infinite}
+  @keyframes p{0%,100%{opacity:.3}50%{opacity:1}}
+  h1{font-size:1.5rem;font-weight:600;margin:20px 0 8px}
+  p{color:#94a3b8;font-size:0.9rem;margin:0}
+  a{color:#2dd4bf;text-decoration:none;display:inline-block;margin-top:20px;padding:10px 20px;border:1px solid #2dd4bf;border-radius:100px;font-size:0.9rem}
+</style>
+<script>
+  // Captura el slug de la URL (e.g. humanio.surge.sh/familydent-culiacan)
+  // y redirige a humanio.digital con tracking.
+  (function() {
+    var path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+    var ref = path || 'direct';
+    var dest = 'https://humanio.digital/?ref=' + encodeURIComponent(ref);
+    // Pequeño delay para que se vea el branding y para tracking de analytics.
+    setTimeout(function() {
+      window.location.replace(dest);
+    }, 800);
+  })();
+</script>
+</head>
+<body>
+<div class="box">
+  <span class="pulse"></span>
+  <h1>Humanio</h1>
+  <p>Inteligencia Artificial para negocios</p>
+  <a href="https://humanio.digital">Llevame a humanio.digital →</a>
+</div>
+</body>
+</html>

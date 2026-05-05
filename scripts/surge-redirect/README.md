@@ -6,10 +6,10 @@ Mientras Meta aprueba el template nuevo de WhatsApp con botón apuntando a `huma
 
 ```bash
 cd scripts/surge-redirect/
-SURGE_TOKEN=$SURGE_TOKEN surge . humanio.surge.sh
+SURGE_LOGIN=mangoex@gmail.com SURGE_TOKEN=$SURGE_TOKEN surge . humanio.surge.sh
 ```
 
-Después puedes deployar lo que quieras dentro de subcarpetas (`humanio.surge.sh/{slug}/`) — Surge sirve el `index.html` de la raíz solo cuando la ruta exacta no existe como subcarpeta. Pero como ya no construimos subcarpetas en cold, todos los slugs caerán al index → redirect.
+El archivo `200.html` actúa como fallback para que rutas sin archivo propio (`humanio.surge.sh/{slug}/`) carguen el mismo redirect en vez de devolver 404. Después puedes deployar lo que quieras dentro de subcarpetas; si no existe una subcarpeta para el slug, caerá al fallback → redirect.
 
 ## Cuando llegue el template nuevo aprobado por Meta
 
