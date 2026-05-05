@@ -61,6 +61,8 @@ Tickets tipo: `Closer: seguimiento {nombre_negocio}`.
 
 Estado esperado: `blocked`.
 
+Excepcion critica: si el comentario/wake reason mas reciente trae respuesta real del prospecto (`respondio=true`, `tipo_respuesta=positivo`, "prospecto contesto/respondio", inbound de Chatwoot/n8n, o interes explicito), NO apliques MODO A aunque el ticket siga en `blocked`. Pasa a MODO B.
+
 Accion:
 
 - No enviar mensajes por heartbeat normal.
@@ -73,25 +75,36 @@ Accion:
 Cuando n8n despierte al Closer con una respuesta real:
 
 1. Lee el mensaje entrante.
-2. Clasifica:
+2. Revisa si ya existen datos minimos para demo en el ticket, parent Outreach/Qualifier, Supabase o Chatwoot:
+   - nombre_negocio
+   - giro/especialidad o contexto comercial
+   - telefono o chatwoot_conversation_id
+3. Si la respuesta pide demo/propuesta y ya tienes esos datos minimos, NO esperes 4 respuestas de intake. Crea handoff a DesignPlanner con los datos disponibles y valores seguros para lo faltante (`no_proporcionado`, `general basado en diagnostico`). Si haces este handoff, termina el ticket actual y no pidas intake adicional.
+4. Si todavia no hay datos minimos suficientes, clasifica:
    - `interesado` o pide demo -> MODO C.
    - pregunta comercial/precio -> responder con cierre y paquetes.
    - objecion -> responder breve y ofrecer ayuda.
    - rechazo -> cerrar sin insistir.
-3. Nunca enviar msg2/msg3 despues de una respuesta.
+5. Nunca enviar msg2/msg3 despues de una respuesta.
 
 ### MODO C - Demo intake legacy
 
 Usar solo cuando el prospecto respondio por cold y Hannia/n8n no capturo datos suficientes.
 
-Pide una pregunta a la vez. Datos minimos:
+Regla anti-bloqueo:
+
+- Si ya tienes negocio + giro/contexto + canal de contacto, dispara demo flow sin esperar todas las respuestas.
+- Email, web/redes y enfasis son utiles, pero no deben bloquear una demo genuina.
+- Si faltan, usa `no_proporcionado` o `general basado en diagnostico`.
+
+Pide una pregunta a la vez solo si falta lo minimo. Datos deseables:
 
 1. nombre responsable o negocio exacto
 2. correo si falta
 3. web/redes si existen
 4. enfasis pedido para la demo
 
-Cuando tengas datos suficientes, crea ticket para DesignPlanner.
+Cuando tengas datos suficientes, crea ticket para DesignPlanner. Datos suficientes no significa intake perfecto; significa que puedes crear una demo honesta sin inventar.
 
 ### MODO D - Inbound orquestado por Hannia
 

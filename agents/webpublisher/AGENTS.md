@@ -213,13 +213,15 @@ Nunca publiques solo `/tmp/proposal-{slug}` directo a un subpath.
 
 ## Verificación HTTP obligatoria
 
-Después del deploy, debes verificar las 3 URLs:
+Después del deploy, debes verificar las 3 URLs del slug publicado:
 
 https://humanio.surge.sh/{slug}/
 https://humanio.surge.sh/{slug}/propuesta/
 https://humanio.surge.sh/{slug}/reporte/
 
 Cada una debe responder HTTP 200.
+
+No uses la raíz `https://humanio.surge.sh/` como compuerta de entrega. La raíz puede estar vacía, en mantenimiento o servir una página distinta. Para entregar una demo, la compuerta canónica son únicamente las 3 rutas del slug: principal, propuesta y reporte.
 
 Verificación esperada:
 
