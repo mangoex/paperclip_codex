@@ -33,14 +33,14 @@ CEO → Scout → Qualifier → Outreach → Closer
                               ↘ DataAnalyst
 ```
 
-En esta ruta NO se construye sitio ni se publica demo al inicio. Outreach envía WhatsApp/email con 3-4 hallazgos reales del Qualifier y un CTA hacia Humanio. Si el prospecto responde con interés, Closer hace intake y dispara la ruta de demo.
+En esta ruta NO se construye sitio ni se publica demo al inicio. Outreach envía WhatsApp/email con 3-4 hallazgos reales del Qualifier y un CTA hacia Humanio. En piloto, Outreach puede pedir a ConversationManager que ejecute o prepare el contacto con `event_type: outbound_contact_request`. Si el prospecto responde con interés, ConversationManager o n8n despierta al CEO/Closer para intake y demo.
 
 ### 2. Inbound o demo solicitada por WhatsApp
 
 Se activa cuando un prospecto contacta por WhatsApp, responde a un mensaje, o el bot Hannia/n8n crea un ticket urgente porque el prospecto quiere propuesta.
 
 ```text
-WhatsApp/n8n → Closer urgente → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer/Outreach
+WhatsApp/n8n → ConversationManager (piloto) → CEO/Closer → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer/Outreach
                                                                                          ↘ DataAnalyst
 ```
 
@@ -58,6 +58,7 @@ En esta ruta no trabaja Scout salvo que Closer necesite enriquecer información 
 | WebQA | Auditor web | Valida propuesta, URLs, marca y contenido antes de publicar |
 | WebPublisher | Publicador | Publica demos aprobadas en Surge.sh y registra estado |
 | Outreach | Comercial | Envía primer contacto outbound y puede apoyar entrega/follow-up |
+| ConversationManager | Conversaciones | Atiende Chatwoot/WhatsApp, captura datos, enruta al CEO y ejecuta contacto en piloto seguro |
 | Closer | Cerrador de ventas | Manejo de respuestas, demo intake, seguimiento y cierre consultivo |
 | DataAnalyst | Analista de datos | Monitorea MRR, churn, LTV, conversión por paquete/país/giro |
 
@@ -66,12 +67,13 @@ En esta ruta no trabaja Scout salvo que Closer necesite enriquecer información 
 1. CEO recibe solicitud outbound: "prospectar {giro} en {ciudad}, {país}"
 2. Scout investiga y genera lista de prospectos con datos de contacto
 3. Qualifier analiza presencia digital, genera score, paquete recomendado y hallazgos textuales
-4. Outreach envía primer contacto por WhatsApp/email con hallazgos y CTA
-5. Closer espera respuesta, maneja objeciones y solicita datos si el prospecto quiere demo
-6. Si hay demo o inbound urgente, Closer despierta a DesignPlanner y empieza el flujo web
-7. WebBuilder/WebQA/WebPublisher construyen, validan y publican la propuesta
-8. Closer/Outreach entregan la URL y programan seguimiento
-9. DataAnalyst genera reportes semanales de MRR, churn, conversión y recomendaciones
+4. Outreach envia primer contacto por WhatsApp/email con hallazgos y CTA; en piloto puede delegar el envio a ConversationManager
+5. ConversationManager/n8n detecta respuesta y la convierte en evento para CEO/Closer
+6. Closer espera respuesta, maneja objeciones y solicita datos si el prospecto quiere demo
+7. Si hay demo o inbound urgente, CEO/Closer despierta a DesignPlanner y empieza el flujo web
+8. WebBuilder/WebQA/WebPublisher construyen, validan y publican la propuesta
+9. Closer/Outreach/ConversationManager entregan la URL y programan seguimiento
+10. DataAnalyst genera reportes semanales de MRR, churn, conversion y recomendaciones
 
 ## Mercado objetivo
 

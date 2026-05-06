@@ -6,9 +6,9 @@
 
 | Content | Count |
 |---------|-------|
-| Agents | 10 |
+| Agents | 11 |
 | Projects | 1 |
-| Skills | 39 |
+| Skills | 41 |
 | Tasks | 2 |
 
 ### Agents
@@ -19,6 +19,7 @@
 | Scout | general | ceo | cold + demo enrichment |
 | Qualifier | general | ceo | cold |
 | Outreach | general | ceo | cold |
+| ConversationManager | general | ceo | Chatwoot/WhatsApp pilot |
 | Closer | general | ceo | cold + demo trigger |
 | DesignPlanner | general | ceo | demo only (paused heartbeat) |
 | WebBuilder | general | ceo | demo only (paused heartbeat) |
@@ -44,14 +45,14 @@ CEO → Scout → Qualifier → Outreach → Closer (espera respuesta)
 
 Se activa cuando el Board/CEO pide prospectar un giro en una ciudad.
 
-NO se construye sitio. NO se publica nada en Surge. El Outreach manda WhatsApp template + email con 3-4 hallazgos del Qualifier y CTA hacia Humanio. Si el prospecto muestra interés, una respuesta programada de WhatsApp/n8n despierta al Closer para intake y demo.
+NO se construye sitio. NO se publica nada en Surge. El Outreach manda WhatsApp template + email con 3-4 hallazgos del Qualifier y CTA hacia Humanio. Si el piloto esta habilitado, Outreach puede crear `event_type: outbound_contact_request` para que ConversationManager ejecute o prepare el contacto sin duplicar n8n. Si el prospecto muestra interés, una respuesta programada de WhatsApp/n8n o ConversationManager despierta al CEO/Closer para intake y demo.
 
 ### 2. INBOUND / DEMO solicitada por WhatsApp
 
 Se activa cuando un cliente contacta directamente por WhatsApp, o cuando un prospecto outbound responde que quiere ver una propuesta.
 
 ```
-WhatsApp/n8n → Closer urgente → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer/Outreach
+WhatsApp/n8n → ConversationManager (piloto) → CEO/Closer → DesignPlanner → WebBuilder → WebQA → WebPublisher → Closer/Outreach
 ```
 
 Esto SÍ construye propuesta web. Scout no participa salvo enriquecimiento explícito de URLs/datos nuevos. La demo se trata como `premier`, se publica, se entrega al prospecto, y se programa seguimiento comercial. Los 4 agentes web tienen heartbeat **paused** — solo se activan por mensaje directo del Closer o del agente anterior en la cadena demo.
@@ -69,6 +70,8 @@ Esto SÍ construye propuesta web. Scout no participa salvo enriquecimiento expl�
 > **Owner operativo de seguimientos**: n8n debe ejecutar la cadencia de dia 3/dia 7. Los tickets `Closer: seguimiento...` quedan `blocked`; el Closer no envia follow-ups por heartbeat normal.
 >
 > **Contrato anti-bloqueo del Closer**: cuando haya respuesta, seguimiento vencido o demo publicada, n8n/WebPublisher deben crear un ticket explicito con `event_type` y status `todo` en lugar de solo despertar un ticket `blocked`. Ver `n8n/EVENT_CONTRACTS.md`.
+>
+> **Piloto ConversationManager**: el agente nuevo corre en `CONVERSATION_MANAGER_MODE=shadow` por defecto. En shadow no envia mensajes externos; clasifica, redacta, registra y crea tickets internos. Para activarlo por etapas se requieren `HUMANIO_ENABLE_OUTBOUND_SEND=true` y/o `HUMANIO_ENABLE_INBOUND_SEND=true`.
 
 ### Quick reply buttons del msg1 — flujo
 
@@ -90,7 +93,7 @@ Esto SÍ construye propuesta web. Scout no participa salvo enriquecimiento expl�
 
 ## Skills
 
-39 skills vendorizadas o propias, incluyendo: frontend-design, outreach-proposals, qualifier-prospect-auditor, qualifier-seo, scout-prospector, frontend-design-review, frontend-ui-dark-ts, closer-sales, sales-copywriting, dataanalyst-pipeline, web-qa, qualifier-diagnostic-html, package-pricing, package-outreach (legacy compatibility), saas-metrics, retention-playbook, ui-ux-pro-max, paperclip-create-agent, paperclip-create-plugin, paperclip, para-memory-files, objection-handling, social-selling, cold-outreach, lead-qualification, web-scraping, web-template-system, web-premier-system, layout-blueprints, design-styles, dataanalyst-dashboard-html.
+41 skills vendorizadas o propias, incluyendo: frontend-design, outreach-proposals, conversation-manager, chatwoot-whatsapp-ops, qualifier-prospect-auditor, qualifier-seo, scout-prospector, frontend-design-review, frontend-ui-dark-ts, closer-sales, sales-copywriting, dataanalyst-pipeline, web-qa, qualifier-diagnostic-html, package-pricing, package-outreach (legacy compatibility), saas-metrics, retention-playbook, ui-ux-pro-max, paperclip-create-agent, paperclip-create-plugin, paperclip, para-memory-files, objection-handling, social-selling, cold-outreach, lead-qualification, web-scraping, web-template-system, web-premier-system, layout-blueprints, design-styles, dataanalyst-dashboard-html.
 
 ## Getting Started
 

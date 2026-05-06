@@ -270,6 +270,157 @@ agents:
           default: ""
           requirement: "required"
 
+  conversationmanager:
+    role: "general"
+    capabilities: "Gestor conversacional de Humanio para Chatwoot y WhatsApp. Recibe eventos inbound, atiende o prepara respuestas como Hannia/Humanio, captura datos, crea instrucciones para CEO, y ejecuta contacto/seguimientos por instruccion de Outreach o Closer. Corre en modo shadow por defecto para convivir con n8n sin duplicar mensajes."
+    adapter:
+      config:
+        model: "openai/gpt-5.4"
+        dangerouslySkipPermissions: true
+      type: "codex_local"
+    runtime:
+      heartbeat:
+        enabled: false
+        intervalSec: 300
+      maxConcurrentRuns: 1
+    inputs:
+      env:
+        CONVERSATION_MANAGER_MODE:
+          description: "Modo operativo: shadow no envia mensajes externos; active permite enviar solo si las flags estan en true"
+          kind: "text"
+          default: "shadow"
+          requirement: "required"
+        HUMANIO_ENABLE_OUTBOUND_SEND:
+          description: "Permite que ConversationManager envie msg1/followups/demo delivery originados por Outreach/Closer"
+          kind: "text"
+          default: "false"
+          requirement: "required"
+        HUMANIO_ENABLE_INBOUND_SEND:
+          description: "Permite que ConversationManager responda mensajes entrantes de Chatwoot/WhatsApp"
+          kind: "text"
+          default: "false"
+          requirement: "required"
+        HUMANIO_ALLOWED_ADMIN_PHONES:
+          description: "Telefonos autorizados para comandos internos, separados por coma"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        WHATSAPP_GRAPH_VERSION:
+          description: "Version de Graph API para WhatsApp Cloud API"
+          kind: "text"
+          default: "v19.0"
+          requirement: "optional"
+        WHATSAPP_PHONE_NUMBER_ID:
+          description: "Meta WhatsApp Business phone number ID"
+          kind: "secret"
+          default: ""
+          requirement: "required"
+        WHATSAPP_CLOUD_API_TOKEN:
+          description: "Meta WhatsApp Business Cloud API permanent token"
+          kind: "secret"
+          default: ""
+          requirement: "required"
+        CHATWOOT_API_URL:
+          description: "URL base de Chatwoot (sin slash final)"
+          kind: "secret"
+          default: ""
+          requirement: "required"
+        CHATWOOT_API_TOKEN:
+          description: "API access token de Chatwoot"
+          kind: "secret"
+          default: ""
+          requirement: "required"
+        CHATWOOT_ACCOUNT_ID:
+          description: "ID de la cuenta en Chatwoot"
+          kind: "secret"
+          default: "1"
+          requirement: "required"
+        CHATWOOT_INBOX_ID:
+          description: "ID del inbox de email en Chatwoot"
+          kind: "secret"
+          default: "2"
+          requirement: "optional"
+        CHATWOOT_WHATSAPP_INBOX_ID:
+          description: "ID del inbox de WhatsApp en Chatwoot"
+          kind: "secret"
+          default: "3"
+          requirement: "required"
+        PAPERCLIP_API_URL:
+          description: "URL base de Paperclip si este agente crea tickets via API"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        PAPERCLIP_API_TOKEN:
+          description: "Token/API key de Paperclip para crear tickets y despertar agentes"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        COMPANY_ID:
+          description: "ID de la compania Humanio en Paperclip"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        CEO_AGENT_ID:
+          description: "ID del agente CEO para tickets de inicio de flujo"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        CLOSER_AGENT_ID:
+          description: "ID del agente Closer para handoffs comerciales"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        OUTREACH_AGENT_ID:
+          description: "ID del agente Outreach para revisiones de contacto"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        CONVERSATION_MANAGER_AGENT_ID:
+          description: "ID de este agente en Paperclip"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        SUPABASE_URL:
+          description: "Supabase project URL para registrar outreach_log/eventos"
+          kind: "secret"
+          default: ""
+          requirement: "required"
+        SUPABASE_SERVICE_KEY:
+          description: "Supabase service role key"
+          kind: "secret"
+          default: ""
+          requirement: "required"
+        SMTP_HOST:
+          description: "SMTP host para email opcional"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        SMTP_PORT:
+          description: "Puerto SMTP"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        SMTP_USER:
+          description: "Usuario SMTP"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        SMTP_PASS:
+          description: "Contrasena SMTP"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        FROM_EMAIL:
+          description: "Email remitente"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+        FROM_NAME:
+          description: "Nombre remitente"
+          kind: "secret"
+          default: ""
+          requirement: "optional"
+
   closer:
     role: "general"
     capabilities: "Cerrador de ventas de Humanio. Recibe prospectos contactados por Outreach, espera respuestas, clasifica interés, hace demo intake, orquesta demos inbound urgentes con el equipo web, envía seguimientos permitidos y escala cierres al CEO."
@@ -440,6 +591,7 @@ sidebar:
     - "webqa"
     - "webpublisher"
     - "outreach"
+    - "conversationmanager"
     - "closer"
     - "dataanalyst"
   projects:

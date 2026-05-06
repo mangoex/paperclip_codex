@@ -6,6 +6,34 @@ Estos contratos evitan que el Closer quede atrapado en tickets `blocked` cuando 
 
 n8n no debe solo "despertar" un ticket bloqueado. Cuando exista un evento nuevo, debe crear un ticket explicito con status `todo`, cuerpo YAML y `event_type`.
 
+## Piloto ConversationManager
+
+Mientras n8n siga activo, los workflows pueden seguir creando eventos para Closer. Para probar el reemplazo gradual, tambien pueden crear eventos para ConversationManager sin apagar n8n.
+
+Titulo:
+
+```text
+ConversationManager: evento Chatwoot {conversation_id}
+```
+
+Cuerpo:
+
+```yaml
+event_type: inbound_chatwoot_event
+source: chatwoot_n8n_bridge
+conversation_id: "{id}"
+message_id: "{id}"
+inbox_id: "{id}"
+sender_phone: "{telefono}"
+sender_name: "{nombre_o_unknown}"
+content: "{texto_real}"
+attachments: []
+created_at: "{ISO}"
+shadow_mode_expected: true
+```
+
+En modo shadow, ConversationManager no debe enviar mensajes externos; solo clasifica, prepara respuesta y crea ticket para CEO/Closer si corresponde.
+
 ## Respuesta entrante
 
 Titulo:

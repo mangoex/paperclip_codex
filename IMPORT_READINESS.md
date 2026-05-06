@@ -10,7 +10,7 @@ El paquete esta preparado para importarse como organizacion Humanio con dos ruta
    No construye sitio inicial. Outreach envia hallazgos reales y Closer espera respuesta.
 
 2. **Inbound / demo solicitada por WhatsApp**
-   `WhatsApp/n8n -> Closer -> DesignPlanner -> WebBuilder -> WebQA -> WebPublisher -> Closer/Outreach`
+   `WhatsApp/n8n -> ConversationManager (piloto) -> CEO/Closer -> DesignPlanner -> WebBuilder -> WebQA -> WebPublisher -> Closer/Outreach`
 
    Se usa cuando el prospecto pide propuesta o llega como urgente por WhatsApp. La demo se trata como `premier`.
 
@@ -32,6 +32,8 @@ El paquete esta preparado para importarse como organizacion Humanio con dos ruta
 - Activar agentes web solo via mensajes directos del flujo demo.
 - Validar que n8n cree tickets explicitos con `event_type` segun `n8n/EVENT_CONTRACTS.md`; no basta con despertar tickets bloqueados del Closer.
 - Verificar que el workflow cron de seguimientos cree tickets `Closer: enviar msg2/msg3...` con `event_type: followup_due`.
+- Configurar ConversationManager primero en `CONVERSATION_MANAGER_MODE=shadow`, `HUMANIO_ENABLE_OUTBOUND_SEND=false`, `HUMANIO_ENABLE_INBOUND_SEND=false`.
+- Probar ConversationManager con tickets internos antes de conectar Chatwoot o apagar cualquier parte de n8n.
 
 ## Comando recomendado de importacion
 
