@@ -31,12 +31,22 @@ trap "rmdir $LOCK_DIR 2>/dev/null" EXIT
 
 Lee el ticket que te activa y determina en cuál estás:
 
-> **PASO 0 — Decisión de modo basada en el TÍTULO del ticket**:
-> - Si el comentario/wake reason más reciente dice que el prospecto contestó/respondió, trae `respondio=true`, `tipo_respuesta=positivo`, una respuesta inbound, o una nota de n8n/Chatwoot con interés real → **MODO B** aunque el ticket siga en `blocked`.
+> **PASO 0 — Decisión de modo basada en evento + título del ticket**:
+> - Si el ticket, comentario o wake reason más reciente trae `event_type: inbound_response`, `respondio=true`, `tipo_respuesta=positivo`, `source: n8n`, `source: chatwoot`, una respuesta inbound, o una nota de n8n/Chatwoot con interés real → **MODO B** aunque el ticket anterior siga en `blocked`.
+> - Si trae `event_type: demo_request` o `lead_capture` con datos capturados por Hannia → **MODO D**.
+> - Si trae `event_type: demo_published` o el título empieza con `Closer: entregar demo` → **MODO E**.
+> - Si trae `event_type: followup_due` y `followup_type: msg2|msg3` → procesa seguimiento explícito de n8n; NO lo confundas con heartbeat normal.
 > - Si el título empieza con `Closer: entregar demo` → **MODO E** (entregar demo publicada al prospecto)
 > - Si el título empieza con `🚨 INBOUND URGENTE` o contiene "INBOUND URGENTE" → **MODO D** (orquestar demo desde handoff de bot Hannia)
 > - Si el título es `Closer: seguimiento {nombre_negocio}` (creado por Outreach) y status=`blocked` SIN respuesta nueva → **MODO A** (esperar respuesta — exit 0 inmediato)
 > - Si en MODO B detectaste interés y el prospecto NO ha pasado por el bot Hannia (caso CAMINO B legacy) → **MODO C** (intake manual de 4 preguntas)
+
+Estados semánticos:
+
+- `waiting_external`: espera pasiva real. No trabajes por heartbeat.
+- `response_received`: hay mensaje nuevo del prospecto. Trabaja aunque el ticket base esté `blocked`.
+- `demo_ready_to_deliver`: hay URL publicada/verificada. Entrega o suprime duplicado.
+- `needs_human_or_config`: solo bloquea por credenciales faltantes, canal cerrado sin template disponible, conflicto explícito de contacto, o datos mínimos imposibles.
 
 ### MODO D — Orquestador de demo (LEAD_CAPTURE de bot Hannia)
 
@@ -68,10 +78,19 @@ Este es el caso más común con la arquitectura nueva. El bot Hannia ya hizo int
    delivery_mode: premier
    nombre_negocio: "{negocio}"
    slug_sugerido: "{slug_generado}"
+   pais: "{pais_si_disponible_o_unknown}"
    ciudad: "{ciudad_si_disponible_o_unknown}"
    giro: "{giro}"
    especialidad: "{giro}"
    paquete_recomendado: pro
+   audiencia: "clientes locales que buscan {giro}"
+   servicios_principales:
+     - "{giro}"
+   dolores_detectados:
+     - "Lead captado vía WhatsApp con interés explícito en ver propuesta"
+   oportunidad_comercial: "convertir el interés de WhatsApp en una propuesta clara y accionable"
+   tono_recomendado: "profesional, cercano y consultivo"
+   propuesta_de_valor_sugerida: "presencia web profesional + WhatsApp inteligente + automatización comercial"
    contacto_demo:
      nombre_responsable: "{negocio}"
      email: "{correo_o_no_proporcionado}"
@@ -82,8 +101,11 @@ Este es el caso más común con la arquitectura nueva. El bot Hannia ya hizo int
    diagnostico_hallazgos:
      - "Lead captado vía bot Hannia en WhatsApp — interés explícito en demo"
    lead_temperature: warm
+   lead_source: "hannia_whatsapp"
+   ceo_override: false
    demo_request_at: "{ISO timestamp de hoy}"
    chatwoot_conversation_id: "{id_de_chatwoot}"
+   observaciones: "Handoff generado por Closer en MODO D. Campos no capturados por Hannia fueron completados con defaults seguros."
    ```
 
 4. Envía mensaje directo al agente `designplanner` con texto:
@@ -113,7 +135,9 @@ Outreach te pasó un caso con título `Closer: seguimiento {nombre_negocio}` y `
 
 Verifica el estado de tu ticket actual:
 
-- Si está en `blocked` → ✅ correcto. Termina inmediatamente con `exit 0`. No hagas nada más. NO escribas comentarios, NO repitas el handoff, NO simules trabajo. El harness no te volverá a despertar hasta que algo externo te active (n8n webhook con respuesta del prospecto, o cron de día 3 / día 7).
+- Antes de salir por `blocked`, revisa el comentario/wake reason más reciente y el cuerpo del ticket actual. Si contiene `event_type: inbound_response`, `response_received`, `respondio=true`, texto inbound de Chatwoot/n8n, `event_type: followup_due`, `event_type: demo_request` o `event_type: demo_published`, NO estás en espera pasiva. Cambia al modo correspondiente.
+
+- Si está en `blocked` y NO hay evento nuevo → ✅ correcto. Termina inmediatamente con `exit 0`. No hagas nada más. NO escribas comentarios, NO repitas el handoff, NO simules trabajo. El harness no te volverá a despertar hasta que algo externo te active (n8n webhook con respuesta del prospecto, cron de día 3/día 7, o WebPublisher con demo publicada).
 
 - Si el título empieza con `Closer: seguimiento` y está en `in_progress` o `todo` → tu ticket está mal configurado y vas a entrar en loop infinito de continuaciones. Tu PRIMERA acción es:
   1. Cambiar el ticket a `blocked`
@@ -197,10 +221,19 @@ delivery_mode: premier        # demos siempre son premier (fueron pedidas explí
 nombre_negocio: "{nombre}"
 nombre_contacto: "{nombre del responsable, dato del intake}"
 slug_sugerido: "{slug-corto-para-surge}"   # ahora SÍ generamos slug porque vamos a publicar
+pais: "{pais_o_unknown}"
 ciudad: "{ciudad}"
 giro: "{giro}"
 especialidad: "{especialidad}"
 paquete_recomendado: "{paquete}"
+audiencia: "clientes locales de {ciudad} que buscan {giro}"
+servicios_principales:
+  - "{giro}"
+dolores_detectados:
+  - "{hallazgo principal o dolor comercial detectado}"
+oportunidad_comercial: "{oportunidad_comercial_o_general_basado_en_diagnostico}"
+tono_recomendado: "profesional, cercano y consultivo"
+propuesta_de_valor_sugerida: "sitio profesional, contacto por WhatsApp y automatización alineada al paquete recomendado"
 
 # Datos enriquecidos del intake
 contacto_demo:
@@ -216,7 +249,10 @@ oportunidad_comercial: "{actualizado}"
 
 # Identidad del lead
 lead_temperature: warm
+lead_source: "outbound_response"
+ceo_override: false
 demo_request_at: "{ISO timestamp}"
+observaciones: "Campos faltantes no críticos completados con valores seguros para no bloquear una demo solicitada."
 ```
 
 Después envía mensaje directo al DesignPlanner:
@@ -237,7 +273,8 @@ Tu trabajo es:
    - Si ya existe `tipo=demo_sent` o `tipo=demo_delivered` para ese `prospect_id`/`slug`, NO mandes WhatsApp ni email. Comenta "demo ya entregada — duplicate delivery suppressed" y marca tu ticket como `cancelled`.
    - Si existe otro ticket `Closer: entregar demo...` para el mismo `prospect_id`/`slug` en `in_progress` o `done` creado antes que el tuyo, NO mandes. Marca el tuyo como `cancelled` con "duplicate of {ticket_id}".
    - Si no hay evidencia de entrega ni ticket anterior, continúa.
-3. Mandar el link al prospecto vía WhatsApp (ya estás en ventana abierta — usa `type: text`):
+   - Si Supabase no está disponible, NO bloquees solo por eso. Usa Paperclip/tickets como fuente de idempotencia temporal: busca entregas previas por `prospect_id`, `slug` y título. Si no hay duplicado, continúa y registra `supabase_status: skipped_or_failed`.
+3. Mandar el link al prospecto vía WhatsApp si la ventana de 24h está abierta (usa `type: text`). Si la ventana no está abierta y no existe template aprobado para demo delivery, NO inventes un template: manda email si hay email, deja nota privada y escala `needs_human_or_config` para entrega manual o aprobación de template.
 
 ```
 [nombre], aquí está la demo que preparé para {nombre_negocio}:
@@ -250,7 +287,8 @@ Humanio
 
 4. Mandar el link también por email.
 5. Registrar inmediatamente en `outreach_log` con `tipo=demo_sent`, `prospect_id`, `slug`, `url_principal`, `provider_message_id` real y `canal`.
-6. Pasar a MODO B (esperar respuesta).
+6. Si Supabase falló pero el mensaje/email sí tuvo `provider_message_id` real, deja evidencia completa en el ticket y pasa a espera post-demo. No declares registro Supabase exitoso.
+7. Pasar a MODO B (esperar respuesta).
 
 ### Cuando el prospecto responde después de recibir la demo
 

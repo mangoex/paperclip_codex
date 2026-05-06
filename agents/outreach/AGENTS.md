@@ -349,6 +349,23 @@ Crea ticket nuevo asignado al **Closer** con:
   - "WhatsApp aceptado por Meta no garantiza entrega; si no hay respuesta, esperar webhook/status o cadencia de seguimiento"
   - "OR día 3 ({fecha_msg2}) para enviar msg2 (humanio_seguimiento_1)"
   - "OR día 7 ({fecha_msg3}) para msg3 (humanio_seguimiento_2)"
+  - "Si n8n detecta respuesta, debe crear ticket explícito `Closer: respuesta entrante de {nombre_negocio}` con `event_type: inbound_response` y status `todo`, no solo despertar este ticket bloqueado."
+
+Incluye tambien este bloque para que n8n/Paperclip tengan un contrato claro de reactivacion:
+
+```yaml
+waiting_state: waiting_external
+unblock_events:
+  - event_type: inbound_response
+    creates_ticket: "Closer: respuesta entrante de {nombre_negocio}"
+    required_fields: [prospect_id, nombre_negocio, message_text, chatwoot_conversation_id]
+  - event_type: followup_due
+    creates_ticket: "Closer: enviar {msg2|msg3} a {nombre_negocio}"
+    required_fields: [prospect_id, nombre_negocio, followup_type, due_at]
+  - event_type: demo_published
+    creates_ticket: "Closer: entregar demo a {nombre_negocio} ({slug})"
+    required_fields: [prospect_id, nombre_negocio, slug, url_principal]
+```
 
 Envía mensaje directo al Closer:
 ```

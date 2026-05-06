@@ -4,7 +4,7 @@ Owner operativo: n8n cron.
 
 Los tickets `Closer: seguimiento {negocio}` creados por Outreach deben quedar en `blocked`.
 
-El Closer NO envia msg2/msg3 por heartbeat normal. Solo participa en seguimiento si n8n crea un ticket explicito de follow-up con:
+El Closer NO envia msg2/msg3 por heartbeat normal. Solo participa en seguimiento si n8n crea un ticket explicito de follow-up con `event_type: followup_due` y status `todo`.
 
 - prospect_id
 - nombre_negocio
@@ -12,6 +12,36 @@ El Closer NO envia msg2/msg3 por heartbeat normal. Solo participa en seguimiento
 - tipo de mensaje: `msg2` o `msg3`
 - evidencia de que no hubo respuesta
 - evidencia de que ya vencio la fecha
+
+## Contrato del ticket explicito
+
+Titulo:
+
+```text
+Closer: enviar {msg2|msg3} a {nombre_negocio}
+```
+
+Cuerpo:
+
+```yaml
+event_type: followup_due
+source: n8n
+prospect_id: "{id}"
+nombre_negocio: "{nombre}"
+telefono: "{telefono_o_null}"
+email: "{email_o_null}"
+chatwoot_conversation_id: "{id_o_null}"
+followup_type: "{msg2|msg3}"
+due_at: "{ISO}"
+msg1_sent_at: "{ISO}"
+no_response_evidence:
+  checked_chatwoot_until: "{ISO}"
+  checked_outreach_log_until: "{ISO}"
+  last_inbound_at: null
+allowed_channels:
+  whatsapp_template: true
+  email_smtp: true
+```
 
 ## Cadencia
 
@@ -43,6 +73,12 @@ Para WhatsApp, si Meta devuelve `messages[0].id`, registrar la fila segun el enu
 {"provider_semantic_status":"accepted_by_meta","delivery_status":"pending_webhook"}
 ```
 
-## Pendiente de implementacion
+## Estado operativo requerido
 
-Este documento define la propiedad y las reglas. El workflow n8n de cron debe existir y estar activo antes de que llegue el primer dia 3 de una corrida real.
+Este documento define la propiedad y las reglas. Antes de una corrida real, valida en n8n que exista un workflow activo que:
+
+1. Consulte `outreach_log` para mensajes `msg1` sin respuesta.
+2. Calcule vencimientos de dia 3 y dia 7.
+3. Revise que no exista respuesta en Chatwoot/n8n.
+4. Cree el ticket explicito anterior en Paperclip.
+5. Nunca despierte el ticket `Closer: seguimiento...` bloqueado sin crear evento estructurado.

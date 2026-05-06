@@ -310,6 +310,7 @@ Antes de crear un ticket para Closer/Outreach o enviar mensaje directo:
 
    ```
    status: demo_published
+   event_type: demo_published
    prospect_id: "{prospect_id}"
    slug: "{slug}"
    delivery_mode: "{template|premier}"
@@ -332,6 +333,7 @@ Hola {Closer|Outreach} — propuesta publicada y verificada.
    Negocio: {nombre_negocio}
    URL: https://humanio.surge.sh/{slug}/
    Ticket: {nuevo_ticket_id}
+   event_type: demo_published
    ```
 
 3. **PRECONDICIÓN DURA**: NO marques tu propio ticket como completado hasta que hayas verificado que el ticket de Closer/Outreach realmente fue creado y aceptado por el panel. Si el panel rechaza la creación, no marques done. La regla es: tu trabajo solo termina cuando el siguiente agente tiene su ticket vivo.
@@ -390,6 +392,7 @@ El cuerpo del ticket nuevo y el contexto que pasas al siguiente agente DEBE incl
 
 ```
 status: demo_published
+event_type: demo_published
 prospect_id: "{prospect_id}"
 slug: "{slug}"
 delivery_mode: "{template|premier}"

@@ -366,6 +366,7 @@ Crea ticket Closer con título `Closer: seguimiento {nombre_negocio}` y cuerpo:
 
 ```yaml
 status: ready_for_closer_followup
+waiting_state: waiting_external
 prospect_id: "{id}"
 nombre_negocio: "{nombre}"
 nombre_contacto: "{nombre}"
@@ -382,6 +383,11 @@ msg1:
   email_status: "{sent|failed|skipped_no_email|n/a}"
   enviado_at: "{ISO}"
 next_step: "Esperar respuesta. Si llega, demo intake."
+unblock_events:
+  - event_type: inbound_response
+    creates_ticket: "Closer: respuesta entrante de {nombre_negocio}"
+  - event_type: followup_due
+    creates_ticket: "Closer: enviar {msg2|msg3} a {nombre_negocio}"
 ```
 
 Mensaje directo al Closer:

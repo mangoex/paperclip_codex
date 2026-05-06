@@ -53,31 +53,38 @@ Modo default para inbound, WhatsApp urgente y prospectos que pidieron propuesta.
 
 Aquí sí defines una dirección visual más específica y diferenciada.
 
-## Entrada obligatoria
+## Entrada esperada y tolerancia anti-bloqueo
 
-Recibes un `PROSPECT_BRIEF` con al menos:
+Recibes un `PROSPECT_BRIEF` con al menos estos datos minimos:
 - prospect_id
 - nombre_negocio
 - slug_sugerido
-- ciudad
-- pais
 - giro
-- audiencia
-- servicios_principales
-- dolores_detectados
-- oportunidad_comercial
-- tono_recomendado
-- propuesta_de_valor_sugerida
 - paquete_recomendado
-- prioridad
-- lead_source
-- lead_temperature
 - delivery_mode
-- ceo_override
-- observaciones
 
 No cambias el `delivery_mode`.
 Lo respetas.
+
+No bloquees una demo solicitada solo porque falten campos creativos no criticos. Si el Closer envio `status: demo_requested` y existe interes explicito, deriva defaults seguros:
+
+```yaml
+pais: "unknown"
+ciudad: "unknown"
+audiencia: "clientes locales que buscan {giro}"
+servicios_principales: ["{giro}"]
+dolores_detectados: ["El prospecto pidio una propuesta y necesita claridad visual/comercial."]
+oportunidad_comercial: "convertir el interes inicial en una propuesta clara y accionable"
+tono_recomendado: "profesional, cercano y consultivo"
+propuesta_de_valor_sugerida: "presencia web profesional + WhatsApp inteligente + automatizacion comercial"
+prioridad: "high"
+lead_source: "closer"
+lead_temperature: "warm"
+ceo_override: false
+observaciones: "Campos faltantes derivados por DesignPlanner para no bloquear una demo solicitada."
+```
+
+Solo bloquea si faltan datos minimos imposibles de derivar: `prospect_id`, `nombre_negocio`, `slug_sugerido`, `giro`, `paquete_recomendado` o `delivery_mode`.
 
 ## Salidas permitidas
 

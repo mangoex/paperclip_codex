@@ -52,3 +52,5 @@ Si no estás seguro si es bot o humano, clasifica como conversación normal y re
 - Chatwoot recibe la etiqueta `bot-auto-reply`.
 - No se crea lead inbound.
 - No se despierta Closer.
+
+Para mensajes humanos que si muestran interes, usar el contrato de `EVENT_CONTRACTS.md` y crear ticket explicito para Closer con `event_type: inbound_response` o `event_type: demo_request`.

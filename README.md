@@ -67,6 +67,8 @@ Esto SÍ construye propuesta web. Scout no participa salvo enriquecimiento expl�
 > **Migración pendiente**: los templates de seguimiento (`humanio_seguimiento_1`, `humanio_seguimiento_2`) todavía apuntan a `humanio.surge.sh/{slug}`. El redirect shim en `scripts/surge-redirect/` cubre esos clicks rebotando a `humanio.digital/?ref={slug}`. Cuando se aprueben versiones v2 con URL directa a `humanio.digital`, el shim queda como respaldo.
 >
 > **Owner operativo de seguimientos**: n8n debe ejecutar la cadencia de dia 3/dia 7. Los tickets `Closer: seguimiento...` quedan `blocked`; el Closer no envia follow-ups por heartbeat normal.
+>
+> **Contrato anti-bloqueo del Closer**: cuando haya respuesta, seguimiento vencido o demo publicada, n8n/WebPublisher deben crear un ticket explicito con `event_type` y status `todo` en lugar de solo despertar un ticket `blocked`. Ver `n8n/EVENT_CONTRACTS.md`.
 
 ### Quick reply buttons del msg1 — flujo
 

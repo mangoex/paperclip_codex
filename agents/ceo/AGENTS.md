@@ -64,6 +64,12 @@ Los 4 agentes web tienen heartbeat **paused** — solo se activan por mensaje di
 | "demo manual para {prospecto}" | Closer (modo demo intake) | Scout |
 | "publica demo aprobada para {ticket}" | DesignPlanner | Scout, Outreach |
 
+Cuando n8n, WebPublisher o cualquier agente reactive al Closer, exige eventos estructurados. No basta con "despertar" un ticket `blocked`.
+
+- Respuesta entrante: ticket `Closer: respuesta entrante de {negocio}` con `event_type: inbound_response`.
+- Seguimiento vencido: ticket `Closer: enviar {msg2|msg3} a {negocio}` con `event_type: followup_due`.
+- Demo publicada: ticket `Closer: entregar demo a {negocio} ({slug})` con `event_type: demo_published`.
+
 Cuando un agente termina su tarea, despierta SOLO al siguiente del flujo correspondiente. No mezcles flows.
 
 ## Regla de control de volumen

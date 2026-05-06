@@ -61,7 +61,7 @@ Tickets tipo: `Closer: seguimiento {nombre_negocio}`.
 
 Estado esperado: `blocked`.
 
-Excepcion critica: si el comentario/wake reason mas reciente trae respuesta real del prospecto (`respondio=true`, `tipo_respuesta=positivo`, "prospecto contesto/respondio", inbound de Chatwoot/n8n, o interes explicito), NO apliques MODO A aunque el ticket siga en `blocked`. Pasa a MODO B.
+Excepcion critica: si el comentario/wake reason mas reciente trae respuesta real del prospecto (`event_type: inbound_response`, `response_received`, `respondio=true`, `tipo_respuesta=positivo`, "prospecto contesto/respondio", inbound de Chatwoot/n8n, o interes explicito), NO apliques MODO A aunque el ticket base siga en `blocked`. Pasa a MODO B.
 
 Accion:
 
@@ -69,6 +69,7 @@ Accion:
 - No enviar msg2/msg3 desde Paperclip salvo que n8n cree un ticket explicito de seguimiento.
 - No disparar demo hasta que exista respuesta real del prospecto.
 - Si el ticket esta en `todo` o `in_progress`, corregir a `blocked` y terminar.
+- Si existe `event_type: followup_due`, `event_type: demo_request` o `event_type: demo_published`, no es espera pasiva: procesa el modo correspondiente.
 
 ### MODO B - Respuesta del prospecto
 
@@ -87,6 +88,20 @@ Cuando n8n despierte al Closer con una respuesta real:
    - rechazo -> cerrar sin insistir.
 5. Nunca enviar msg2/msg3 despues de una respuesta.
 
+Contrato recomendado del wake reason:
+
+```yaml
+event_type: inbound_response
+source: n8n
+prospect_id: "{id}"
+nombre_negocio: "{nombre}"
+chatwoot_conversation_id: "{id}"
+message_text: "{texto_real_del_prospecto}"
+respondio: true
+tipo_respuesta: "{positivo|objecion|no_interesado|pregunta|otro}"
+contact_window_open_until: "{ISO_o_unknown}"
+```
+
 ### MODO C - Demo intake legacy
 
 Usar solo cuando el prospecto respondio por cold y Hannia/n8n no capturo datos suficientes.
@@ -96,6 +111,7 @@ Regla anti-bloqueo:
 - Si ya tienes negocio + giro/contexto + canal de contacto, dispara demo flow sin esperar todas las respuestas.
 - Email, web/redes y enfasis son utiles, pero no deben bloquear una demo genuina.
 - Si faltan, usa `no_proporcionado` o `general basado en diagnostico`.
+- Si DesignPlanner requiere campos de direccion creativa que no existen, completalos con defaults seguros derivados del brief. No bloquees por falta de `audiencia`, `tono_recomendado`, `dolores_detectados` u `observaciones` cuando ya hay interes explicito y datos minimos.
 
 Pide una pregunta a la vez solo si falta lo minimo. Datos deseables:
 
@@ -129,10 +145,11 @@ Accion:
 
 1. Validar HTTP 200 de `url_principal`.
 2. Revisar idempotencia: si ya existe `demo_sent` o `demo_delivered`, cancelar duplicado.
-3. Enviar la URL al prospecto por WhatsApp si la ventana 24h esta abierta; si no, usar canal disponible o escalar.
-4. Enviar email si hay email.
-5. Registrar `outreach_log` con `tipo=demo_sent` y provider_message_id real.
-6. Dejar el ticket en `done` o `blocked` esperando respuesta post-demo, segun el estado real.
+3. Si Supabase no esta disponible para idempotencia, no bloquees solo por eso: revisa tickets Paperclip existentes por `prospect_id`/`slug` como fallback temporal. Si no hay duplicado, continua y reporta `supabase_status: skipped_or_failed`.
+4. Enviar la URL al prospecto por WhatsApp si la ventana 24h esta abierta; si no, usar email si existe o escalar para entrega manual/template aprobado.
+5. Enviar email si hay email.
+6. Registrar `outreach_log` con `tipo=demo_sent` y provider_message_id real cuando Supabase este disponible.
+7. Dejar el ticket en `done` o `blocked` esperando respuesta post-demo, segun el estado real.
 
 No apliques la regla de MODO A a tickets de entrega de demo.
 

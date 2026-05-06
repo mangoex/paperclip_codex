@@ -21,6 +21,7 @@ Mantener un entorno importable y seguro para dos rutas:
 - Los agentes web trabajan solo cuando hay interes explicito o lead inbound.
 - Los env vars reales se configuran en Paperclip UI, no en este repositorio.
 - Antes de correr envios reales, revisar WhatsApp, SMTP, Chatwoot, Supabase y locks.
+- n8n/WebPublisher deben reactivar al Closer con tickets explicitos `event_type`, no solo con wake de tickets `blocked`.
 
 ## Estado Esperado
 
@@ -28,3 +29,4 @@ Mantener un entorno importable y seguro para dos rutas:
 - Skills principales actualizadas manualmente o por import controlado.
 - WebPublisher con `CLOSER_AGENT_ID` configurado.
 - n8n como owner de seguimientos msg2/msg3.
+- Contratos `n8n/EVENT_CONTRACTS.md` probados con un caso de respuesta entrante y un caso de seguimiento vencido.

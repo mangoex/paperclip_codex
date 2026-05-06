@@ -30,6 +30,8 @@ El paquete esta preparado para importarse como organizacion Humanio con dos ruta
 - Cargar secretos reales en Paperclip: WhatsApp, Chatwoot, Supabase, Surge y SMTP si se usara email.
 - Probar primero con `contact_override` para evitar contactar prospectos reales.
 - Activar agentes web solo via mensajes directos del flujo demo.
+- Validar que n8n cree tickets explicitos con `event_type` segun `n8n/EVENT_CONTRACTS.md`; no basta con despertar tickets bloqueados del Closer.
+- Verificar que el workflow cron de seguimientos cree tickets `Closer: enviar msg2/msg3...` con `event_type: followup_due`.
 
 ## Comando recomendado de importacion
 
