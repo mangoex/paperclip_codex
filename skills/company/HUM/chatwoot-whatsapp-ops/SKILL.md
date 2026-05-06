@@ -14,49 +14,49 @@ No contiene secretos. Todos los tokens, URLs e IDs deben venir de variables de e
 ### Chatwoot
 
 ```yaml
-CHATWOOT_API_URL: "URL base sin slash final"
-CHATWOOT_API_TOKEN: "Access Token de Chatwoot"
-CHATWOOT_ACCOUNT_ID: "ID de cuenta"
-CHATWOOT_WHATSAPP_INBOX_ID: "ID del inbox WhatsApp"
-CHATWOOT_INBOX_ID: "ID del inbox email, si aplica"
+CHATWOOT_API_URL: "https://n8n-humanio-chatwoot.yroec7.easypanel.host"
+CHATWOOT_API_TOKEN: "y4ztDTQEjKu9dUsWpHSFaH8C"
+CHATWOOT_ACCOUNT_ID: "1"
+CHATWOOT_WHATSAPP_INBOX_ID: "3"
+CHATWOOT_INBOX_ID: "2"
 ```
 
 ### WhatsApp Cloud API
 
 ```yaml
-WHATSAPP_PHONE_NUMBER_ID: "Phone Number ID de Meta"
-WHATSAPP_CLOUD_API_TOKEN: "Token permanente o de larga vida"
+WHATSAPP_PHONE_NUMBER_ID: "1039498685919677"
+WHATSAPP_CLOUD_API_TOKEN: "EAF7Id5FLnOcBRHhHYi8b29PjaoXVhcNolPiFYA15oPrZBjKOTJFLzyZAPYVhBir7zMRjBKA0XFO9AaWCZBhCPbPnx4q3oaoC9cMZCEZAfpJvAfH5OFRppyufduRLxVBNHvnrL6TBv6U45FxzxoJ8vOQHYwuyT0S2Uzd1BnZBujaS8CUUCt1AU9zEn0dwt5FQZDZD"
 WHATSAPP_GRAPH_VERSION: "v19.0 por defecto"
 ```
 
 ### Paperclip
 
 ```yaml
-PAPERCLIP_API_URL: "URL base de Paperclip si se crean tickets via API"
-PAPERCLIP_API_TOKEN: "Token/API key para crear issues y despertar agentes"
-COMPANY_ID: "ID de compania Humanio en Paperclip"
-CEO_AGENT_ID: "ID del agente CEO"
-CLOSER_AGENT_ID: "ID del agente Closer"
-OUTREACH_AGENT_ID: "ID del agente Outreach"
-CONVERSATION_MANAGER_AGENT_ID: "ID de este agente"
+PAPERCLIP_API_URL: "https://paperclip-paperclip-app.yroec7.easypanel.host/"
+PAPERCLIP_API_TOKEN: "pcp_0513450378c5e144467f50e5dcdc318b7ff3f47ea309e37f"
+COMPANY_ID: "HUMAAAAAAAAAAAAA"
+CEO_AGENT_ID: "75773041-c013-4c9b-9dac-4f85908ae47c"
+CLOSER_AGENT_ID: "21092e14-eb98-4c26-a5b1-9050bd22db85"
+OUTREACH_AGENT_ID: "6e269f8d-513a-4097-9240-5c11aeea2408"
+CONVERSATION_MANAGER_AGENT_ID: "05685665-23c0-4a20-a09a-3be97740c02d"
 ```
 
 ### Supabase
 
 ```yaml
-SUPABASE_URL: "Project URL"
-SUPABASE_SERVICE_KEY: "Service role key"
+SUPABASE_URL: "https://nloytkdjbhoozjrhrpxq.supabase.co"
+SUPABASE_SERVICE_KEY: "sb_secret_Zn5j6LE1MqUuyfL68HbGew__USpQm6f"
 ```
 
 ### SMTP opcional
 
 ```yaml
-SMTP_HOST:
-SMTP_PORT:
-SMTP_USER:
-SMTP_PASS:
-FROM_EMAIL:
-FROM_NAME:
+SMTP_HOST:smtpout.secureserver.net
+SMTP_PORT:465
+SMTP_USER:contacto@humanio.digital
+SMTP_PASS:531698Pa+
+FROM_EMAIL:contacto@humanio.digital
+FROM_NAME:Humanio-Hannia
 ```
 
 ### Flags de seguridad
