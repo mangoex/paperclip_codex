@@ -7,66 +7,91 @@ description: Procedimientos operativos y contratos de API para Chatwoot, WhatsAp
 
 Usa esta skill para operar o preparar acciones entre Chatwoot, WhatsApp Cloud API, Supabase y Paperclip.
 
-No contiene secretos. Todos los tokens, URLs e IDs deben venir de variables de entorno configuradas en Paperclip.
+No contiene secretos. Todos los tokens, URLs e IDs deben venir de variables de entorno configuradas en Paperclip o en el gateway. Nunca hardcodees tokens, keys, contrasenas ni IDs sensibles dentro de skills o agentes.
 
 ## Variables requeridas para modo activo
 
 ### Chatwoot
 
 ```yaml
-CHATWOOT_API_URL: "https://n8n-humanio-chatwoot.yroec7.easypanel.host"
-CHATWOOT_API_TOKEN: "y4ztDTQEjKu9dUsWpHSFaH8C"
-CHATWOOT_ACCOUNT_ID: "1"
-CHATWOOT_WHATSAPP_INBOX_ID: "3"
-CHATWOOT_INBOX_ID: "2"
+CHATWOOT_API_URL: "https://<tu-chatwoot>"
+CHATWOOT_API_TOKEN: "<token>"
+CHATWOOT_ACCOUNT_ID: "<account_id>"
+CHATWOOT_WHATSAPP_INBOX_ID: "<inbox_id_whatsapp>"
+CHATWOOT_INBOX_ID: "<inbox_id_default_opcional>"
 ```
 
 ### WhatsApp Cloud API
 
 ```yaml
-WHATSAPP_PHONE_NUMBER_ID: "1039498685919677"
-WHATSAPP_CLOUD_API_TOKEN: "EAF7Id5FLnOcBRHhHYi8b29PjaoXVhcNolPiFYA15oPrZBjKOTJFLzyZAPYVhBir7zMRjBKA0XFO9AaWCZBhCPbPnx4q3oaoC9cMZCEZAfpJvAfH5OFRppyufduRLxVBNHvnrL6TBv6U45FxzxoJ8vOQHYwuyT0S2Uzd1BnZBujaS8CUUCt1AU9zEn0dwt5FQZDZD"
-WHATSAPP_GRAPH_VERSION: "v19.0 por defecto"
+WHATSAPP_PHONE_NUMBER_ID: "<phone_number_id>"
+WHATSAPP_CLOUD_API_TOKEN: "<token>"
+WHATSAPP_GRAPH_VERSION: "v19.0"
 ```
 
 ### Paperclip
 
 ```yaml
-PAPERCLIP_API_URL: "https://paperclip-paperclip-app.yroec7.easypanel.host/"
-PAPERCLIP_API_TOKEN: "pcp_0513450378c5e144467f50e5dcdc318b7ff3f47ea309e37f"
-COMPANY_ID: "HUMAAAAAAAAAAAAA"
-CEO_AGENT_ID: "75773041-c013-4c9b-9dac-4f85908ae47c"
-CLOSER_AGENT_ID: "21092e14-eb98-4c26-a5b1-9050bd22db85"
-OUTREACH_AGENT_ID: "6e269f8d-513a-4097-9240-5c11aeea2408"
-CONVERSATION_MANAGER_AGENT_ID: "05685665-23c0-4a20-a09a-3be97740c02d"
+PAPERCLIP_API_URL: "https://<paperclip-app>"
+PAPERCLIP_API_TOKEN: "<token>"
+COMPANY_ID: "<company_id>"
+CEO_AGENT_ID: "<agent_id>"
+CLOSER_AGENT_ID: "<agent_id>"
+OUTREACH_AGENT_ID: "<agent_id>"
+CONVERSATION_MANAGER_AGENT_ID: "<agent_id>"
 ```
 
-### Supabase
+### Supabase opcional
 
 ```yaml
-SUPABASE_URL: "https://nloytkdjbhoozjrhrpxq.supabase.co"
-SUPABASE_SERVICE_KEY: "sb_secret_Zn5j6LE1MqUuyfL68HbGew__USpQm6f"
+SUPABASE_URL: "https://<project>.supabase.co"
+SUPABASE_SERVICE_KEY: "<service_role_key>"
 ```
 
 ### SMTP opcional
 
 ```yaml
-SMTP_HOST:smtpout.secureserver.net
-SMTP_PORT:465
-SMTP_USER:contacto@humanio.digital
-SMTP_PASS:531698Pa+
-FROM_EMAIL:contacto@humanio.digital
-FROM_NAME:Humanio-Hannia
+SMTP_HOST: "<smtp_host>"
+SMTP_PORT: "465"
+SMTP_USER: "<smtp_user>"
+SMTP_PASS: "<smtp_password>"
+FROM_EMAIL: "contacto@humanio.digital"
+FROM_NAME: "Hannia | Humanio"
 ```
 
 ### Flags de seguridad
 
 ```yaml
 CONVERSATION_MANAGER_MODE: "shadow|active"
-HUMANIO_ENABLE_OUTBOUND_SEND: "false"
-HUMANIO_ENABLE_INBOUND_SEND: "false"
+HUMANIO_ENABLE_OUTBOUND_SEND: "false|true"
+HUMANIO_ENABLE_INBOUND_SEND: "false|true"
 HUMANIO_ALLOWED_ADMIN_PHONES: "lista separada por comas"
 ```
+
+## Inbound activo: canal y permiso
+
+Para responder un `inbound_chatwoot_event` necesitas:
+
+```yaml
+CONVERSATION_MANAGER_MODE: active
+HUMANIO_ENABLE_INBOUND_SEND: "true"
+conversation_id: presente
+message_id: presente
+content: presente
+sender_phone: presente
+```
+
+Canales permitidos para respuesta inbound:
+
+1. **Chatwoot API**, si existen `CHATWOOT_API_URL`, `CHATWOOT_API_TOKEN`, `CHATWOOT_ACCOUNT_ID` y `conversation_id`.
+2. **WhatsApp Cloud API**, si existen `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_CLOUD_API_TOKEN` y la ventana de 24h permite texto libre, o si se usa un template aprobado.
+
+Reglas:
+
+- Para inbound no exijas `HUMANIO_ENABLE_OUTBOUND_SEND=true`.
+- Para inbound no exijas email del prospecto.
+- Si falta un dato comercial, responde con una sola pregunta de intake.
+- Si falta el canal de envio, no inventes: crea `needs_config` y deja el borrador exacto.
 
 ## Endpoints autorizados
 
@@ -128,6 +153,22 @@ Operaciones permitidas:
 - Aplicar labels operativos.
 - Actualizar custom attributes solo si el ticket lo pide explicitamente.
 
+Para responder dentro de una conversacion de Chatwoot:
+
+```text
+POST {CHATWOOT_API_URL}/api/v1/accounts/{CHATWOOT_ACCOUNT_ID}/conversations/{conversation_id}/messages
+```
+
+Cuerpo recomendado:
+
+```json
+{
+  "content": "mensaje visible para el prospecto",
+  "message_type": "outgoing",
+  "private": false
+}
+```
+
 No uses Chatwoot para mandar email comercial. El email comercial va por SMTP directo.
 
 ## Contratos de entrada
@@ -145,6 +186,11 @@ sender_name:
 content:
 attachments:
 created_at:
+content_hash:
+conversation_manager_mode:
+humanio_enable_outbound_send:
+humanio_enable_inbound_send:
+credential_flags:
 ```
 
 ### outbound_contact_request
@@ -276,6 +322,7 @@ needs_human: excepcion comercial o riesgo
 provider_failed: proveedor rechazo o API fallo
 duplicate_suppressed: ya se proceso el mismo evento
 draft_only: modo shadow o envio deshabilitado
+intake_question_sent: se respondio con la siguiente pregunta de intake
 ```
 
 Nunca reintentes a ciegas si el error puede duplicar un mensaje al prospecto.
