@@ -326,7 +326,7 @@ Usa estos estados:
 
 ```yaml
 needs_config: faltan variables o permisos del canal requerido
-eeds_template_approval: falta template aprobado por Meta
+needs_template_approval: falta template aprobado por Meta
 needs_human: excepcion comercial o riesgo
 provider_failed: proveedor rechazo o API fallo
 duplicate_suppressed: ya se proceso el mismo evento
