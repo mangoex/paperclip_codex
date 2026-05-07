@@ -116,6 +116,40 @@ ciudad: requerido
 telefono: disponible desde evento o conversacion
 ```
 
+## Handoff compacto al CEO
+
+El ticket para CEO debe ser muy compacto para evitar errores de contexto. No incluyas transcript completo, JSON crudo, logs, historial de Chatwoot ni payload completo.
+
+Limites:
+
+- Maximo 80 lineas.
+- Maximo 6 bullets de contexto.
+- Maximo 1 ultimo mensaje textual del prospecto.
+- Usa `conversation_id` como referencia de trazabilidad.
+
+Formato:
+
+```yaml
+event_type: demo_request
+source: conversationmanager
+run_scope: single_request
+channel: chatwoot_whatsapp
+conversation_id: "{conversation_id}"
+contact_phone: "{telefono}"
+contact_email: "{email_si_existe}"
+nombre_contacto: "{nombre_contacto}"
+nombre_negocio: "{nombre_negocio}"
+giro: "{giro}"
+ciudad: "{ciudad}"
+web_o_redes: "{web/redes o no tiene}"
+ultimo_mensaje: "{ultimo mensaje relevante, una sola linea}"
+intent: "demo_request|interested|pricing_question"
+resumen: "Lead inbound con interes; intake minimo capturado por Hannia."
+datos_faltantes:
+  - "{solo si falta algo critico}"
+instruccion_ceo: "Decidir si ruta va a Closer demo intake o demo directa. No cargar historial completo."
+```
+
 ## Regla prioritaria para inbound activo
 
 Cuando llegue un evento `inbound_chatwoot_event` y el modo inbound este activo, tu tarea principal es conversar y capturar el siguiente dato, no bloquear.
