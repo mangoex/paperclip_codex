@@ -81,19 +81,62 @@ content: presente
 sender_phone: presente
 ```
 
-Canales permitidos para respuesta inbound:
+Canal preferente:
 
-1. **Chatwoot API**, si existen `CHATWOOT_API_URL`, `CHATWOOT_API_TOKEN`, `CHATWOOT_ACCOUNT_ID` y `conversation_id`.
-2. **WhatsApp Cloud API**, si existen `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_CLOUD_API_TOKEN` y la ventana de 24h permite texto libre, o si se usa un template aprobado.
+1. **Chatwoot API**. Si el evento llego desde Chatwoot y existe `conversation_id`, este es el canal principal.
+2. **WhatsApp Cloud API**. Usalo solo si Chatwoot API no esta disponible y WhatsApp Cloud esta configurado con ventana 24h abierta o template aprobado.
 
 Reglas:
 
 - Para inbound no exijas `HUMANIO_ENABLE_OUTBOUND_SEND=true`.
 - Para inbound no exijas email del prospecto.
+- Para inbound de Chatwoot no exijas `WHATSAPP_PHONE_NUMBER_ID` ni `WHATSAPP_CLOUD_API_TOKEN` si Chatwoot API esta configurado.
+- `credential_flags.whatsapp: false` NO bloquea una respuesta por Chatwoot.
 - Si falta un dato comercial, responde con una sola pregunta de intake.
-- Si falta el canal de envio, no inventes: crea `needs_config` y deja el borrador exacto.
+- Si falta Chatwoot API y tampoco hay WhatsApp utilizable, no inventes: crea `needs_config` y deja el borrador exacto.
 
 ## Endpoints autorizados
+
+### Chatwoot API
+
+Base:
+
+```text
+{CHATWOOT_API_URL}/api/v1/accounts/{CHATWOOT_ACCOUNT_ID}
+```
+
+Responder dentro de una conversacion:
+
+```text
+POST {CHATWOOT_API_URL}/api/v1/accounts/{CHATWOOT_ACCOUNT_ID}/conversations/{conversation_id}/messages
+```
+
+Headers:
+
+```text
+api_access_token: {CHATWOOT_API_TOKEN}
+Content-Type: application/json
+```
+
+Cuerpo recomendado:
+
+```json
+{
+  "content": "mensaje visible para el prospecto",
+  "message_type": "outgoing",
+  "private": false
+}
+```
+
+Operaciones permitidas:
+
+- Leer conversacion.
+- Crear nota privada.
+- Crear mensaje saliente solo si el modo y flags lo permiten.
+- Aplicar labels operativos.
+- Actualizar custom attributes solo si el ticket lo pide explicitamente.
+
+No uses Chatwoot para mandar email comercial. El email comercial va por SMTP directo.
 
 ### WhatsApp Cloud API
 
@@ -136,40 +179,6 @@ humanio_seguimiento_2:
 ```
 
 No inventes templates. Si se necesita uno nuevo, crea `needs_template_approval`.
-
-### Chatwoot API
-
-Base:
-
-```text
-{CHATWOOT_API_URL}/api/v1/accounts/{CHATWOOT_ACCOUNT_ID}
-```
-
-Operaciones permitidas:
-
-- Leer conversacion.
-- Crear nota privada.
-- Crear mensaje saliente solo si el modo y flags lo permiten.
-- Aplicar labels operativos.
-- Actualizar custom attributes solo si el ticket lo pide explicitamente.
-
-Para responder dentro de una conversacion de Chatwoot:
-
-```text
-POST {CHATWOOT_API_URL}/api/v1/accounts/{CHATWOOT_ACCOUNT_ID}/conversations/{conversation_id}/messages
-```
-
-Cuerpo recomendado:
-
-```json
-{
-  "content": "mensaje visible para el prospecto",
-  "message_type": "outgoing",
-  "private": false
-}
-```
-
-No uses Chatwoot para mandar email comercial. El email comercial va por SMTP directo.
 
 ## Contratos de entrada
 
@@ -316,8 +325,8 @@ next_step: "no enviar; dejar nota privada"
 Usa estos estados:
 
 ```yaml
-needs_config: faltan variables o permisos
-needs_template_approval: falta template aprobado por Meta
+needs_config: faltan variables o permisos del canal requerido
+eeds_template_approval: falta template aprobado por Meta
 needs_human: excepcion comercial o riesgo
 provider_failed: proveedor rechazo o API fallo
 duplicate_suppressed: ya se proceso el mismo evento
