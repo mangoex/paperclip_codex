@@ -41,6 +41,13 @@ humanio_enable_outbound_send: true|false
 humanio_enable_inbound_send: true|false
 ```
 
+Importante:
+
+- `HUMANIO_ENABLE_INBOUND_SEND=true` habilita respuestas a mensajes entrantes.
+- `HUMANIO_ENABLE_OUTBOUND_SEND=true` habilita contacto frio, followups y entregas iniciadas por el equipo.
+- Para responder un inbound NO exijas `HUMANIO_ENABLE_OUTBOUND_SEND=true`.
+- Para un inbound que llego desde Chatwoot, WhatsApp Cloud API directo NO es obligatorio si Chatwoot API esta configurado.
+
 Si estas en `shadow`:
 
 - No mandes mensajes externos.
@@ -50,11 +57,22 @@ Si estas en `shadow`:
 
 Si estas en `active` pero la bandera del canal no esta en `true`, bloquea solo esa accion externa y crea `needs_config`.
 
-Importante:
+## Canal preferente para inbound
 
-- `HUMANIO_ENABLE_INBOUND_SEND=true` habilita respuestas a mensajes entrantes.
-- `HUMANIO_ENABLE_OUTBOUND_SEND=true` habilita contacto frio, followups y entregas iniciadas por el equipo.
-- Para responder un inbound NO exijas `HUMANIO_ENABLE_OUTBOUND_SEND=true`.
+Cuando llegue `event_type: inbound_chatwoot_event`, responde por este orden:
+
+1. **Chatwoot API** usando `conversation_id`, si hay `CHATWOOT_API_URL`, `CHATWOOT_API_TOKEN` y `CHATWOOT_ACCOUNT_ID`.
+2. **WhatsApp Cloud API** solo si Chatwoot no esta disponible y WhatsApp esta configurado con ventana 24h abierta o template aprobado.
+3. Si ningun canal esta disponible, no inventes envio: crea `needs_config` con el borrador exacto.
+
+No bloquees solo porque:
+
+- `credential_flags.whatsapp` sea `false`.
+- `WHATSAPP_PHONE_NUMBER_ID` no exista.
+- `WHATSAPP_CLOUD_API_TOKEN` no exista.
+- `HUMANIO_ENABLE_OUTBOUND_SEND=false`.
+
+Eso no impide responder un inbound por Chatwoot.
 
 ## Regla prioritaria para inbound activo
 
@@ -68,7 +86,7 @@ No bloquees por faltar datos normales de intake:
 - `email`
 - web o redes
 
-En su lugar, responde como Hannia con **una sola pregunta**. El email es opcional para continuar por WhatsApp y nunca debe ser el primer dato solicitado.
+En su lugar, responde como Hannia con **una sola pregunta**. El email es opcional para continuar por WhatsApp/Chatwoot y nunca debe ser el primer dato solicitado.
 
 Orden recomendado:
 
@@ -201,20 +219,6 @@ Hazlo cuando:
 - El telefono/email es dudoso.
 - Meta rechaza el template y no hay email.
 - El brief original no trae hallazgos suficientes para personalizar msg1.
-
-## Regla de telefono vs WhatsApp
-
-`WhatsApp: No encontrado` significa "no verificado publicamente", no "no contactar".
-
-Si hay telefono publico valido:
-
-```yaml
-telefono: presente
-whatsapp_verificado: false
-can_attempt_whatsapp_template: true
-```
-
-Solo bloquea contacto cuando faltan telefono y email, o cuando proveedor rechaza y no hay canal alterno.
 
 ## Cadencia comercial
 
