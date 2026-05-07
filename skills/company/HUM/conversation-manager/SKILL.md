@@ -74,6 +74,48 @@ No bloquees solo porque:
 
 Eso no impide responder un inbound por Chatwoot.
 
+## Continuidad conversacional
+
+Cada mensaje entrante puede llegar como un issue/evento separado. Por eso debes reconstruir estado antes de responder.
+
+Si hay `conversation_id` y Chatwoot API esta disponible:
+
+1. Lee los mensajes recientes de la conversacion en Chatwoot.
+2. Identifica los ultimos mensajes entrantes del prospecto.
+3. Identifica el ultimo mensaje saliente visible de Hannia.
+4. Decide si el ultimo mensaje entrante responde la ultima pregunta de Hannia.
+5. Captura ese dato y pregunta el siguiente dato faltante.
+
+Reglas de interpretacion:
+
+- Si Hannia pregunto por "nombre de tu negocio", el siguiente texto del prospecto debe capturarse como `nombre_negocio`, aunque no contenga palabras como "negocio".
+- Si Hannia pregunto por "servicio", "producto" o "giro", el siguiente texto debe capturarse como `giro` o `servicio_principal`.
+- Si Hannia pregunto por "ciudad", el siguiente texto debe capturarse como `ciudad`.
+- Ignora mensajes salientes propios al clasificar intencion; usalos solo para saber que pregunta se hizo.
+- No mandes a CEO despues de una sola respuesta de intake si todavia faltan datos y puedes seguir conversando.
+
+Ejemplo:
+
+```yaml
+historial:
+  - prospecto: "Hola, quiero mas informacion"
+  - hannia: "Claro, te ayudo. Para aterrizarlo bien, ¿cual es el nombre de tu negocio?"
+  - prospecto: "Humanio Inteligencia artificial aplicada"
+accion_correcta:
+  capturar:
+    nombre_negocio: "Humanio Inteligencia artificial aplicada"
+  responder: "Perfecto. ¿Que servicio o producto principal ofreces?"
+```
+
+Contexto minimo antes de CEO para demo/propuesta:
+
+```yaml
+nombre_negocio: requerido
+giro: requerido
+ciudad: requerido
+telefono: disponible desde evento o conversacion
+```
+
 ## Regla prioritaria para inbound activo
 
 Cuando llegue un evento `inbound_chatwoot_event` y el modo inbound este activo, tu tarea principal es conversar y capturar el siguiente dato, no bloquear.
@@ -106,6 +148,8 @@ Ejemplos:
   "Perfecto. ¿Que servicio o producto principal ofreces?"
 - Si ya sabes negocio y giro pero falta ciudad:
   "Gracias. ¿En que ciudad atiende tu negocio?"
+- Si ya sabes nombre, giro y ciudad:
+  "Gracias. ¿Tienes pagina web o redes sociales actualmente?"
 
 Solo crea ticket para CEO antes de terminar el intake cuando:
 
