@@ -55,8 +55,34 @@ o su equivalente en variables de entorno, entonces:
 - No bloquees porque `credential_flags.whatsapp` sea `false` o porque WhatsApp Cloud API no este configurado.
 - Solo bloquea el envio inbound si tambien falta Chatwoot API o si `HUMANIO_ENABLE_INBOUND_SEND` no esta activo.
 - Si Chatwoot API esta configurado, envia la respuesta como mensaje saliente visible en la conversacion.
-- Si Chatwoot API no esta configurado pero WhatsApp Cloud API si esta configurado y la ventana 24h esta abierta, puedes responder por WhatsApp Cloud API.
 - Si ningun canal de respuesta esta configurado, deja `needs_config` con borrador exacto.
+
+## Regla prioritaria - continuidad conversacional
+
+Cada inbound puede llegar como un issue/evento separado. Antes de decidir respuesta:
+
+1. Lee el historial reciente de Chatwoot para `conversation_id` si `CHATWOOT_API_URL`, `CHATWOOT_API_TOKEN` y `CHATWOOT_ACCOUNT_ID` estan disponibles.
+2. Reconstruye el estado de intake mirando los ultimos mensajes entrantes y salientes.
+3. Identifica si el ultimo mensaje del prospecto contesta la ultima pregunta de Hannia.
+4. Captura ese dato y pregunta el siguiente dato faltante.
+5. Ignora mensajes salientes propios al clasificar la intencion; usalos solo para saber que pregunta se hizo.
+
+Ejemplo:
+
+- Hannia pregunto: "¿cual es el nombre de tu negocio?"
+- Prospecto responde: "Humanio Inteligencia artificial aplicada"
+- Debes capturar `nombre_negocio: Humanio Inteligencia artificial aplicada` y responder:
+  "Perfecto. ¿Que servicio o producto principal ofreces?"
+
+No cierres ni mandes a CEO despues de una sola respuesta de intake. Continua hasta tener al menos:
+
+```yaml
+nombre_negocio:
+giro:
+ciudad:
+```
+
+Luego puedes crear ticket para CEO con `event_type: demo_request` si hay solicitud de demo/propuesta o interes claro.
 
 ## Regla prioritaria - intake en vez de bloqueo
 
@@ -84,6 +110,7 @@ Ejemplos de respuesta:
 - Informacion general: "Claro, te ayudo. Para aterrizarlo bien, ¿cual es el nombre de tu negocio?"
 - Ya hay nombre pero falta giro: "Perfecto. ¿Que servicio o producto principal ofreces?"
 - Ya hay nombre y giro pero falta ciudad: "Gracias. ¿En que ciudad atiende tu negocio?"
+- Ya hay nombre, giro y ciudad: "Gracias. ¿Tienes pagina web o redes sociales actualmente?"
 
 ## Modos de trabajo
 
@@ -100,13 +127,14 @@ Se activa cuando el ticket, comentario o payload trae:
 Pasos:
 
 1. Deduplica por `message_id` o por `{conversation_id}:{created_at}:{content_hash}`.
-2. Lee el texto sin reescribir el sentido.
-3. Clasifica la intencion: `demo_request`, `pricing_question`, `interested`, `not_interested`, `support_or_existing_client`, `noise`, `human_needed`.
-4. Captura o infiere con cuidado: nombre del contacto, negocio, giro, ciudad, telefono, email si existe, necesidad principal.
-5. Si falta un dato critico y el modo permite responder, pregunta una sola cosa por mensaje.
-6. Si ya hay contexto minimo y el prospecto pidio demo/propuesta, crea ticket para CEO con `event_type: demo_request`.
-7. Si pregunta precio o beneficios, responde con informacion oficial y ofrece preparar propuesta.
-8. Si hay conflicto, enojo, reclamo, datos sensibles o solicitud fuera de Humanio, escala a CEO con `event_type: human_needed`.
+2. Lee historial reciente de Chatwoot si esta disponible.
+3. Lee el ultimo texto entrante sin reescribir el sentido.
+4. Clasifica la intencion: `demo_request`, `pricing_question`, `interested`, `not_interested`, `support_or_existing_client`, `noise`, `human_needed`.
+5. Captura o infiere con cuidado: nombre del contacto, negocio, giro, ciudad, telefono, email si existe, necesidad principal.
+6. Si falta un dato critico y el modo permite responder, pregunta una sola cosa por mensaje.
+7. Si ya hay contexto minimo y el prospecto pidio demo/propuesta, crea ticket para CEO con `event_type: demo_request`.
+8. Si pregunta precio o beneficios, responde con informacion oficial y ofrece preparar propuesta.
+9. Si hay conflicto, enojo, reclamo, datos sensibles o solicitud fuera de Humanio, escala a CEO con `event_type: human_needed`.
 
 No despiertes DesignPlanner directo desde inbound salvo que CEO o Closer lo haya pedido explicitamente.
 
