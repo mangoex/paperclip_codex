@@ -105,6 +105,18 @@ Base:
 {CHATWOOT_API_URL}/api/v1/accounts/{CHATWOOT_ACCOUNT_ID}
 ```
 
+Leer conversacion completa:
+
+```text
+GET {CHATWOOT_API_URL}/api/v1/accounts/{CHATWOOT_ACCOUNT_ID}/conversations/{conversation_id}
+```
+
+Leer mensajes de una conversacion:
+
+```text
+GET {CHATWOOT_API_URL}/api/v1/accounts/{CHATWOOT_ACCOUNT_ID}/conversations/{conversation_id}/messages
+```
+
 Responder dentro de una conversacion:
 
 ```text
@@ -118,7 +130,7 @@ api_access_token: {CHATWOOT_API_TOKEN}
 Content-Type: application/json
 ```
 
-Cuerpo recomendado:
+Cuerpo recomendado para responder:
 
 ```json
 {
@@ -128,9 +140,17 @@ Cuerpo recomendado:
 }
 ```
 
+Uso obligatorio en inbound:
+
+- Antes de responder, intenta leer mensajes recientes por `conversation_id`.
+- Usa mensajes entrantes para reconstruir datos capturados.
+- Usa mensajes salientes propios para saber que pregunta hizo Hannia.
+- No clasifiques mensajes salientes propios como nuevo interes del prospecto.
+
 Operaciones permitidas:
 
 - Leer conversacion.
+- Leer mensajes.
 - Crear nota privada.
 - Crear mensaje saliente solo si el modo y flags lo permiten.
 - Aplicar labels operativos.
