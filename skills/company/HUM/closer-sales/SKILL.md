@@ -70,6 +70,13 @@ Antes de aceptar espera pasiva, confirma que el ticket trae evidencia real de ms
 - `msg1.whatsapp_id` presente con `msg1.whatsapp_status: accepted_by_meta`, o
 - `msg1.email_id` presente con `msg1.email_status: sent`.
 
+Si Supabase esta configurado para cold, confirma tambien evidencia de persistencia:
+
+- `outreach_log_ids.whatsapp` para WhatsApp aceptado, o
+- `outreach_log_ids.email` para email enviado.
+
+Si el ticket trae provider ID pero no trae `outreach_log_ids`, o declara `supabase_not_configured`, `supabase_status: skipped_or_failed` o `persistence_failed_after_provider_send`, no lo aceptes como espera sana. Bloquea con `missing_outreach_log_evidence`.
+
 No aceptes como evidencia un ticket de ConversationManager, `delegated_to_conversationmanager`, `external_messages_sent: false`, ni un comentario sin provider ID.
 
 Email-only es un caso valido: si `email_id` existe y `email_status: sent`, acepta espera pasiva aunque WhatsApp haya fallado. En ese caso la respuesta esperada viene por email/inbox, no necesariamente por Chatwoot.
@@ -82,6 +89,16 @@ Si falta esa evidencia, no esperes respuesta ni dia 3. Deja el ticket bloqueado 
 status: closer_blocked
 blocking_reason: missing_msg1_delivery_evidence
 next_owner: Outreach/ConversationManager
+```
+
+Luego termina.
+
+Si falta persistencia:
+
+```yaml
+status: closer_blocked
+blocking_reason: missing_outreach_log_evidence
+next_owner: Outreach
 ```
 
 Luego termina.

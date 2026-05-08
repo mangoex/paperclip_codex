@@ -140,6 +140,13 @@ Antes de aceptar un ticket `Closer: seguimiento ...` como espera pasiva, verific
 - `msg1.whatsapp_id` con `msg1.whatsapp_status: accepted_by_meta`, o
 - `msg1.email_id` con `msg1.email_status: sent`.
 
+Ademas, para cold con Supabase configurado, verifica persistencia:
+
+- debe existir `outreach_log_ids.whatsapp` si el canal WhatsApp fue aceptado por Meta, o
+- debe existir `outreach_log_ids.email` si el canal email fue enviado por SMTP.
+
+Si hay `provider_message_id` en el texto pero falta `outreach_log_ids` o el ticket dice `supabase_not_configured`, `supabase_status: skipped_or_failed`, `persistence_failed_after_provider_send`, o equivalente, NO lo trates como espera sana. Bloquea como `missing_outreach_log_evidence`.
+
 No cuentan como evidencia:
 
 - un ticket creado para ConversationManager,
@@ -161,6 +168,15 @@ Si NO existe evidencia real de canal:
    next_owner: Outreach/ConversationManager
    ```
 4. Termina (`exit 0`).
+
+Si falta solo la evidencia de Supabase:
+
+```yaml
+status: closer_blocked
+blocking_reason: missing_outreach_log_evidence
+detail: "Hay provider_message_id en el texto, pero no hay outreach_log_id canónico. No puedo declarar espera externa sana."
+next_owner: Outreach
+```
 
 Si solo hay email (`email_status: sent`) y WhatsApp falló, el ticket es válido. No lo marques como incompleto por falta de WhatsApp. La espera pasiva debe decir email/inbox, no exclusivamente Chatwoot.
 

@@ -61,6 +61,11 @@ telefono (E.164 sin '+') y/o email
 - Usa `prospect_key: "{ref_slug}"` como clave estable en Paperclip.
 - En locks e idempotencia local usa `prospect_id || prospect_key`.
 - En handoffs incluye `prospect_id` y `prospect_key`.
+- Si Supabase esta configurado, resuelve el row real antes de enviar:
+  - busca en `prospects` por `email`, `telefono`, `ref_slug` o `nombre_negocio`;
+  - si existe, usa su `id`;
+  - si no existe y tienes datos canonicos, crea el prospecto y usa el `id`;
+  - si Supabase falla, bloquea con `supabase_prospect_resolution_failed`.
 
 ## Regla definitiva de contacto y canales
 
@@ -361,6 +366,13 @@ NUNCA hagas `if WA failed: skip SMTP` cuando hay email utilizable. NUNCA hagas `
 
 Nota de esquema Supabase: `outreach_log.status` no acepta `accepted_by_meta`. Para WhatsApp aceptado por Meta, registra `status: "sent"` y guarda la semantica real en `error_detail`.
 
+Supabase es la fuente canonica de evidencia cold:
+
+- Si Supabase esta configurado, NO crees Closer hasta que exista fila en `outreach_log` con `provider_message_id`.
+- Si el proveedor envio/acepto pero falla el INSERT, NO reintentes el canal. Bloquea con `persistence_failed_after_provider_send` y pega el provider ID para reconciliacion manual.
+- Si Supabase no esta configurado en runtime, bloquea con `supabase_not_configured_for_cold_outreach` salvo instruccion explicita del CEO de operar sin persistencia.
+- El handoff a Closer debe incluir `outreach_log_ids`.
+
 ```bash
 STATUS_FOR_LOG="sent"
 if [ "$CANAL" = "whatsapp" ] && [ -n "$WA_MSG_ID" ] && [ -z "${ERROR_DETAIL:-}" ]; then
@@ -412,6 +424,9 @@ status: ready_for_closer_followup
 waiting_state: waiting_external
 prospect_id: "{id|null}"
 prospect_key: "{ref_slug}"
+outreach_log_ids:
+  whatsapp: "{uuid|null}"
+  email: "{uuid|null}"
 nombre_negocio: "{nombre}"
 nombre_contacto: "{nombre}"
 ref_slug: "{ref_slug}"

@@ -88,8 +88,10 @@ Recibes del **Qualifier**, NO del WebPublisher (ya no existe ese handoff porque 
 
 Tu trabajo termina cuando:
 1. Enviaste por al menos un canal disponible con evidencia real de aceptación/envío (WhatsApp, email o ambos)
-2. Registraste en `outreach_log`
+2. Registraste en `outreach_log` con `provider_message_id` real
 3. Creaste handoff a Closer
+
+Regla canónica de evidencia cold: `outreach_log` es la fuente de verdad. El texto del ticket, un comentario o un `email_id` escrito a mano NO bastan si Supabase está configurado.
 
 NO esperes URLs de surge. NO valides HTTP 200 de propuesta/reporte. Esos pasos eran del flujo viejo y ya no aplican.
 
@@ -118,6 +120,8 @@ Reglas:
   prospect_key: "{ref_slug}"
   ```
 - Si Supabase está disponible y crea/devuelve un ID real, entonces sí usa ese `prospect_id`.
+- Si Supabase está configurado y `prospect_id` viene null, debes buscar el prospecto antes de enviar usando `email`, `telefono`, `ref_slug` o `nombre_negocio`. Si encuentras un row, usa su `id`. Si no lo encuentras, crea/usa el row canónico antes de contactar.
+- Si no puedes resolver o crear el prospecto en Supabase por error de credencial/API, bloquea con `blocking_reason: supabase_prospect_resolution_failed`. No avances a Closer.
 
 Campos críticos de identidad/contexto:
 - `nombre_negocio`
@@ -341,6 +345,12 @@ Regla: `etapa = "contactado"` solo si hay AL MENOS un `provider_message_id` real
 
 Solo si la fila se insertó, actualiza `prospects.etapa = 'contactado'`.
 
+Regla dura:
+- Si Supabase está configurado, el INSERT en `outreach_log` es obligatorio antes de crear Closer.
+- El handoff a Closer debe incluir `outreach_log_id` de cada canal enviado.
+- Si el proveedor aceptó el envío pero `outreach_log` falló, NO crees Closer. Reporta `status: outreach_blocked`, `blocking_reason: persistence_failed_after_provider_send`, pega el `provider_message_id` y pide intervención humana. No reintentes el canal automáticamente.
+- Si Supabase no está configurado en runtime, bloquea con `blocking_reason: supabase_not_configured_for_cold_outreach` salvo instrucción explícita del CEO de operar sin persistencia.
+
 Nota de esquema Supabase: `outreach_log.status` no acepta `accepted_by_meta`. Para WhatsApp aceptado por Meta, registra la fila con `status: "sent"` y guarda la semántica real en `error_detail` o metadatos equivalentes:
 
 ```yaml
@@ -360,6 +370,9 @@ Email-only es un envío real si `SMTP_STATUS=sent` y existe `SMTP_MSG_ID`. En es
 status: ready_for_closer_followup
 prospect_id: "{id|null}"
 prospect_key: "{ref_slug}"
+outreach_log_ids:
+  whatsapp: "{uuid|null}"
+  email: "{uuid|null}"
 nombre_negocio: "{nombre}"
 nombre_contacto: "{nombre}"
 ref_slug: "{ref_slug}"
