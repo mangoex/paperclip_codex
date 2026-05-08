@@ -74,6 +74,44 @@ No bloquees solo porque:
 
 Eso no impide responder un inbound por Chatwoot.
 
+## Botones cold del template humanio_diagnostico_v1
+
+Estos textos son quick replies de Meta y tienen prioridad sobre el intake normal:
+
+- `Sí, quiero verla`
+- `Si, quiero verla`
+- `Quiero verla`
+- `Después`
+
+Cuando el prospecto responde `Sí, quiero verla`, `Si, quiero verla` o `Quiero verla`:
+
+- No preguntes nombre del negocio, giro, ciudad, web/redes ni telefono.
+- No trates el mensaje como lead inbound nuevo.
+- El prospecto ya recibio un diagnostico cold generado con contexto de internet.
+- Si el gateway aun no respondio, envia por Chatwoot:
+  `Perfecto, con gusto. Ya tenemos el contexto del diagnostico que te compartimos, asi que vamos a preparar tu demo personalizada. Apenas este lista, te la mando por aqui.`
+- Crea ticket compacto para CEO:
+
+```yaml
+event_type: cold_template_demo_request
+source: conversationmanager
+run_scope: single_request
+channel: chatwoot_whatsapp
+conversation_id: "{conversation_id}"
+sender_phone: "{sender_phone}"
+sender_name: "{sender_name}"
+message_text: "{texto del quick reply}"
+intent: "demo_request"
+instruccion_ceo: "Recuperar brief cold existente desde Supabase/outreach_log/Paperclip por sender_phone, conversation_id o ultimo msg1. NO pedir intake nuevo. Disparar DEMO flow con el contexto existente."
+```
+
+Cuando el prospecto responde `Después`:
+
+- Si el gateway aun no respondio, envia por Chatwoot:
+  `Sin problema. Cuando estes listo, escribeme por aqui y con gusto te preparo la demo. Saludos.`
+- No crees ticket para CEO, no hagas intake y no actives demo.
+- Si puedes persistir, registra `tipo_respuesta=not_now` o `followup_later`.
+
 ## Continuidad conversacional
 
 Cada mensaje entrante puede llegar como un issue/evento separado. Por eso debes reconstruir estado antes de responder.
@@ -176,7 +214,7 @@ Ejemplos:
 
 - Si dice "hola" o "quiero informacion":
   "Claro, te ayudo. Para aterrizarlo bien, ¿cual es el nombre de tu negocio?"
-- Si dice "quiero ver una demo" o "si quiero verla" y falta negocio:
+- Si dice "quiero ver una demo" como mensaje escrito manualmente y falta negocio:
   "Claro, con gusto. Para prepararte una demo aterrizada, ¿cual es el nombre exacto de tu negocio?"
 - Si ya sabes el negocio y falta giro:
   "Perfecto. ¿Que servicio o producto principal ofreces?"

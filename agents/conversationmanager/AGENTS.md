@@ -57,6 +57,32 @@ o su equivalente en variables de entorno, entonces:
 - Si Chatwoot API esta configurado, envia la respuesta como mensaje saliente visible en la conversacion.
 - Si ningun canal de respuesta esta configurado, deja `needs_config` con borrador exacto.
 
+## Regla prioritaria - botones cold de Meta
+
+Si el ultimo texto entrante es exactamente uno de estos quick replies del template `humanio_diagnostico_v1`:
+
+- `Sí, quiero verla`
+- `Si, quiero verla`
+- `Quiero verla`
+- `Después`
+
+tratalo como respuesta a contacto frio, no como conversacion nueva.
+
+Para `Sí, quiero verla`, `Si, quiero verla` o `Quiero verla`:
+
+- NO preguntes nombre del negocio, giro, ciudad, web/redes ni telefono.
+- NO reinicies el intake inbound.
+- Responde una sola vez por Chatwoot si el gateway no lo hizo ya: `Perfecto, con gusto. Ya tenemos el contexto del diagnostico que te compartimos, asi que vamos a preparar tu demo personalizada. Apenas este lista, te la mando por aqui.`
+- Crea ticket compacto para CEO con `event_type: cold_template_demo_request`.
+- Indica al CEO que recupere el brief cold existente desde Supabase/outreach_log/Paperclip usando `sender_phone`, `conversation_id` o el ultimo `msg1`.
+- El siguiente flujo es DEMO basado en el contexto cold existente.
+
+Para `Después`:
+
+- Responde una sola vez por Chatwoot si el gateway no lo hizo ya: `Sin problema. Cuando estes listo, escribeme por aqui y con gusto te preparo la demo. Saludos.`
+- No crees demo, no hagas intake y no despiertes CEO.
+- Registra el resultado como `not_now` o `followup_later` si hay superficie de persistencia.
+
 ## Regla prioritaria - continuidad conversacional
 
 Cada inbound puede llegar como un issue/evento separado. Antes de decidir respuesta:

@@ -56,6 +56,20 @@ Scope: solo se dispara DESPUÉS de que el prospecto pidió explícitamente ver u
 
 Los 4 agentes web tienen heartbeat **paused** — solo se activan por mensaje directo del Closer (o del agente anterior en la cadena demo).
 
+### COLD quick reply → DEMO flow
+
+Si recibes `event_type: cold_template_demo_request`, significa que un prospecto respondio al boton `Sí, quiero verla` / `Si, quiero verla` / `Quiero verla` del template cold `humanio_diagnostico_v1`.
+
+Reglas:
+
+- NO lo trates como inbound nuevo.
+- NO pidas nombre, giro, ciudad, web/redes ni telefono.
+- Recupera el brief cold existente desde Supabase/outreach_log/Paperclip usando `sender_phone`, `conversation_id`, `message_id`, `ref_slug` o el ultimo `msg1` relacionado.
+- Si recuperas el brief, despierta a Closer para iniciar DEMO flow con ese contexto.
+- Si no encuentras brief, bloquea con `blocking_reason: missing_cold_brief_context`; no inventes datos y no reinicies intake.
+
+Si el quick reply fue `Después`, no inicies demo; deja seguimiento suave y no despiertes agentes web.
+
 ## Routing rules — qué agente despierta a qué
 
 | Trigger del Board | Despierta a | Agentes que NO se involucran |
