@@ -241,6 +241,30 @@ package_recommendation:
 contact_override:
 ```
 
+Contrato de cierre:
+
+- Este evento NO significa que el prospecto ya fue contactado.
+- Quien lo procese debe intentar el canal disponible y devolver evidencia real.
+- Solo despues de `provider_message_id` real se puede crear Closer.
+- Si no hay evidencia, el resultado debe ser `blocked` o `needs_config`, nunca `ready_for_closer_followup`.
+
+Evidencia minima para crear Closer:
+
+```yaml
+msg1:
+  whatsapp_status: accepted_by_meta
+  whatsapp_id: "wamid..."
+  delivery_status: pending_webhook
+```
+
+o:
+
+```yaml
+msg1:
+  email_status: sent
+  email_id: "<messageId>"
+```
+
 ### followup_due
 
 ```yaml

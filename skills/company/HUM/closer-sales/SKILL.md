@@ -63,6 +63,25 @@ Estado esperado: `blocked`.
 
 Excepcion critica: si el comentario/wake reason mas reciente trae respuesta real del prospecto (`event_type: inbound_response`, `response_received`, `respondio=true`, `tipo_respuesta=positivo`, "prospecto contesto/respondio", inbound de Chatwoot/n8n, o interes explicito), NO apliques MODO A aunque el ticket base siga en `blocked`. Pasa a MODO B.
 
+Validacion obligatoria del handoff:
+
+Antes de aceptar espera pasiva, confirma que el ticket trae evidencia real de msg1:
+
+- `msg1.whatsapp_id` presente con `msg1.whatsapp_status: accepted_by_meta`, o
+- `msg1.email_id` presente con `msg1.email_status: sent`.
+
+No aceptes como evidencia un ticket de ConversationManager, `delegated_to_conversationmanager`, `external_messages_sent: false`, ni un comentario sin provider ID.
+
+Si falta esa evidencia, no esperes respuesta ni dia 3. Deja el ticket bloqueado con:
+
+```yaml
+status: closer_blocked
+blocking_reason: missing_msg1_delivery_evidence
+next_owner: Outreach/ConversationManager
+```
+
+Luego termina.
+
 Accion:
 
 - No enviar mensajes por heartbeat normal.

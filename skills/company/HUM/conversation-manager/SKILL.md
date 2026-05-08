@@ -192,6 +192,71 @@ Solo crea ticket para CEO antes de terminar el intake cuando:
 - ya tienes contexto minimo suficiente y el prospecto pidio demo/propuesta,
 - el CEO pidio que todo inbound se revise manualmente.
 
+## Outbound delegado por Outreach
+
+Cuando recibas `event_type: outbound_contact_request`, ConversationManager sustituye el envio directo de Outreach para ese caso. Debes ejecutar o bloquear el contacto; no puedes dejar el sistema en "espera" sin evidencia.
+
+Condiciones para enviar:
+
+- `CONVERSATION_MANAGER_MODE=active`
+- `HUMANIO_ENABLE_OUTBOUND_SEND=true`
+- brief con `nombre_negocio`, `ref_slug`, `ciudad`, `diagnostico_hallazgos`
+- al menos `telefono` o `email` utilizable
+- template aprobado para WhatsApp: `humanio_diagnostico_v1`
+
+Reglas:
+
+- Si hay telefono valido, intenta WhatsApp template `humanio_diagnostico_v1`.
+- Si hay email valido, intenta SMTP de forma independiente.
+- No uses Chatwoot para email comercial.
+- No marques `sent/delivered/read` para WhatsApp solo por Meta. Usa `accepted_by_meta` cuando exista `messages[0].id`.
+- No crees Closer si no tienes `provider_message_id` real.
+
+### Resultado si SI hubo envio real
+
+Si WhatsApp fue `accepted_by_meta` o SMTP fue `sent`, registra evidencia y crea ticket Closer con:
+
+```yaml
+event_type: outbound_contact_sent
+source: conversationmanager
+status: ready_for_closer_followup
+waiting_state: waiting_external
+prospect_id: "{prospect_id}"
+nombre_negocio: "{nombre_negocio}"
+nombre_contacto: "{nombre_contacto}"
+ref_slug: "{slug}"
+telefono: "{telefono}"
+email: "{email}"
+diagnostico_hallazgos: [...]
+paquete_recomendado: "{paquete}"
+msg1:
+  whatsapp_status: "{accepted_by_meta|failed|n/a}"
+  delivery_status: "{pending_webhook|failed|n/a}"
+  whatsapp_id: "{WA_MSG_ID|null}"
+  email_status: "{sent|failed|skipped_no_email|n/a}"
+  email_id: "{SMTP_MSG_ID|null}"
+  enviado_at: "{ISO}"
+next_step: "Esperar respuesta del prospecto. Si responde, demo intake."
+```
+
+El Closer solo debe recibir este ticket despues de evidencia real. Si el envio se delego pero aun no se ejecuto, NO crees Closer.
+
+### Resultado si NO hubo envio real
+
+Si ambos canales fallan o faltan flags/credenciales:
+
+```yaml
+conversationmanager_result:
+  mode: outbound_contact_request
+  action_taken: blocked
+  external_messages_sent: false
+  closer_created: false
+  missing_config_or_error:
+    - "{error concreto}"
+  next_owner: Outreach/CEO
+  next_step: "Corregir canal/credencial o emitir nuevo brief antes de reintentar."
+```
+
 ## Captura de lead inbound
 
 Datos ideales:

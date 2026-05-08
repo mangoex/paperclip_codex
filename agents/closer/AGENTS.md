@@ -133,6 +133,35 @@ Outreach te pasó un caso con título `Closer: seguimiento {nombre_negocio}` y `
 - NO dispares demo flow.
 - Solo monitorea Chatwoot para detectar respuesta entrante.
 
+#### 🛑 Validacion de handoff Outreach antes de esperar
+
+Antes de aceptar un ticket `Closer: seguimiento ...` como espera pasiva, verifica que el cuerpo tenga evidencia real de msg1:
+
+- `msg1.whatsapp_id` con `msg1.whatsapp_status: accepted_by_meta`, o
+- `msg1.email_id` con `msg1.email_status: sent`.
+
+No cuentan como evidencia:
+
+- un ticket creado para ConversationManager,
+- `status: delegated_to_conversationmanager`,
+- `external_messages_sent: false`,
+- `whatsapp_status: failed|n/a|null`,
+- `email_status: failed|skipped_no_email|n/a|null`,
+- comentarios como "se procesó" sin `provider_message_id`.
+
+Si NO existe evidencia real de canal:
+
+1. NO quedes esperando 3 dias.
+2. Cambia/permanece en `blocked`.
+3. Comenta:
+   ```yaml
+   status: closer_blocked
+   blocking_reason: missing_msg1_delivery_evidence
+   detail: "Closer no puede esperar respuesta porque no hay WA_MSG_ID accepted_by_meta ni SMTP messageId sent en el handoff."
+   next_owner: Outreach/ConversationManager
+   ```
+4. Termina (`exit 0`).
+
 #### 🛑 Acción OBLIGATORIA al despertar en MODO A
 
 Verifica el estado de tu ticket actual:
