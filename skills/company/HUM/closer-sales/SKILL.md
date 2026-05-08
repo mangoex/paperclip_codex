@@ -72,6 +72,10 @@ Antes de aceptar espera pasiva, confirma que el ticket trae evidencia real de ms
 
 No aceptes como evidencia un ticket de ConversationManager, `delegated_to_conversationmanager`, `external_messages_sent: false`, ni un comentario sin provider ID.
 
+Email-only es un caso valido: si `email_id` existe y `email_status: sent`, acepta espera pasiva aunque WhatsApp haya fallado. En ese caso la respuesta esperada viene por email/inbox, no necesariamente por Chatwoot.
+
+Si `prospect_id` viene null pero el ticket trae `prospect_key` o `ref_slug`, usa esa clave para idempotencia temporal. No inventes UUID.
+
 Si falta esa evidencia, no esperes respuesta ni dia 3. Deja el ticket bloqueado con:
 
 ```yaml
@@ -178,7 +182,7 @@ Owner operativo: n8n cron.
 
 El Closer no envia msg2/msg3 por rutina normal. Los tickets de seguimiento cold quedan bloqueados con estas condiciones:
 
-- esperar respuesta del prospecto via Chatwoot/n8n webhook
+- esperar respuesta del prospecto via el canal usado en msg1: WhatsApp/Chatwoot si hubo `whatsapp_id`, email/inbox si hubo `email_id`
 - dia 3 para `humanio_seguimiento_1`
 - dia 7 para `humanio_seguimiento_2`
 

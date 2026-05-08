@@ -52,6 +52,16 @@ especialidad, keyword_principal, diagnostico_hallazgos[], paquete_recomendado,
 telefono (E.164 sin '+') y/o email
 ```
 
+### Identificador
+
+`prospect_id` puede faltar si Supabase no estuvo disponible en Scout/Qualifier. Eso no bloquea msg1.
+
+- No inventes UUID.
+- Si `prospect_id` viene `null`, `"null"`, vacío o ausente, conserva `prospect_id: null`.
+- Usa `prospect_key: "{ref_slug}"` como clave estable en Paperclip.
+- En locks e idempotencia local usa `prospect_id || prospect_key`.
+- En handoffs incluye `prospect_id` y `prospect_key`.
+
 ## Regla definitiva de contacto y canales
 
 Campos críticos de identidad/contexto:
@@ -395,10 +405,13 @@ Antes de crear este ticket valida obligatoriamente:
 
 Si no existe ninguno de esos IDs, NO crees Closer. Bloquea o delega segun corresponda. Un ticket ConversationManager, un comentario, o un intento sin provider ID no cuentan como envio real.
 
+Email-only es valido: si WhatsApp falla pero SMTP fue `sent`, crea Closer con espera por email. No escribas que el prospecto respondera por Chatwoot/WhatsApp como unica ruta.
+
 ```yaml
 status: ready_for_closer_followup
 waiting_state: waiting_external
-prospect_id: "{id}"
+prospect_id: "{id|null}"
+prospect_key: "{ref_slug}"
 nombre_negocio: "{nombre}"
 nombre_contacto: "{nombre}"
 ref_slug: "{ref_slug}"
@@ -417,8 +430,10 @@ next_step: "Esperar respuesta. Si llega, demo intake."
 unblock_events:
   - event_type: inbound_response
     creates_ticket: "Closer: respuesta entrante de {nombre_negocio}"
+    required_fields: [prospect_id_or_prospect_key, nombre_negocio, message_text, channel]
   - event_type: followup_due
     creates_ticket: "Closer: enviar {msg2|msg3} a {nombre_negocio}"
+    required_fields: [prospect_id_or_prospect_key, nombre_negocio, followup_type, due_at, channel]
 ```
 
 Mensaje directo al Closer:
@@ -427,6 +442,14 @@ Hola Closer — msg1 procesado para {nombre_negocio}.
 WA: {WA_MSG_ID} (accepted_by_meta, pending webhook) | SMTP: {messageId}
 Ticket: {nuevo_id}.
 ```
+
+Blockers recomendados segun canal:
+
+- Si `WA_STATUS=accepted_by_meta`: "Esperando respuesta via WhatsApp/Chatwoot webhook."
+- Si `SMTP_STATUS=sent`: "Esperando respuesta via email/inbox."
+- Si `WA_STATUS=failed`: "WhatsApp fallo o no tuvo evidencia; no reintentar sin instruccion explicita."
+- Si `SMTP_STATUS=failed`: "Email fallo; no asumir entrega."
+- Dia 3/dia 7: seguimiento por el canal que si tuvo evidencia, o bloquear si no hay template/canal aprobado.
 
 ## Variables de entorno requeridas
 

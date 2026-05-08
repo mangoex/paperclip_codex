@@ -104,6 +104,21 @@ PROSPECT_BRIEF con:
 - paquete_recomendado, oportunidad_comercial
 - telefono (E.164 sin '+') y/o email
 
+### Identificador del prospecto
+
+`prospect_id` puede venir ausente/null cuando Scout/Qualifier no tuvieron Supabase disponible. Eso NO bloquea el envío si el resto del brief es canónico.
+
+Reglas:
+- NUNCA inventes un UUID.
+- Si `prospect_id` viene `null`, `"null"`, vacío o ausente, conserva `prospect_id: null`.
+- Usa `prospect_key: "{ref_slug}"` como identificador operativo estable para locks, idempotencia en Paperclip y handoff.
+- En todo handoff incluye ambos campos:
+  ```yaml
+  prospect_id: null
+  prospect_key: "{ref_slug}"
+  ```
+- Si Supabase está disponible y crea/devuelve un ID real, entonces sí usa ese `prospect_id`.
+
 Campos críticos de identidad/contexto:
 - `nombre_negocio`
 - `ref_slug`
@@ -339,9 +354,12 @@ El ticket/handoff a Closer SÍ debe seguir usando `whatsapp_status: accepted_by_
 
 Solo si hubo envío real:
 
+Email-only es un envío real si `SMTP_STATUS=sent` y existe `SMTP_MSG_ID`. En ese caso el Closer queda esperando respuesta por email, NO por Chatwoot/WhatsApp.
+
 ```yaml
 status: ready_for_closer_followup
-prospect_id: "{id}"
+prospect_id: "{id|null}"
+prospect_key: "{ref_slug}"
 nombre_negocio: "{nombre}"
 nombre_contacto: "{nombre}"
 ref_slug: "{ref_slug}"
@@ -364,11 +382,13 @@ Crea ticket nuevo asignado al **Closer** con:
 - Título: `Closer: seguimiento {nombre_negocio}`
 - **Status: `blocked`** (no `in_progress` — esto evita que el harness entre en loop de continuaciones porque el Closer no tiene nada que hacer hasta que el prospecto responda)
 - Blocker / unblock conditions (en el cuerpo del ticket):
-  - "Esperando respuesta del prospecto vía Chatwoot/n8n webhook"
-  - "WhatsApp aceptado por Meta no garantiza entrega; si no hay respuesta, esperar webhook/status o cadencia de seguimiento"
-  - "OR día 3 ({fecha_msg2}) para enviar msg2 (humanio_seguimiento_1)"
-  - "OR día 7 ({fecha_msg3}) para msg3 (humanio_seguimiento_2)"
-  - "Si n8n detecta respuesta, debe crear ticket explícito `Closer: respuesta entrante de {nombre_negocio}` con `event_type: inbound_response` y status `todo`, no solo despertar este ticket bloqueado."
+  - Si WhatsApp fue `accepted_by_meta`: "Esperando respuesta del prospecto vía Chatwoot/WhatsApp webhook."
+  - Si Email fue `sent`: "Esperando respuesta del prospecto vía email/inbox."
+  - Si WhatsApp falló: "WhatsApp no quedó con evidencia de proveedor; no reintentar sin instrucción explícita para evitar duplicado."
+  - Si Email falló: "Email no quedó con evidencia SMTP; no asumir entrega."
+  - "OR día 3 ({fecha_msg2}) para seguimiento por canal disponible."
+  - "OR día 7 ({fecha_msg3}) para seguimiento por canal disponible."
+  - "Si llega respuesta por WhatsApp/Chatwoot o email, crear ticket explícito `Closer: respuesta entrante de {nombre_negocio}` con `event_type: inbound_response` y status `todo`, no solo despertar este ticket bloqueado."
 
 Incluye tambien este bloque para que n8n/Paperclip tengan un contrato claro de reactivacion:
 
@@ -377,10 +397,10 @@ waiting_state: waiting_external
 unblock_events:
   - event_type: inbound_response
     creates_ticket: "Closer: respuesta entrante de {nombre_negocio}"
-    required_fields: [prospect_id, nombre_negocio, message_text, chatwoot_conversation_id]
+    required_fields: [prospect_id_or_prospect_key, nombre_negocio, message_text, channel]
   - event_type: followup_due
     creates_ticket: "Closer: enviar {msg2|msg3} a {nombre_negocio}"
-    required_fields: [prospect_id, nombre_negocio, followup_type, due_at]
+    required_fields: [prospect_id_or_prospect_key, nombre_negocio, followup_type, due_at, channel]
   - event_type: demo_published
     creates_ticket: "Closer: entregar demo a {nombre_negocio} ({slug})"
     required_fields: [prospect_id, nombre_negocio, slug, url_principal]

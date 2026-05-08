@@ -131,7 +131,7 @@ Outreach te pasó un caso con título `Closer: seguimiento {nombre_negocio}` y `
 
 - NO envíes msg2 ni msg3 inmediato. (Esos van día 3 y día 7 — los maneja n8n con cron, no tú.)
 - NO dispares demo flow.
-- Solo monitorea Chatwoot para detectar respuesta entrante.
+- Solo espera un evento externo de respuesta por el canal usado: Chatwoot/WhatsApp si hubo `whatsapp_id`, o email/inbox si hubo `email_id`.
 
 #### 🛑 Validacion de handoff Outreach antes de esperar
 
@@ -161,6 +161,10 @@ Si NO existe evidencia real de canal:
    next_owner: Outreach/ConversationManager
    ```
 4. Termina (`exit 0`).
+
+Si solo hay email (`email_status: sent`) y WhatsApp falló, el ticket es válido. No lo marques como incompleto por falta de WhatsApp. La espera pasiva debe decir email/inbox, no exclusivamente Chatwoot.
+
+Si `prospect_id` es null pero existe `prospect_key` o `ref_slug`, usa ese valor para idempotencia temporal. No inventes UUID.
 
 #### 🛑 Acción OBLIGATORIA al despertar en MODO A
 
