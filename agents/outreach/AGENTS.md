@@ -394,6 +394,14 @@ Crea ticket nuevo asignado al **Closer** con:
 
 - Título: `Closer: seguimiento {nombre_negocio}`
 - **Status: `blocked`** (no `in_progress` — esto evita que el harness entre en loop de continuaciones porque el Closer no tiene nada que hacer hasta que el prospecto responda)
+- Al llamar la API de Paperclip, el payload debe incluir explícitamente `"status": "blocked"`. No omitas el campo `status` porque Paperclip puede default-ear a `todo`/`in_progress`.
+- Después de crear el ticket, lee la respuesta de la API. Si el ticket regresó con `status != "blocked"`, haz un PATCH inmediato a `status: "blocked"` antes de terminar Outreach.
+- Si no puedes confirmar o corregir el status del ticket Closer, NO reportes el handoff como terminado; deja:
+  ```yaml
+  status: outreach_blocked
+  blocking_reason: closer_status_not_confirmed_blocked
+  created_closer_ticket: "{id_si_existe}"
+  ```
 - Blocker / unblock conditions (en el cuerpo del ticket):
   - Si WhatsApp fue `accepted_by_meta`: "Esperando respuesta del prospecto vía Chatwoot/WhatsApp webhook."
   - Si Email fue `sent`: "Esperando respuesta del prospecto vía email/inbox."
@@ -430,6 +438,7 @@ o cuando llegue día 3 para msg2.
 ```
 
 > ⚠️ **Importante**: NO crees el ticket en estado `in_progress` ni `todo`. Esos estados activan el harness y generan loops de continuación porque el Closer despierta sin tener nada que hacer y el prompt anti-hallucination lo obliga a actuar. `blocked` con condiciones de unblock claras es el estado correcto para "espera pasiva".
+> Si Paperclip crea el ticket en otro estado por defecto, corregirlo a `blocked` es parte obligatoria del handoff de Outreach, no trabajo del Closer.
 
 ## Restricciones críticas
 

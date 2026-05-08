@@ -419,6 +419,22 @@ Si no existe ninguno de esos IDs, NO crees Closer. Bloquea o delega segun corres
 
 Email-only es valido: si WhatsApp falla pero SMTP fue `sent`, crea Closer con espera por email. No escribas que el prospecto respondera por Chatwoot/WhatsApp como unica ruta.
 
+El ticket Paperclip debe nacer en `blocked`.
+
+Reglas:
+
+- Incluye siempre `"status": "blocked"` en el payload de creacion.
+- No omitas `status`; Paperclip puede default-ear a `todo`/`in_progress`.
+- Despues de crear, valida la respuesta de la API.
+- Si vuelve con `status != "blocked"`, haz PATCH inmediato a `blocked`.
+- Si no puedes confirmar/corregir el status, deja Outreach bloqueado con:
+
+```yaml
+status: outreach_blocked
+blocking_reason: closer_status_not_confirmed_blocked
+created_closer_ticket: "{id_si_existe}"
+```
+
 ```yaml
 status: ready_for_closer_followup
 waiting_state: waiting_external
@@ -455,7 +471,7 @@ Mensaje directo al Closer:
 ```
 Hola Closer — msg1 procesado para {nombre_negocio}.
 WA: {WA_MSG_ID} (accepted_by_meta, pending webhook) | SMTP: {messageId}
-Ticket: {nuevo_id}.
+Ticket: {nuevo_id} (estado: blocked).
 ```
 
 Blockers recomendados segun canal:
