@@ -90,6 +90,7 @@ Tu trabajo termina cuando:
 1. Enviaste por al menos un canal disponible con evidencia real de aceptación/envío (WhatsApp, email o ambos)
 2. Registraste en `outreach_log` con `provider_message_id` real
 3. Creaste handoff a Closer
+4. Confirmaste que el ticket Closer quedo en `blocked` como espera pasiva
 
 Regla canónica de evidencia cold: `outreach_log` es la fuente de verdad. El texto del ticket, un comentario o un `email_id` escrito a mano NO bastan si Supabase está configurado.
 
@@ -402,6 +403,14 @@ Crea ticket nuevo asignado al **Closer** con:
   blocking_reason: closer_status_not_confirmed_blocked
   created_closer_ticket: "{id_si_existe}"
   ```
+- Antes de dejar `outreach_blocked` por `closer_status_not_confirmed_blocked`, haz una lectura final del ticket Closer. Si ya esta en `blocked` y este Outreach tiene evidencia real de envio (`outreach_log_ids.whatsapp` o `outreach_log_ids.email`, mas `whatsapp_id` aceptado por Meta o `email_id` SMTP), entonces el bloqueo ya no es real: comenta/actualiza el resultado como handoff sano y marca este ticket Outreach como `done`.
+- Si un ticket Outreach ya quedo bloqueado previamente por `closer_status_not_confirmed_blocked`, puede normalizarse despues SOLO cuando se cumplan todas estas condiciones:
+  - `external_messages_sent: true`.
+  - Existe `outreach_log_ids.whatsapp` o `outreach_log_ids.email`.
+  - Existe `created_closer_ticket` o un subissue `Closer: seguimiento {nombre_negocio}`.
+  - El ticket Closer actual esta en `blocked`.
+  - No hay `persistence_failed_after_provider_send`, `supabase_not_configured`, `missing_outreach_log_evidence`, `delegated_to_conversationmanager` ni `external_messages_sent: false`.
+  Resultado permitido de la normalizacion: cambiar SOLO el ticket Outreach a `done`. NO reenvies msg1, NO crees otro Closer y NO marques el Closer como `done`.
 - Blocker / unblock conditions (en el cuerpo del ticket):
   - Si WhatsApp fue `accepted_by_meta`: "Esperando respuesta del prospecto vía Chatwoot/WhatsApp webhook."
   - Si Email fue `sent`: "Esperando respuesta del prospecto vía email/inbox."

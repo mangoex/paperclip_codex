@@ -427,13 +427,33 @@ Reglas:
 - No omitas `status`; Paperclip puede default-ear a `todo`/`in_progress`.
 - Despues de crear, valida la respuesta de la API.
 - Si vuelve con `status != "blocked"`, haz PATCH inmediato a `blocked`.
-- Si no puedes confirmar/corregir el status, deja Outreach bloqueado con:
+- Si no puedes confirmar/corregir el status, primero relee el ticket Closer. Si ya esta en `blocked` y hay evidencia real de proveedor + `outreach_log_ids`, el handoff es sano y Outreach debe terminar en `done`.
+- Solo si despues de esa relectura no puedes confirmar Closer en `blocked`, deja Outreach bloqueado con:
 
 ```yaml
 status: outreach_blocked
 blocking_reason: closer_status_not_confirmed_blocked
 created_closer_ticket: "{id_si_existe}"
 ```
+
+## Normalizacion segura de handoff
+
+Un Outreach bloqueado por `closer_status_not_confirmed_blocked` se puede cerrar despues sin reenviar nada cuando todas las pruebas ya existen:
+
+- `external_messages_sent: true`.
+- `outreach_log_ids.whatsapp` o `outreach_log_ids.email` presente.
+- `created_closer_ticket` presente, o subissue `Closer: seguimiento {nombre_negocio}`.
+- El Closer actual esta en `blocked`.
+- No aparece `delegated_to_conversationmanager`, `external_messages_sent: false`, `supabase_not_configured`, `persistence_failed_after_provider_send` ni `missing_outreach_log_evidence`.
+
+Accion permitida: marcar SOLO el ticket Outreach como `done`.
+
+Acciones prohibidas en normalizacion:
+
+- Reenviar msg1.
+- Crear otro ticket Closer.
+- Marcar el Closer como `done`.
+- Cambiar `prospects.etapa` sin un nuevo hecho externo.
 
 ```yaml
 status: ready_for_closer_followup
