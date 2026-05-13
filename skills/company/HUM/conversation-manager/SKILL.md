@@ -376,6 +376,10 @@ source: conversationmanager
 next_owner: CEO
 ```
 
+Si ya respondiste al prospecto que el equipo trabajara en su demo/propuesta, el `intent` del handoff debe ser `demo_request`, no solo `interested`.
+
+Cuando haya `nombre_negocio`, `giro`, `ciudad` y `telefono` o `conversation_id`, no incluyas `email` como dato bloqueante. Si no existe email, usa `contact_email: ""` o `email: "no_proporcionado"` y deja que CEO/Closer continúen DEMO flow.
+
 ### Enviar al Closer
 
 Hazlo cuando:

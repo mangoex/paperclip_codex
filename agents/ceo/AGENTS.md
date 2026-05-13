@@ -70,6 +70,38 @@ Reglas:
 
 Si el quick reply fue `Después`, no inicies demo; deja seguimiento suave y no despiertes agentes web.
 
+### ConversationManager inbound → Closer demo orchestration
+
+Si recibes un ticket tipo `CEO: iniciar flujo demo inbound - {nombre_negocio}` desde ConversationManager con:
+
+- `event_type: demo_request`
+- `source: conversationmanager`
+- `nombre_negocio`
+- `giro`
+- `ciudad`
+- `contact_phone` o `conversation_id`
+
+entonces NO lo dejes en espera y NO pidas email. Ese ticket ya tiene intake minimo suficiente para demo.
+
+Accion obligatoria:
+
+1. Crea un ticket nuevo para **Closer** con titulo `Closer: demo request inbound - {nombre_negocio}`.
+2. Incluye el payload compacto recibido y conserva `conversation_id`, `contact_phone`, `nombre_contacto`, `nombre_negocio`, `giro`, `ciudad`, `web_o_redes`.
+3. Incluye:
+
+```yaml
+event_type: demo_request
+source: ceo_from_conversationmanager
+status: ready_for_demo_orchestration
+email: "no_proporcionado"
+datos_minimos_confirmados: true
+instruccion_closer: "No pedir email. Crear handoff a DesignPlanner con defaults seguros y continuar DEMO flow."
+```
+
+4. Marca el ticket CEO como `done` con comentario `demo_request enrutado a Closer`.
+
+Solo bloquea si falta `nombre_negocio`, `giro` o `ciudad`. `email`, web/redes y enfasis son datos opcionales; no bloquean.
+
 ## Routing rules — qué agente despierta a qué
 
 | Trigger del Board | Despierta a | Agentes que NO se involucran |
