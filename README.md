@@ -65,7 +65,7 @@ Esto SÍ construye propuesta web. Scout no participa salvo enriquecimiento expl�
 | `humanio_seguimiento_1` | msg2 día 3 (n8n cron; Closer solo si n8n crea ticket explícito) | {{1}}=Nombre, {{2}}=Empresa, {{3}}=Objetivo | `https://humanio.surge.sh/{{1}}` | — |
 | `humanio_seguimiento_2` | msg3 día 7 (n8n cron; Closer solo si n8n crea ticket explícito) | {{1}}=Nombre, {{2}}=Empresa | `https://humanio.surge.sh/{{1}}` | — |
 
-> **Migración pendiente**: los templates de seguimiento (`humanio_seguimiento_1`, `humanio_seguimiento_2`) todavía apuntan a `humanio.surge.sh/{slug}`. El redirect shim en `scripts/surge-redirect/` cubre esos clicks rebotando a `humanio.digital/?ref={slug}`. Cuando se aprueben versiones v2 con URL directa a `humanio.digital`, el shim queda como respaldo.
+> **Migración pendiente**: los templates de seguimiento (`humanio_seguimiento_1`, `humanio_seguimiento_2`) todavía apuntan a `humanio.surge.sh/{slug}`. El redirect shim en `scripts/surge-redirect/` cubre esos clicks rebotando a `www.humanio.digital/?ref={slug}`. Cuando se aprueben versiones v2 con URL directa a `humanio.digital`, el shim queda como respaldo.
 >
 > **Owner operativo de seguimientos**: n8n debe ejecutar la cadencia de dia 3/dia 7. Los tickets `Closer: seguimiento...` quedan `blocked`; el Closer no envia follow-ups por heartbeat normal.
 >

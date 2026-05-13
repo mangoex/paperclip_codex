@@ -36,7 +36,7 @@ Scope: contacto frío masivo. NO se construye sitio, NO se publica nada, NO se u
 
 - **Scout** investiga el prospecto.
 - **Qualifier** califica + genera 3-4 hallazgos en TEXTO PLANO.
-- **Outreach** envía WhatsApp template + email con los hallazgos. CTA → `humanio.digital/?ref={slug}`.
+- **Outreach** envía WhatsApp template + email con los hallazgos. CTA → `www.humanio.digital/?ref={slug}`.
 - **Closer** espera respuesta. Si responde, hace intake de datos para demo.
 
 NO involucres a DesignPlanner, WebBuilder, WebQA ni WebPublisher en COLD. No construyas sitios para prospectos sin señal de interés.

@@ -1,6 +1,6 @@
 # Surge.sh Redirect Shim
 
-Mientras Meta aprueba el template nuevo de WhatsApp con botón apuntando a `humanio.digital`, este shim hace que cualquier click del template actual (que va a `humanio.surge.sh/{slug}`) termine en `humanio.digital/?ref={slug}`.
+Mientras Meta aprueba el template nuevo de WhatsApp con botón apuntando a `humanio.digital`, este shim hace que cualquier click del template actual (que va a `humanio.surge.sh/{slug}`) termine en `www.humanio.digital/?ref={slug}`.
 
 ## Deploy (una sola vez, manual)
 
@@ -13,6 +13,6 @@ El archivo `200.html` actúa como fallback para que rutas sin archivo propio (`h
 
 ## Cuando llegue el template nuevo aprobado por Meta
 
-- Botón URL del nuevo template: `https://humanio.digital/?ref={{1}}`
+- Botón URL del nuevo template: `https://www.humanio.digital/?ref={{1}}`
 - Cuando esté aprobado, actualiza `outreach-proposals/SKILL.md` para usar el nombre nuevo del template.
 - Este shim se vuelve innecesario, pero puede quedarse como branding/seguridad por si algún cliente viejo todavía clickea links viejos.

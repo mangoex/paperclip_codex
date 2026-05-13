@@ -249,7 +249,7 @@ No registres WhatsApp como `sent`, `delivered` o `read` desde esta respuesta. Es
 
 - `NOMBRE_CONTACTO_O_NEGOCIO` — `nombre_contacto` del brief, o si vacío `nombre_negocio`.
 - `NOMBRE_NEGOCIO`, `CIUDAD`
-- `REF_SLUG` — para construir el CTA: `https://humanio.digital/?ref=${REF_SLUG}`
+- `REF_SLUG` — para construir el CTA: `https://www.humanio.digital/?ref=${REF_SLUG}`
 - `EMAIL` — destino
 - `HALLAZGOS_HTML` — construido desde `diagnostico_hallazgos[]`:
 
@@ -271,7 +271,7 @@ const transporter = nodemailer.createTransport({
   auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
 });
 
-const refUrl = `https://humanio.digital/?ref=${REF_SLUG}`;
+const refUrl = `https://www.humanio.digital/?ref=${REF_SLUG}`;
 
 const html = `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><style>

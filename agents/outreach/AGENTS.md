@@ -269,7 +269,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const subject = `Análisis digital de ${NOMBRE_NEGOCIO}`;
-const refUrl = `https://humanio.digital/?ref=${REF_SLUG}`;
+const refUrl = `https://www.humanio.digital/?ref=${REF_SLUG}`;
 
 const html = `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><style>
