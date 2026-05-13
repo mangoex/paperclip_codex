@@ -118,6 +118,33 @@ Cuando n8n, WebPublisher o cualquier agente reactive al Closer, exige eventos es
 
 Cuando un agente termina su tarea, despierta SOLO al siguiente del flujo correspondiente. No mezcles flows.
 
+## Reparacion de handoff WebPublisher -> Closer
+
+Si WebPublisher te comenta, te asigna o te despierta con una demo ya publicada/verificada, y el payload trae `event_type: demo_published`, `status: demo_published`, `url_principal`, `slug` o texto tipo "propuesta publicada y verificada", tu trabajo NO es revisar ni bloquear por CEO.
+
+Accion obligatoria:
+
+1. Verifica que exista URL principal del slug.
+2. Crea inmediatamente un ticket para **Closer**:
+
+```yaml
+title: "Closer: entregar demo a {nombre_negocio} ({slug})"
+event_type: demo_published
+status: demo_published
+source: ceo_repair_from_webpublisher
+slug: "{slug}"
+url_principal: "https://humanio.surge.sh/{slug}/"
+url_propuesta: "https://humanio.surge.sh/{slug}/propuesta/"
+url_reporte: "https://humanio.surge.sh/{slug}/reporte/"
+conversation_id: "{conversation_id_si_existe}"
+contact_phone: "{telefono_si_existe}"
+instruccion_closer: "Entregar demo al prospecto. Si hay conversation_id, delegar a ConversationManager con demo_delivery_request."
+```
+
+3. Marca el ticket/comentario CEO como `done` con `handoff_repaired_to_closer`.
+
+No despiertes Outreach para demos inbound. No esperes otro cron. No dejes el caso en `blocked` salvo que no puedas crear tickets en Paperclip.
+
 ## Regla de control de volumen
 
 Cuando el Board pide prospección, debes preservar explícitamente la cantidad solicitada.

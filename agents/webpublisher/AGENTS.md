@@ -385,7 +385,24 @@ Usa la Paperclip API si está disponible:
 PAPERCLIP_BASE="${PAPERCLIP_API_URL:-${PAPERCLIP_URL:-http://localhost:3100}}"
 AUTH_HEADER="Authorization: Bearer ${PAPERCLIP_API_KEY:-$PAPERCLIP_AGENT_TOKEN}"
 RUN_HEADER="X-Paperclip-Run-Id: ${PAPERCLIP_RUN_ID:-webpublisher-handoff}"
-: "${CLOSER_AGENT_ID:?Define CLOSER_AGENT_ID con el id del agente Closer de esta compania antes de crear handoffs de demo}"
+
+if [ -z "${CLOSER_AGENT_ID:-}" ]; then
+  AGENTS_JSON=$(curl -s "$PAPERCLIP_BASE/api/companies/${COMPANY_ID}/agents" -H "$AUTH_HEADER")
+  CLOSER_AGENT_ID=$(printf "%s" "$AGENTS_JSON" | node -e '
+    let raw=""; process.stdin.on("data", d => raw += d); process.stdin.on("end", () => {
+      const data = JSON.parse(raw || "[]");
+      const list = Array.isArray(data) ? data : (data.agents || data.data || []);
+      const closer = list.find(a => String(a.slug || a.name || a.title || "").toLowerCase() === "closer")
+        || list.find(a => String(a.slug || a.name || a.title || "").toLowerCase().includes("closer"));
+      if (closer) process.stdout.write(String(closer.id || closer.agentId || ""));
+    });
+  ')
+fi
+
+if [ -z "${CLOSER_AGENT_ID:-}" ]; then
+  echo "BLOCKED: no pude resolver CLOSER_AGENT_ID. No comentes solo al CEO; crea bloqueo failed_step=handoff y pide configurar CLOSER_AGENT_ID."
+  exit 1
+fi
 
 curl -s -X POST "$PAPERCLIP_BASE/api/companies/${COMPANY_ID}/issues" \
   -H "$AUTH_HEADER" \
@@ -419,7 +436,7 @@ curl -s -X POST "$PAPERCLIP_BASE/api/issues" \
   }'
 ```
 
-Solo bloquea si también falla la creación del ticket de Closer en Paperclip.
+Solo bloquea si también falla la creación del ticket de Closer en Paperclip. Si comentas al CEO por un fallo de handoff, incluye obligatoriamente `event_type: demo_published`, el bloque completo de URLs y `failed_step: handoff`; no dejes un comentario genérico, porque el CEO debe poder reparar creando el ticket de Closer.
 
 ## Bloque obligatorio del handoff (todos los campos)
 
