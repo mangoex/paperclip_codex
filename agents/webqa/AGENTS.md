@@ -196,6 +196,16 @@ Si `delivery_mode = premier`, valida:
 
 Falla un premier si parece simplemente un template con cambios mínimos.
 
+### Validación de interacción visual
+
+Para demos inbound, `delivery_mode = premier`, o tickets con interés explícito:
+
+- Debe existir una experiencia visual clara en el hero: video Pexels real o fallback premium documentado.
+- Si usa `futuristic-v1`, deben existir `.scroll-progress`, `.cursor-spotlight` y referencia a `assets/scroll-video.js`.
+- Debe conservarse al menos una señal de interacción: scroll/reveal, spotlight de mouse, hover luminoso o video scroll-scrub.
+- Si `qa_notes` trae `visual_degraded: true`, evalúa si el fallback mantiene calidad premium. Si el resultado se ve plano, emite FAIL y pide reintentar Pexels o elevar el hero.
+- No apruebes una demo inbound/premier que sea solo HTML estático básico con copy correcto pero sin video/interacción/fallback visual fuerte.
+
 ## Regla de salida
 
 Solo puedes emitir uno de estos estados:

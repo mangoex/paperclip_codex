@@ -196,6 +196,23 @@ Accion:
 
 No apliques la regla de MODO A a tickets de entrega de demo.
 
+Tono de entrega:
+
+- Mantén una voz cálida, clara y profesional.
+- Evita frases demasiado coloquiales como "echar toda la carne al asador", "quedó brutal", "súper wow" o similares.
+- Usa este mensaje base para WhatsApp/Chatwoot:
+
+```text
+{nombre_contacto}, aquí está la demo que preparamos para {nombre_negocio}:
+{url_principal}
+
+La desarrollamos con enfoque en {enfasis_pedido}, cuidando que la propuesta sea clara, moderna y útil para tu negocio.
+
+Cuando puedas, revísala y me dices qué te parece.
+
+Humanio
+```
+
 ## Seguimientos msg2/msg3
 
 Owner operativo: n8n cron.

@@ -125,6 +125,9 @@ En modo template:
 - no conviertas una landing eficiente en un sitio premium disfrazado
 - sí conserva siempre las interacciones base del template (`scroll-video.js`, spotlight, reveal y hover)
 - sí usa un video Pexels específico del giro cuando exista, evitando fondos abstractos genéricos
+- si Pexels falla, marca `visual_degraded: true` en el handoff y usa fallback visual animado; no entregues una pantalla plana
+
+En demos inbound o `delivery_mode=premier`, aunque uses `futuristic-v1` como base, el resultado debe sentirse más cuidado que un template estándar: hero visual fuerte, video o fallback premium, narrativa más específica y microinteracciones intactas.
 
 ## Criterios de calidad
 

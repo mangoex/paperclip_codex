@@ -335,7 +335,9 @@ Tu trabajo es:
 [nombre], aquí está la demo que preparé para {nombre_negocio}:
 {url_principal}
 
-Eché toda la carne al asador en lo que pediste sobre {enfasis_pedido}. Échale un ojo cuando puedas y me dices qué piensas.
+La desarrollamos con enfoque en {enfasis_pedido}, cuidando que la propuesta sea clara, moderna y útil para tu negocio.
+
+Cuando puedas, revísala y me dices qué te parece.
 
 Humanio
 ```

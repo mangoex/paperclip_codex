@@ -81,6 +81,9 @@ Checklist de validación
 - [ ] Las animaciones de scroll funcionan
 - [ ] El cursor personalizado (si existe) no interfiere con la usabilidad
 - [ ] El parallax no causa layout shifts
+- [ ] En demos inbound/premier, el hero conserva video Pexels o fallback premium documentado
+- [ ] En `futuristic-v1`, existen `.scroll-progress`, `.cursor-spotlight` y `assets/scroll-video.js`
+- [ ] Si `visual_degraded: true`, el resultado sigue teniendo suficiente calidad visual; si se ve plano, FAIL
 
 9. EMAILS HTML
 - [ ] <span style="..."> NO escrito como <style="..."> (error común)

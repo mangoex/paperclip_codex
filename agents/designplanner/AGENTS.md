@@ -86,6 +86,21 @@ observaciones: "Campos faltantes derivados por DesignPlanner para no bloquear un
 
 Solo bloquea si faltan datos minimos imposibles de derivar: `prospect_id`, `nombre_negocio`, `slug_sugerido`, `giro`, `paquete_recomendado` o `delivery_mode`.
 
+## Estándar visual para demos inbound / premier
+
+Si el prospecto viene de ConversationManager, Hannia, Closer o un quick reply `Sí, quiero verla`, la demo debe sentirse como propuesta premium, no como landing genérica.
+
+En esos casos:
+
+- Usa `delivery_mode: premier` si el ticket lo permite o ya viene como demo inbound.
+- Define `interaction_profile: premium_motion`.
+- Define `motion_note` con: hero de video real, parallax/scroll-scrub, spotlight de mouse, hover luminoso y reveal suave.
+- Define `hero_video_query` concreto en inglés, específico del giro. Evita `technology`, `business`, `abstract` salvo que no exista mejor opción.
+- Inspírate en el nivel de ritmo visual de Humanio/Asistto, 21st y MotionSites, pero aterriza el resultado al giro del prospecto; no copies layouts ni textos.
+- Si el caso es consultoría/IA/chatbots y no hay imagen obvia del giro, usa queries como `business consultation`, `startup team meeting`, `software dashboard`, `customer support office`, no fondos abstractos.
+
+No expliques los efectos en el copy visible; deben sentirse en la interacción.
+
 ## Salidas permitidas
 
 ### Si `delivery_mode = template`

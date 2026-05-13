@@ -110,7 +110,7 @@ Si `HERO_FALLBACK=1` por cualquier razón (no API key, key expirada, rate limit,
 }
 ```
 
-3. Documenta en `qa_notes` del handoff: `"Hero usando fallback CSS (Pexels {razón}). WebQA: aceptar como válido."`
+3. Documenta en `qa_notes` del handoff: `"visual_degraded: true — Hero usando fallback CSS (Pexels {razón}). WebQA: aceptar solo si delivery_mode=template o si el fallback mantiene un nivel visual premium suficiente."`
 
 Esto evita que un problema operativo de Pexels detenga toda la cadena.
 
@@ -119,6 +119,16 @@ Esto evita que un problema operativo de Pexels detenga toda la cadena.
 5. NO modifiques `assets/styles.css` ni `assets/scroll-video.js` durante la instancia de un prospecto. Esos archivos contienen el estándar visual Humanio: video scroll-scrub, progreso de scroll, spotlight de mouse, hover luminoso y reveal suave. La personalización visual va por las CSS vars `--accent`, `--accent-2`, `--accent-glow` que ya están inyectadas via `<style>` en los `<head>` de cada HTML.
 
 6. Genera UNA palabra clave principal (`KEYWORD_PRINCIPAL`) y métricas reales del Qualifier para el reporte. NUNCA inventes cifras.
+
+### Estándar mínimo de interacción para demos inbound
+
+Si `delivery_mode=premier` o el brief viene de inbound/ConversationManager/Closer:
+
+- Mantén hero con video real de Pexels salvo falla documentada.
+- Mantén `assets/scroll-video.js` enlazado en la página principal.
+- Mantén `.scroll-progress`, `.cursor-spotlight`, reveal por scroll y hover luminoso.
+- No entregues una página estática plana si el lead pidió demo. Si Pexels falla, el fallback debe seguir siendo premium: composición cuidada, gradiente animado, profundidad visual y `visual_degraded: true` en `qa_notes`.
+- Si tomas `futuristic-v1` como base, eleva copy, video, secciones y composición, pero no elimines sus microinteracciones.
 
 ### premier
 

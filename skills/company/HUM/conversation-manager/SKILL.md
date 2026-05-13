@@ -424,7 +424,9 @@ Mensaje base:
 {nombre_contacto}, aquí está la demo que preparé para {nombre_negocio}:
 {url_principal}
 
-Échale un ojo cuando puedas y me dices qué piensas.
+La desarrollamos con una propuesta clara, moderna y enfocada en lo que tu negocio necesita comunicar.
+
+Cuando puedas, revísala y me dices qué te parece.
 
 Humanio
 ```
