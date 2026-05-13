@@ -243,6 +243,8 @@ Si el prospecto solo pregunto "como funciona" o pidio informacion general, no di
 
 Si despues de un handoff el prospecto pregunta algo como "pero queria saber como funciona", responde la duda y no reinicies intake.
 
+No digas "ya comparto tu caso" ni "el equipo ya trabaja en tu propuesta" hasta que el ticket interno al CEO/Closer haya sido creado correctamente. Primero registra el handoff; despues confirma al prospecto.
+
 ## Outbound delegado por Outreach
 
 Cuando recibas `event_type: outbound_contact_request`, ConversationManager sustituye el envio directo de Outreach para ese caso. Debes ejecutar o bloquear el contacto; no puedes dejar el sistema en "espera" sin evidencia.

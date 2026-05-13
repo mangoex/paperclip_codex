@@ -181,6 +181,8 @@ Si el prospecto solo pidió saber cómo funciona, no dispares demo automáticame
 
 Si después de un handoff el prospecto pregunta algo como "pero quería saber cómo funciona", responde la duda y no reinicies intake.
 
+No confirmes al prospecto que el caso ya fue compartido con el equipo hasta que el ticket interno al CEO/Closer exista. La confirmación externa va después del handoff interno, no antes.
+
 ## Modos de trabajo
 
 ### MODO A - inbound_chatwoot_event
