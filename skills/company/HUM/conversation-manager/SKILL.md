@@ -411,7 +411,25 @@ Hazlo cuando:
 - msg2 dia 3: template aprobado `humanio_seguimiento_1`.
 - msg3 dia 7: template aprobado `humanio_seguimiento_2`.
 - Texto libre WhatsApp: solo dentro de ventana 24h abierta.
-- Demo delivery fuera de ventana 24h: requiere template aprobado especifico; si no existe, usar email o escalar.
+- Demo delivery desde un inbound con `conversation_id`: responde por Chatwoot API si esta configurado. No exijas WhatsApp Cloud API directo ni email.
+- Demo delivery fuera de ventana 24h y sin Chatwoot conversation utilizable: requiere template aprobado especifico; si no existe, usar email o escalar.
+
+### demo_delivery_request
+
+Cuando recibas `event_type: demo_delivery_request` con `conversation_id` o `chatwoot_conversation_id`, entrega la URL por Chatwoot como Hannia/Humanio.
+
+Mensaje base:
+
+```text
+{nombre_contacto}, aquí está la demo que preparé para {nombre_negocio}:
+{url_principal}
+
+Échale un ojo cuando puedas y me dices qué piensas.
+
+Humanio
+```
+
+Despues registra evidencia y devuelve resultado al Closer. Si Chatwoot API falla, no marques entregado: bloquea con `needs_config` o `chatwoot_send_failed`.
 
 ## Evidencia obligatoria
 

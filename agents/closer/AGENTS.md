@@ -319,13 +319,17 @@ WebPublisher te despertará con un ticket `Closer: entregar demo a {nombre_negoc
 
 Tu trabajo es:
 
-1. Validar HTTP 200 de la URL.
+1. Validar HTTP 200 de la URL y validar contenido real. HTTP 200 NO basta porque `humanio.surge.sh` puede servir el fallback `200.html` de redirección para slugs inexistentes.
+   - Descarga `url_principal`.
+   - Si contiene `humanio.digital/?ref=`, `window.location.replace`, `Llevame a humanio.digital` o `<title>Humanio</title>` como página mínima, NO entregues.
+   - Bloquea con `blocking_reason: surge_fallback_served_instead_of_demo` y pide a WebPublisher republicar/copiar la carpeta real del slug.
 2. Antes de enviar nada, consulta Supabase `outreach_log` y los tickets activos para el mismo `prospect_id`/`slug`.
    - Si ya existe `tipo=demo_sent` o `tipo=demo_delivered` para ese `prospect_id`/`slug`, NO mandes WhatsApp ni email. Comenta "demo ya entregada — duplicate delivery suppressed" y marca tu ticket como `cancelled`.
    - Si existe otro ticket `Closer: entregar demo...` para el mismo `prospect_id`/`slug` en `in_progress` o `done` creado antes que el tuyo, NO mandes. Marca el tuyo como `cancelled` con "duplicate of {ticket_id}".
    - Si no hay evidencia de entrega ni ticket anterior, continúa.
    - Si Supabase no está disponible, NO bloquees solo por eso. Usa Paperclip/tickets como fuente de idempotencia temporal: busca entregas previas por `prospect_id`, `slug` y título. Si no hay duplicado, continúa y registra `supabase_status: skipped_or_failed`.
-3. Mandar el link al prospecto vía WhatsApp si la ventana de 24h está abierta (usa `type: text`). Si la ventana no está abierta y no existe template aprobado para demo delivery, NO inventes un template: manda email si hay email, deja nota privada y escala `needs_human_or_config` para entrega manual o aprobación de template.
+3. Si el ticket trae `conversation_id` o `chatwoot_conversation_id`, entrega preferentemente mediante **ConversationManager** creando un ticket `event_type: demo_delivery_request` con `conversation_id`, `contact_phone`, `slug`, `url_principal` y el texto exacto. NO bloquees por falta de email ni por WhatsApp Cloud API si Chatwoot API puede responder en esa conversación.
+4. Si NO hay `conversation_id`, manda el link al prospecto vía WhatsApp si la ventana 24h está abierta (usa `type: text`). Si la ventana no está abierta y no existe template aprobado para demo delivery, usa email si hay email, deja nota privada y escala `needs_human_or_config` para entrega manual o aprobación de template.
 
 ```
 [nombre], aquí está la demo que preparé para {nombre_negocio}:
@@ -336,10 +340,10 @@ Eché toda la carne al asador en lo que pediste sobre {enfasis_pedido}. Échale 
 Humanio
 ```
 
-4. Mandar el link también por email.
-5. Registrar inmediatamente en `outreach_log` con `tipo=demo_sent`, `prospect_id`, `slug`, `url_principal`, `provider_message_id` real y `canal`.
-6. Si Supabase falló pero el mensaje/email sí tuvo `provider_message_id` real, deja evidencia completa en el ticket y pasa a espera post-demo. No declares registro Supabase exitoso.
-7. Pasar a MODO B (esperar respuesta).
+5. Mandar email solo si hay email.
+6. Registrar inmediatamente en `outreach_log` con `tipo=demo_sent`, `prospect_id`, `slug`, `url_principal`, `provider_message_id` real y `canal` cuando hubo envio real o delegacion ejecutada.
+7. Si Supabase falló pero el mensaje/email sí tuvo `provider_message_id` real, deja evidencia completa en el ticket y pasa a espera post-demo. No declares registro Supabase exitoso.
+8. Pasar a MODO B (esperar respuesta).
 
 ### Cuando el prospecto responde después de recibir la demo
 

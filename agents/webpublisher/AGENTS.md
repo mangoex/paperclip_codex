@@ -229,6 +229,41 @@ principal_http_code = 200
 propuesta_http_code = 200
 reporte_http_code = 200
 
+## Verificación de contenido obligatoria (anti-fallback Surge)
+
+HTTP 200 NO basta. `humanio.surge.sh` tiene un `200.html` fallback de redirección para slugs inexistentes; ese fallback también responde 200 y NO es una demo publicada.
+
+Después de confirmar HTTP 200, descarga las 3 URLs y rechaza la publicación si cualquiera contiene señales del fallback:
+
+- `humanio.digital/?ref=`
+- `window.location.replace`
+- `Llevame a humanio.digital`
+- `<title>Humanio</title>` con contenido mínimo de redirect
+
+Comando de referencia:
+
+```bash
+for PATH_SUFFIX in "" "propuesta/" "reporte/"; do
+  URL="https://humanio.surge.sh/{slug}/${PATH_SUFFIX}"
+  BODY="/tmp/{slug}-${PATH_SUFFIX:-principal}.html"
+  curl -fsSL "$URL" -o "$BODY"
+  if rg -n "humanio\\.digital/\\?ref=|window\\.location\\.replace|Llevame a humanio\\.digital|<title>Humanio</title>" "$BODY"; then
+    echo "BLOCKED: $URL sirve el fallback redirect, no la demo publicada."
+    exit 1
+  fi
+done
+```
+
+Ademas, el HTML principal debe contener el nombre del negocio o un identificador claro del prospecto; `propuesta/` debe contener contenido de propuesta, no el mismo HTML de redirect; `reporte/` debe contener contenido de diagnostico/reporte.
+
+Si las rutas responden 200 pero caen al fallback, NO registres Supabase, NO crees handoff a Closer y reporta:
+
+```yaml
+status: publish_blocked
+blocking_reason: surge_fallback_served_instead_of_demo
+detail: "Las URLs del slug responden 200 pero sirven scripts/redirect 200.html; falta publicar/copiar la carpeta real del slug antes de entregar."
+```
+
 Si cualquiera no responde 200:
 
 - no declares éxito

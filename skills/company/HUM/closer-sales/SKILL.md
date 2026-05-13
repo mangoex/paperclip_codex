@@ -183,13 +183,16 @@ Este ticket viene de WebPublisher y debe estar en `todo`.
 
 Accion:
 
-1. Validar HTTP 200 de `url_principal`.
+1. Validar HTTP 200 de `url_principal` y validar que NO sea el fallback redirect de Surge.
+   - Rechaza si el HTML contiene `humanio.digital/?ref=`, `window.location.replace`, `Llevame a humanio.digital` o `<title>Humanio</title>` como página mínima.
+   - Si detectas fallback, no entregues la URL; bloquea con `blocking_reason: surge_fallback_served_instead_of_demo` y pide a WebPublisher republicar la carpeta real del slug.
 2. Revisar idempotencia: si ya existe `demo_sent` o `demo_delivered`, cancelar duplicado.
 3. Si Supabase no esta disponible para idempotencia, no bloquees solo por eso: revisa tickets Paperclip existentes por `prospect_id`/`slug` como fallback temporal. Si no hay duplicado, continua y reporta `supabase_status: skipped_or_failed`.
-4. Enviar la URL al prospecto por WhatsApp si la ventana 24h esta abierta; si no, usar email si existe o escalar para entrega manual/template aprobado.
-5. Enviar email si hay email.
-6. Registrar `outreach_log` con `tipo=demo_sent` y provider_message_id real cuando Supabase este disponible.
-7. Dejar el ticket en `done` o `blocked` esperando respuesta post-demo, segun el estado real.
+4. Si existe `conversation_id` o `chatwoot_conversation_id`, delega la entrega a ConversationManager con `event_type: demo_delivery_request`. Chatwoot es el canal preferente para una conversación inbound abierta; no bloquees por falta de email ni por falta de WhatsApp Cloud API directo.
+5. Si no existe conversación Chatwoot, enviar la URL al prospecto por WhatsApp si la ventana 24h esta abierta; si no, usar email si existe o escalar para entrega manual/template aprobado.
+6. Enviar email solo si hay email.
+7. Registrar `outreach_log` con `tipo=demo_sent` y provider_message_id real cuando Supabase este disponible.
+8. Dejar el ticket en `done` o `blocked` esperando respuesta post-demo, segun el estado real.
 
 No apliques la regla de MODO A a tickets de entrega de demo.
 
