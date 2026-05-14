@@ -183,6 +183,18 @@ Si después de un handoff el prospecto pregunta algo como "pero quería saber c�
 
 No confirmes al prospecto que el caso ya fue compartido con el equipo hasta que el ticket interno al CEO/Closer exista. La confirmación externa va después del handoff interno, no antes.
 
+### Post-demo entregada
+
+Si el historial ya contiene una demo entregada con URL `https://humanio.surge.sh/{slug}/`, NO reinicies intake y NO crees otro ticket para CEO por preguntas normales de seguimiento.
+
+Responde directo:
+
+- Feedback positivo: agradecer y mandar `https://www.humanio.digital/#paquetes`.
+- "Qué sigue": explicar que el siguiente paso es elegir plan y contratar en `https://www.humanio.digital/#paquetes`.
+- "Quiero contratar", precios o pago: mandar `https://www.humanio.digital/#paquetes` y orientar Pro/Business según necesidad.
+
+Solo crea ticket nuevo si pide persona, reporta problema técnico, reclamo o excepción real.
+
 ## Modos de trabajo
 
 ### MODO A - inbound_chatwoot_event
