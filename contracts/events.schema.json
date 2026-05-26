@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperclip_codex/contracts/events.schema.json",
+  "title": "Event Contracts",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/inbound_chatwoot_event" },
+    { "$ref": "#/$defs/inbound_response" },
+    { "$ref": "#/$defs/demo_request" },
+    { "$ref": "#/$defs/followup_due" },
+    { "$ref": "#/$defs/demo_published" }
+  ],
+  "$defs": {
+    "base": {
+      "type": "object",
+      "required": ["event_type", "event_id", "occurred_at", "prospect_id", "correlation_id"],
+      "properties": {
+        "event_type": { "type": "string" },
+        "event_id": { "type": "string", "minLength": 8 },
+        "occurred_at": { "type": "string", "format": "date-time" },
+        "prospect_id": { "type": "string", "minLength": 1 },
+        "correlation_id": { "type": "string", "minLength": 8 },
+        "source": { "type": "string" },
+        "metadata": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": true
+    },
+    "inbound_chatwoot_event": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "event_type": { "const": "inbound_chatwoot_event" },
+            "chatwoot_conversation_id": { "type": "string" },
+            "chatwoot_message_id": { "type": "string" },
+            "channel": { "enum": ["whatsapp", "web", "email"] },
+            "from": { "type": "string" },
+            "body": { "type": "string" }
+          },
+          "required": ["chatwoot_conversation_id", "chatwoot_message_id", "channel", "from", "body"]
+        }
+      ]
+    },
+    "inbound_response": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "event_type": { "const": "inbound_response" },
+            "response_type": { "enum": ["positive", "objection", "negative", "other"] },
+            "body": { "type": "string" },
+            "normalized_intent": { "type": "string" }
+          },
+          "required": ["response_type", "body"]
+        }
+      ]
+    },
+    "demo_request": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "event_type": { "const": "demo_request" },
+            "delivery_mode": { "enum": ["premier", "template"] },
+            "business_name": { "type": "string" },
+            "slug": { "type": "string" },
+            "package_recommended": { "enum": ["starter", "pro", "business"] }
+          },
+          "required": ["delivery_mode", "business_name", "slug"]
+        }
+      ]
+    },
+    "followup_due": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "event_type": { "const": "followup_due" },
+            "followup_kind": { "enum": ["day3", "day7"] },
+            "due_at": { "type": "string", "format": "date-time" },
+            "template_name": { "type": "string" }
+          },
+          "required": ["followup_kind", "due_at", "template_name"]
+        }
+      ]
+    },
+    "demo_published": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "event_type": { "const": "demo_published" },
+            "slug": { "type": "string" },
+            "url_home": { "type": "string", "format": "uri" },
+            "url_propuesta": { "type": "string", "format": "uri" },
+            "url_reporte": { "type": "string", "format": "uri" }
+          },
+          "required": ["slug", "url_home", "url_propuesta", "url_reporte"]
+        }
+      ]
+    }
+  }
+}

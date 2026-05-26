@@ -1,0 +1,13 @@
+{
+  "event_type": "inbound_chatwoot_event",
+  "event_id": "evt_01jz_inb_chatwoot_001",
+  "occurred_at": "2026-05-26T15:04:05Z",
+  "prospect_id": "pros_ingenieria_dental_001",
+  "correlation_id": "corr_01jz_demo_001",
+  "source": "chatwoot",
+  "chatwoot_conversation_id": "cw_778899",
+  "chatwoot_message_id": "msg_998877",
+  "channel": "whatsapp",
+  "from": "5215512345678",
+  "body": "Sí, quiero ver una propuesta"
+}

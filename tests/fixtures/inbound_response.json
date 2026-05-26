@@ -1,0 +1,11 @@
+{
+  "event_type": "inbound_response",
+  "event_id": "evt_01jz_inb_response_001",
+  "occurred_at": "2026-05-26T15:05:11Z",
+  "prospect_id": "pros_ingenieria_dental_001",
+  "correlation_id": "corr_01jz_demo_001",
+  "source": "runtime-normalizer",
+  "response_type": "positive",
+  "body": "Me interesa, ¿cómo sería la demo?",
+  "normalized_intent": "request_demo"
+}

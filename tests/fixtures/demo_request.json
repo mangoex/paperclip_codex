@@ -1,0 +1,12 @@
+{
+  "event_type": "demo_request",
+  "event_id": "evt_01jz_demo_request_001",
+  "occurred_at": "2026-05-26T15:06:20Z",
+  "prospect_id": "pros_ingenieria_dental_001",
+  "correlation_id": "corr_01jz_demo_001",
+  "source": "closer",
+  "delivery_mode": "premier",
+  "business_name": "Ingeniería Dental",
+  "slug": "ingenieria-dental",
+  "package_recommended": "pro"
+}

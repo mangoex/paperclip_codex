@@ -1,0 +1,12 @@
+{
+  "event_type": "demo_published",
+  "event_id": "evt_01jz_demo_published_001",
+  "occurred_at": "2026-05-26T18:10:00Z",
+  "prospect_id": "pros_ingenieria_dental_001",
+  "correlation_id": "corr_01jz_demo_001",
+  "source": "webpublisher",
+  "slug": "ingenieria-dental",
+  "url_home": "https://humanio.surge.sh/ingenieria-dental/",
+  "url_propuesta": "https://humanio.surge.sh/ingenieria-dental/propuesta/",
+  "url_reporte": "https://humanio.surge.sh/ingenieria-dental/reporte/"
+}
