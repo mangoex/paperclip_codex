@@ -13,15 +13,47 @@ Confirmed staging project:
 
 This plan must not be used against production.
 
-## Legacy Tables Detected
+## Legacy Objects Detected
 
-The current staging project already contains these legacy tables:
+The current staging project already contains these legacy objects:
 
 - `outreach_log`
 - `pipeline_events`
 - `pipeline_funnel`
 - `proposals`
 - `prospects`
+
+`pipeline_funnel` was detected as a view, not a table. Its removal requires explicit `DROP VIEW`, authorized only in staging.
+
+## Object Type Preflight
+
+Run this read-only preflight before reset:
+
+```sql
+select
+  n.nspname as schema_name,
+  c.relname as object_name,
+  c.relkind as object_kind
+from pg_class c
+join pg_namespace n on n.oid = c.relnamespace
+where n.nspname = 'public'
+  and c.relname in (
+    'pipeline_events',
+    'pipeline_funnel',
+    'outreach_log',
+    'proposals',
+    'prospects'
+  )
+order by c.relname;
+```
+
+Expected `relkind` values:
+
+- `r` = table
+- `v` = view
+- `m` = materialized view
+
+For this reset script, `pipeline_events`, `outreach_log`, `proposals`, and `prospects` must be tables (`r`) or absent. `pipeline_funnel` must be a view (`v`) or absent. Any other object type is a hard stop.
 
 ## Drift Explanation
 
@@ -55,9 +87,9 @@ Miguel must confirm all items before the reset script is executed:
 - [ ] No WhatsApp send path depends on this project.
 - [ ] No Chatwoot production workflow depends on this project.
 - [ ] No worker is reading or writing this project.
-- [ ] No client-facing dashboard depends on the legacy tables.
+- [ ] No client-facing dashboard depends on the legacy objects.
 - [ ] Existing staging legacy data can be discarded or has been exported.
-- [ ] The operator understands that only the listed public legacy tables are in scope.
+- [ ] The operator understands that only the listed public legacy objects are in scope.
 
 ## Safe Reset Order
 
@@ -96,7 +128,10 @@ Miguel must confirm all items before the reset script is executed:
 The reset script:
 
 - fails unless `current_setting('app.environment', true) = 'staging'`;
-- drops only known legacy tables in `public`;
+- verifies expected object types before dropping anything;
+- drops only known legacy objects in `public`;
+- uses explicit `DROP VIEW IF EXISTS public.pipeline_funnel`;
+- uses `DROP TABLE IF EXISTS` only for `public.pipeline_events`, `public.outreach_log`, `public.proposals`, and `public.prospects`;
 - does not touch `auth`;
 - does not touch `storage`;
 - does not touch schemas outside `public`;
@@ -122,8 +157,9 @@ After reset:
 
 ## Risks
 
-- Existing staging data in the five legacy tables will be removed.
-- If `pipeline_funnel` is a view or has dependencies, the script may fail intentionally.
+- Existing staging data in the four legacy tables will be removed.
+- The legacy `pipeline_funnel` view will be removed.
+- If `pipeline_funnel` has dependencies, the script may fail intentionally.
 - If hidden staging tooling depends on legacy tables, that tooling will break until updated.
 - Because the organization plan is free, point-in-time restore was not confirmed through the connector.
 - The reset does not solve production migration; production requires a separate compatibility/backfill plan.

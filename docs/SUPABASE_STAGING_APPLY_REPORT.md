@@ -172,9 +172,15 @@ Accion tomada:
 
 ## Recomendacion
 
-STAGING_RESET_PLAN_NEEDS_FIX
+RESET_SCRIPT_FIX_REQUIRED_FOR_VIEW_PIPELINE_FUNNEL
 
 El reset plan debe actualizarse para tratar explicitamente `pipeline_funnel` como vista, con aprobacion manual previa, o para excluirla si no bloquea el rebuild. No se debe improvisar este cambio en ejecucion.
+
+Actualizacion preparada en el repositorio:
+
+- `supabase/reset/001_reset_staging_legacy.sql` distingue tablas y vista legacy.
+- `docs/SUPABASE_STAGING_RESET_PLAN.md` documenta el preflight de `relkind`.
+- No se ejecuto reset corregido todavia.
 
 ## Decision Final
 
