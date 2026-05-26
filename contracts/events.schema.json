@@ -16,27 +16,12 @@
       "type": "string",
       "minLength": 3,
       "maxLength": 120,
-      "pattern": "^[a-z][a-z0-9_\\.:-]*$",
-      "examples": [
-        "prospect.qualified",
-        "outreach.sent",
-        "reply.interested",
-        "demo.requested",
-        "proposal.published",
-        "handoff.opened"
-      ]
+      "pattern": "^[a-z][a-z0-9_\\.:-]*$"
     },
     "source": {
       "type": "string",
       "minLength": 2,
-      "maxLength": 80,
-      "examples": [
-        "n8n",
-        "whatsapp",
-        "chatwoot",
-        "surge",
-        "manual"
-      ]
+      "maxLength": 80
     },
     "idempotency_key": {
       "type": "string",
@@ -44,8 +29,7 @@
       "maxLength": 200
     },
     "occurred_at": {
-      "type": "string",
-      "format": "date-time"
+      "$ref": "#/$defs/dateTime"
     },
     "actor": {
       "type": [
@@ -55,18 +39,10 @@
       "maxLength": 120
     },
     "contact_id": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "format": "uuid"
+      "$ref": "#/$defs/nullableUuid"
     },
     "prospect_id": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "format": "uuid"
+      "$ref": "#/$defs/nullableUuid"
     },
     "summary": {
       "type": [
@@ -76,63 +52,831 @@
       "maxLength": 500
     },
     "payload": {
+      "type": "object"
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "event_type": {
+          "const": "outbound_prospecting_requested"
+        },
+        "payload": {
+          "$ref": "#/$defs/outbound_prospecting_requested"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "prospects_found"
+        },
+        "payload": {
+          "$ref": "#/$defs/prospects_found"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "qualification_completed"
+        },
+        "payload": {
+          "$ref": "#/$defs/qualification_completed"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "outbound_contact_request"
+        },
+        "payload": {
+          "$ref": "#/$defs/outbound_contact_request"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "inbound_chatwoot_event"
+        },
+        "payload": {
+          "$ref": "#/$defs/inbound_chatwoot_event"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "inbound_response"
+        },
+        "payload": {
+          "$ref": "#/$defs/inbound_response"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "demo_request"
+        },
+        "payload": {
+          "$ref": "#/$defs/demo_request"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "design_spec_created"
+        },
+        "payload": {
+          "$ref": "#/$defs/design_spec_created"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "demo_built"
+        },
+        "payload": {
+          "$ref": "#/$defs/demo_built"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "webqa_completed"
+        },
+        "payload": {
+          "$ref": "#/$defs/webqa_completed"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "demo_published"
+        },
+        "payload": {
+          "$ref": "#/$defs/demo_published"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "followup_due"
+        },
+        "payload": {
+          "$ref": "#/$defs/followup_due"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "human_approval_required"
+        },
+        "payload": {
+          "$ref": "#/$defs/human_approval_required"
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "error_dead_lettered"
+        },
+        "payload": {
+          "$ref": "#/$defs/error_dead_lettered"
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "nullableUuid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "package": {
+      "type": "string",
+      "enum": [
+        "Starter",
+        "Pro",
+        "Business"
+      ]
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "email",
+        "chatwoot",
+        "manual",
+        "web"
+      ]
+    },
+    "externalIds": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null"
+        ]
+      }
+    },
+    "outbound_prospecting_requested": {
       "type": "object",
       "additionalProperties": true,
+      "required": [
+        "request_id",
+        "vertical",
+        "city",
+        "country",
+        "requested_count",
+        "requested_by"
+      ],
       "properties": {
-        "environment": {
+        "request_id": {
           "type": "string",
-          "enum": [
-            "local",
-            "staging",
-            "production"
-          ]
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "vertical": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "city": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "country": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "requested_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "requested_by": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
         },
         "external_ids": {
-          "type": "object",
-          "additionalProperties": {
-            "type": [
-              "string",
-              "number",
-              "boolean",
-              "null"
-            ]
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "prospects_found": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "request_id",
+        "prospects",
+        "found_count",
+        "source"
+      ],
+      "properties": {
+        "request_id": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "found_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "prospects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": [
+              "business_name",
+              "city",
+              "country",
+              "source"
+            ],
+            "properties": {
+              "business_name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "city": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "country": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "source": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "phone_e164": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "email": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "email"
+              }
+            }
           }
         },
-        "channel": {
-          "type": "string",
-          "enum": [
-            "whatsapp",
-            "email",
-            "chatwoot",
-            "manual",
-            "web"
-          ]
-        },
-        "status": {
-          "type": "string",
-          "maxLength": 80
-        },
-        "business_name": {
-          "type": "string",
-          "maxLength": 200
-        },
-        "package": {
-          "type": "string",
-          "enum": [
-            "Starter",
-            "Pro",
-            "Business"
-          ]
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "qualification_completed": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "prospect_id",
+        "score",
+        "recommended_package",
+        "findings",
+        "status"
+      ],
+      "properties": {
+        "prospect_id": {
+          "$ref": "#/$defs/uuid"
         },
         "score": {
           "type": "integer",
           "minimum": 1,
           "maximum": 10
         },
-        "url": {
+        "recommended_package": {
+          "$ref": "#/$defs/package"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "qualified",
+            "outreach_ready",
+            "paused"
+          ]
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "outbound_contact_request": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "prospect_id",
+        "contact_id",
+        "channel",
+        "tipo",
+        "template_name",
+        "message_purpose"
+      ],
+      "properties": {
+        "prospect_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "contact_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "channel": {
+          "$ref": "#/$defs/channel"
+        },
+        "tipo": {
+          "type": "string",
+          "enum": [
+            "msg1",
+            "msg2",
+            "msg3",
+            "demo_sent",
+            "demo_delivered",
+            "manual"
+          ]
+        },
+        "template_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "message_purpose": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "inbound_chatwoot_event": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "chatwoot_conversation_id",
+        "chatwoot_message_id",
+        "inbox_id",
+        "sender_phone",
+        "message_text",
+        "received_at"
+      ],
+      "properties": {
+        "chatwoot_conversation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "chatwoot_message_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "inbox_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "sender_phone": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 40
+        },
+        "sender_name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "message_text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "received_at": {
+          "$ref": "#/$defs/dateTime"
+        },
+        "attachments": {
+          "type": "array"
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "inbound_response": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "prospect_id",
+        "chatwoot_conversation_id",
+        "message_text",
+        "response_type",
+        "contact_window_open_until"
+      ],
+      "properties": {
+        "prospect_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "chatwoot_conversation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "message_text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "response_type": {
+          "type": "string",
+          "enum": [
+            "positive",
+            "objection",
+            "not_interested",
+            "question",
+            "other"
+          ]
+        },
+        "contact_window_open_until": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "demo_request": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "prospect_id",
+        "chatwoot_conversation_id",
+        "business_name",
+        "requested_package",
+        "requested_at"
+      ],
+      "properties": {
+        "prospect_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "chatwoot_conversation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "business_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "requested_package": {
+          "$ref": "#/$defs/package"
+        },
+        "requested_at": {
+          "$ref": "#/$defs/dateTime"
+        },
+        "intake": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "design_spec_created": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "demo_request_id",
+        "prospect_id",
+        "agent_run_id",
+        "design_spec"
+      ],
+      "properties": {
+        "demo_request_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "prospect_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "agent_run_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "design_spec": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "asset_brief": {
+          "type": "string"
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "demo_built": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "demo_request_id",
+        "prospect_id",
+        "demo_asset_id",
+        "slug",
+        "build_paths"
+      ],
+      "properties": {
+        "demo_request_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "prospect_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "demo_asset_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "build_paths": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "minProperties": 1
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "webqa_completed": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "demo_asset_id",
+        "prospect_id",
+        "status",
+        "qa_summary",
+        "checks"
+      ],
+      "properties": {
+        "demo_asset_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "prospect_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "passed",
+            "failed",
+            "blocked"
+          ]
+        },
+        "qa_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checks": {
+          "type": "object",
+          "additionalProperties": true,
+          "minProperties": 1
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "demo_published": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "demo_asset_id",
+        "prospect_id",
+        "slug",
+        "url_principal",
+        "url_propuesta",
+        "url_reporte",
+        "http_checks"
+      ],
+      "properties": {
+        "demo_asset_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "prospect_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "url_principal": {
           "type": "string",
           "format": "uri",
           "maxLength": 500
+        },
+        "url_propuesta": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 500
+        },
+        "url_reporte": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 500
+        },
+        "http_checks": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599
+          },
+          "required": [
+            "principal",
+            "propuesta",
+            "reporte"
+          ]
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "followup_due": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "followup_id",
+        "prospect_id",
+        "followup_type",
+        "due_at",
+        "no_response_evidence"
+      ],
+      "properties": {
+        "followup_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "prospect_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "followup_type": {
+          "type": "string",
+          "enum": [
+            "msg2",
+            "msg3",
+            "demo_delivery",
+            "custom"
+          ]
+        },
+        "due_at": {
+          "$ref": "#/$defs/dateTime"
+        },
+        "no_response_evidence": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "checked_chatwoot_until",
+            "checked_outreach_log_until"
+          ]
+        },
+        "allowed_channels": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "human_approval_required": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "approval_id",
+        "approval_type",
+        "reason",
+        "requested_by",
+        "risk_level"
+      ],
+      "properties": {
+        "approval_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "approval_type": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 5
+        },
+        "requested_by": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "risk_level": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
+        }
+      }
+    },
+    "error_dead_lettered": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "dead_letter_event_id",
+        "failed_event_type",
+        "error_message",
+        "retryable",
+        "original_payload"
+      ],
+      "properties": {
+        "dead_letter_event_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "failed_event_type": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "error_message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "original_payload": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "external_ids": {
+          "$ref": "#/$defs/externalIds"
         }
       }
     }
