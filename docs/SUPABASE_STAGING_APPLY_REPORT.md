@@ -2,16 +2,14 @@
 
 ## Fecha y Hora
 
-2026-05-26T15:40:01.7673955-07:00
+2026-05-26T15:48:23.8610985-07:00
 
 ## Commit Aplicado
-
-No aplicado.
 
 Commit base verificado en el repositorio local:
 
 ```text
-6383842 Handle staging reset legacy view
+91beb9d Document staging reset completion
 ```
 
 ## Proyecto Supabase Confirmado Como Staging
@@ -31,100 +29,122 @@ El conector de Supabase mostro el proyecto esperado:
 
 No se registraron keys ni secretos.
 
-## Segundo Reset Controlado
+## Estado Previo
 
-Autorizacion recibida para ejecutar el segundo intento de reset controlado solo en Supabase STAGING, usando el script corregido que trata `pipeline_funnel` como view.
+RESET_COMPLETED confirmado antes de aplicar schema.
 
-Se ejecuto el reset con la senal requerida en la misma sesion SQL:
+La consulta de preflight para objetos legacy devolvio `[]`:
 
-```sql
-set app.environment = 'staging';
-```
-
-Luego se ejecuto:
-
-```text
-supabase/reset/001_reset_staging_legacy.sql
-```
-
-Resultado: RESET_COMPLETED.
-
-El script corregido:
-
-- valido `current_setting('app.environment', true) = 'staging'`;
-- valido tipos esperados antes de borrar;
-- trato `pipeline_funnel` como view;
-- no uso `CASCADE`;
-- no toco `auth`;
-- no toco `storage`;
-- no toco schemas fuera de `public`;
-- no toco funciones ajenas;
-- no toco secretos.
-
-## Verificacion Posterior al Reset
-
-Se ejecuto una consulta de solo lectura sobre `pg_class` para los objetos legacy:
-
-```sql
-select n.nspname as schema_name, c.relname as object_name, c.relkind as object_kind
-from pg_class c
-join pg_namespace n on n.oid = c.relnamespace
-where n.nspname = 'public'
-  and c.relname in (
-    'pipeline_events',
-    'pipeline_funnel',
-    'outreach_log',
-    'proposals',
-    'prospects'
-  )
-order by c.relname;
-```
-
-Resultado: `[]`.
-
-Conclusion: los cinco objetos legacy ya no existen en `public`.
-
-## Backup / Restore Path
-
-No se avanzo a migraciones ni seed en esta autorizacion.
-
-El reset fue ejecutado en staging confirmado. Si hiciera falta revertir datos legacy, se requiere restaurar desde export o backup de staging; no se hizo ningun cambio productivo.
+- `pipeline_events`
+- `pipeline_funnel`
+- `outreach_log`
+- `proposals`
+- `prospects`
 
 ## Migraciones Aplicadas
 
-No aplicadas en esta autorizacion.
-
-Pendientes:
+Aplicadas correctamente:
 
 - `supabase/migrations/001_operating_core.sql`
 - `supabase/migrations/002_operating_completion.sql`
-- `supabase/seeds/001_humanio_company.sql`
+
+Migraciones registradas en Supabase despues de aplicar:
+
+- `20260419050703 add_prospect_response_columns`
+- `20260419050715 add_enum_checks_and_index`
+- `20260422045032 outreach_log_add_provider_status_error`
+- `20260526224432 operating_core`
+- `20260526224606 operating_completion`
 
 ## Resultado del Seed
 
-No ejecutado.
+Ejecutado correctamente:
+
+- `supabase/seeds/001_humanio_company.sql`
+
+Verificacion:
+
+| Campo | Valor |
+| --- | --- |
+| slug | `humanio` |
+| name | `Humanio` |
+| domain | `humanio.digital` |
+| status | `active` |
+| metadata.seed | `001_humanio_company` |
 
 ## Resultado del Smoke Test
 
-No ejecutado.
-
-No se insertaron datos de prueba y no se ejecuto:
+Ejecutado:
 
 ```text
 supabase/tests/001_operating_core_smoke.sql
 ```
 
+Resultado: fallo.
+
+Error exacto:
+
+```text
+ERROR: 42P10: there is no unique or exclusion constraint matching the ON CONFLICT specification
+```
+
+Causa identificada por verificacion de solo lectura:
+
+El smoke test usa `ON CONFLICT(idempotency_key)` en tablas que tienen indices unicos parciales, por ejemplo:
+
+```text
+CREATE UNIQUE INDEX agent_runs_idempotency_uidx
+ON public.agent_runs USING btree (idempotency_key)
+WHERE (idempotency_key IS NOT NULL)
+```
+
+Postgres no acepta `ON CONFLICT(idempotency_key)` contra ese indice parcial sin una clausula conflict target equivalente. No se hicieron arreglos manuales improvisados.
+
+Smoke rows esperadas: no se confirmaron porque el script fallo antes de completar sus `SELECT`s.
+
+## Rollback del Smoke Test
+
+Verificacion posterior: no quedaron filas de prueba con UUID prefix `10000000-0000-4000-8000-`.
+
+| Tabla | test_rows |
+| --- | ---: |
+| `contacts` | 0 |
+| `prospects` | 0 |
+| `events` | 0 |
+| `agent_runs` | 0 |
+| `agent_outputs` | 0 |
+| `approvals` | 0 |
+| `dead_letter_events` | 0 |
+
 ## Resultado de RLS
 
-No verificado como schema objetivo.
+Verificado: `rowsecurity = true` en todas las tablas operativas esperadas.
 
-Motivo: las migraciones nuevas no se aplicaron en esta autorizacion.
+Tablas verificadas:
+
+- `agent_outputs`
+- `agent_runs`
+- `approvals`
+- `audit_log`
+- `companies`
+- `contacts`
+- `conversations`
+- `dead_letter_events`
+- `demo_assets`
+- `demo_requests`
+- `events`
+- `followups`
+- `handoffs`
+- `messages`
+- `metrics_snapshots`
+- `outreach_attempts`
+- `outreach_log`
+- `proposals`
+- `prospects`
 
 ## Resultado de Tablas
 
-No verificado como schema objetivo.
-
-Tablas esperadas pendientes de aplicacion/validacion:
+Verificado: existen todas las tablas esperadas.
 
 - `contacts`
 - `prospects`
@@ -148,9 +168,7 @@ Tablas esperadas pendientes de aplicacion/validacion:
 
 ## Resultado de Indices
 
-No verificado como schema objetivo.
-
-Indices esperados pendientes de aplicacion/validacion:
+Verificado: existen todos los indices de idempotencia esperados.
 
 - `events_idempotency_key_uidx`
 - `messages_idempotency_uidx`
@@ -165,26 +183,24 @@ Indices esperados pendientes de aplicacion/validacion:
 
 ## Errores Encontrados
 
-Ningun error en el segundo reset controlado.
+El schema operativo y el seed se aplicaron correctamente.
 
-Accion tomada:
+El error encontrado esta en el smoke test:
 
-- Se ejecuto reset corregido solo en `Humanio Staging`.
-- Se verifico que los objetos legacy ya no existen.
-- No se aplicaron migraciones.
-- No se ejecuto seed.
-- No se ejecuto smoke test.
-- No se cambio n8n, WhatsApp, Chatwoot, workers, secretos, PRs, mensajes ni demos.
-- No se hicieron cambios productivos.
+```text
+ERROR: 42P10: there is no unique or exclusion constraint matching the ON CONFLICT specification
+```
+
+No se aplicaron correcciones manuales. No se cambio n8n, WhatsApp, Chatwoot, workers, secretos, PRs, mensajes ni demos.
 
 ## Recomendacion
 
-STAGING_RESET_COMPLETED_APPLY_PENDING
+SMOKE_TEST_FIX_REQUIRED
 
-Siguiente paso recomendado: aplicar migraciones `001`, `002`, seed y smoke test en staging, con una autorizacion explicita para esa fase.
+Actualizar `supabase/tests/001_operating_core_smoke.sql` para usar un conflict target compatible con indices unicos parciales o para hacer upsert por `id` en las tablas con `idempotency_key` parcial. Luego re-ejecutar smoke test en staging.
 
 ## Decision Final
 
 STAGING_SCHEMA_READY_WITH_FIXES
 
-El reset staging quedo completado, pero el schema operativo completo todavia no esta aplicado.
+Las migraciones, seed, tablas, RLS e indices estan aplicados y verificados en STAGING. La validacion final queda pendiente por el fallo del smoke test.
