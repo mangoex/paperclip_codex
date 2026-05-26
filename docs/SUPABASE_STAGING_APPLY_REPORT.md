@@ -185,7 +185,7 @@ Verificado: existen todos los indices de idempotencia esperados.
 
 El schema operativo y el seed se aplicaron correctamente.
 
-El error encontrado esta en el smoke test:
+El error encontrado esta en el smoke test, no en el schema:
 
 ```text
 ERROR: 42P10: there is no unique or exclusion constraint matching the ON CONFLICT specification
@@ -197,10 +197,16 @@ No se aplicaron correcciones manuales. No se cambio n8n, WhatsApp, Chatwoot, wor
 
 SMOKE_TEST_FIX_REQUIRED
 
-Actualizar `supabase/tests/001_operating_core_smoke.sql` para usar un conflict target compatible con indices unicos parciales o para hacer upsert por `id` en las tablas con `idempotency_key` parcial. Luego re-ejecutar smoke test en staging.
+Fix preparado:
+
+- `supabase/tests/001_operating_core_smoke.sql` ya no usa `ON CONFLICT`.
+- El test usa inserts directos dentro de `BEGIN ... ROLLBACK`; la company Humanio se inserta solo si no existe, sin upsert.
+- `docs/SMOKE_TEST_FIX_NOTES.md` documenta causa, correccion y rerun.
+
+No se re-ejecuto el smoke test corregido todavia.
 
 ## Decision Final
 
 STAGING_SCHEMA_READY_WITH_FIXES
 
-Las migraciones, seed, tablas, RLS e indices estan aplicados y verificados en STAGING. La validacion final queda pendiente por el fallo del smoke test.
+Las migraciones, seed, tablas, RLS e indices estan aplicados y verificados en STAGING. La validacion final queda pendiente hasta re-ejecutar el smoke test corregido.

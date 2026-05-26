@@ -11,20 +11,17 @@ insert into companies (
   status,
   metadata
 )
-values (
+select
   'humanio',
   'Humanio',
   'humanio.digital',
   'active',
   '{"test": true, "source": "001_operating_core_smoke"}'::jsonb
-)
-on conflict (slug) do update
-set
-  name = excluded.name,
-  domain = excluded.domain,
-  status = excluded.status,
-  metadata = companies.metadata || excluded.metadata,
-  updated_at = now();
+where not exists (
+  select 1
+  from companies
+  where slug = 'humanio'
+);
 
 insert into contacts (
   id,
@@ -47,13 +44,7 @@ values (
   'Culiacan',
   'manual',
   '{"test": true, "source": "001_operating_core_smoke"}'::jsonb
-)
-on conflict (id) do update
-set
-  display_name = excluded.display_name,
-  business_name = excluded.business_name,
-  metadata = contacts.metadata || excluded.metadata,
-  updated_at = now();
+);
 
 insert into prospects (
   id,
@@ -84,15 +75,7 @@ values (
   '["No agenda online", "WhatsApp visible"]'::jsonb,
   'qualifier',
   '{"test": true, "source": "001_operating_core_smoke"}'::jsonb
-)
-on conflict (id) do update
-set
-  score = excluded.score,
-  recommended_package = excluded.recommended_package,
-  status = excluded.status,
-  findings = excluded.findings,
-  metadata = prospects.metadata || excluded.metadata,
-  updated_at = now();
+);
 
 insert into events (
   id,
@@ -125,10 +108,7 @@ values (
     'requested_count', 1,
     'requested_by', 'smoke_test'
   )
-)
-on conflict (idempotency_key) do update
-set
-  payload = excluded.payload;
+);
 
 insert into agent_runs (
   id,
@@ -159,12 +139,7 @@ values (
   '{"test": true, "goal": "verify agent_runs insert"}'::jsonb,
   now(),
   now()
-)
-on conflict (idempotency_key) do update
-set
-  status = excluded.status,
-  input = excluded.input,
-  updated_at = now();
+);
 
 insert into agent_outputs (
   id,
@@ -193,12 +168,7 @@ values (
   'smoke:agent_output:001',
   'Smoke test output created',
   '{"test": true, "prospects_found": 1}'::jsonb
-)
-on conflict (idempotency_key) do update
-set
-  status = excluded.status,
-  content = excluded.content,
-  updated_at = now();
+);
 
 insert into approvals (
   id,
@@ -229,12 +199,7 @@ values (
   'smoke_test',
   'Verify pending approval insert',
   '{"test": true, "risk_level": "low"}'::jsonb
-)
-on conflict (idempotency_key) do update
-set
-  status = excluded.status,
-  request_payload = excluded.request_payload,
-  updated_at = now();
+);
 
 insert into dead_letter_events (
   id,
@@ -263,13 +228,7 @@ values (
   'Intentional smoke test dead letter',
   0,
   '{"test": true, "original_payload": {"example": true}}'::jsonb
-)
-on conflict (idempotency_key) do update
-set
-  status = excluded.status,
-  error_message = excluded.error_message,
-  payload = excluded.payload,
-  updated_at = now();
+);
 
 select 'companies' as check_name, count(*) as row_count
 from companies
