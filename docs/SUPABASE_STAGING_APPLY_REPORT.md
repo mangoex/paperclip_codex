@@ -164,3 +164,22 @@ Accion tomada:
 STAGING_SCHEMA_FAILED
 
 La decision es `STAGING_SCHEMA_FAILED` porque el proyecto STAGING confirmado tiene drift de schema previo. Se requiere una migracion de compatibilidad o una estrategia de reset/rebuild de staging antes de aplicar el schema operativo completo.
+
+## Recomendacion
+
+STAGING_RESET_RECOMMENDED
+
+No ejecutado todavia.
+
+Se preparo un plan y un script de reset seguro para staging:
+
+- `docs/SUPABASE_STAGING_RESET_PLAN.md`
+- `supabase/reset/001_reset_staging_legacy.sql`
+
+El reset requiere confirmacion manual previa de Miguel y una senal explicita en la misma sesion SQL:
+
+```sql
+set app.environment = 'staging';
+```
+
+No se ejecuto SQL en esta tarea.

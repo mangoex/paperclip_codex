@@ -48,6 +48,50 @@ Verify that these tables exist:
 
 Verify RLS is enabled on each table.
 
+## Staging Reset Path When Legacy Drift Is Detected
+
+Use this path only for the confirmed staging project:
+
+```text
+Humanio Staging / nloytkdjbhoozjrhrpxq
+```
+
+Do not use this path in production.
+
+If staging contains the legacy tables `outreach_log`, `pipeline_events`, `pipeline_funnel`, `proposals`, and `prospects` with columns that conflict with the new operating model, stop and get manual confirmation from Miguel before resetting.
+
+Manual confirmation must cover:
+
+- the target is `Humanio Staging`;
+- the target ref is `nloytkdjbhoozjrhrpxq`;
+- existing staging legacy data can be discarded or has been exported;
+- no n8n, WhatsApp, Chatwoot, worker, dashboard, or customer-facing flow depends on the legacy staging tables.
+
+In the same SQL session, run:
+
+```sql
+set app.environment = 'staging';
+```
+
+Then run:
+
+```sql
+supabase/reset/001_reset_staging_legacy.sql
+```
+
+The reset script refuses to run unless `current_setting('app.environment', true) = 'staging'`. It drops only the known public legacy tables and does not touch `auth`, `storage`, schemas outside `public`, functions, or secrets.
+
+After the reset, apply the rebuild sequence:
+
+```sql
+supabase/migrations/001_operating_core.sql
+supabase/migrations/002_operating_completion.sql
+supabase/seeds/001_humanio_company.sql
+supabase/tests/001_operating_core_smoke.sql
+```
+
+Then continue with RLS, table, index, seed, and smoke rollback verification in this runbook.
+
 ## Apply 002
 
 Apply:
