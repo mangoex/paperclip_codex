@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperclip_codex/contracts/agent_outputs.schema.json",
+  "title": "Agent Output Contracts",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/PROSPECT_BRIEF" },
+    { "$ref": "#/$defs/DESIGN_SPEC" },
+    { "$ref": "#/$defs/WEB_QA_REPORT" },
+    { "$ref": "#/$defs/OUTREACH_DRAFT" },
+    { "$ref": "#/$defs/CLOSER_DECISION" }
+  ],
+  "$defs": {
+    "PROSPECT_BRIEF": {
+      "type": "object",
+      "required": ["type", "prospect_id", "business_name", "vertical", "city", "country", "score", "package_recommended", "findings"],
+      "properties": {
+        "type": { "const": "PROSPECT_BRIEF" },
+        "prospect_id": { "type": "string" },
+        "business_name": { "type": "string" },
+        "vertical": { "type": "string" },
+        "city": { "type": "string" },
+        "country": { "type": "string" },
+        "score": { "type": "number", "minimum": 0, "maximum": 10 },
+        "package_recommended": { "enum": ["starter", "pro", "business"] },
+        "findings": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      },
+      "additionalProperties": true
+    },
+    "DESIGN_SPEC": {
+      "type": "object",
+      "required": ["type", "prospect_id", "slug", "delivery_mode", "visual_direction", "sections"],
+      "properties": {
+        "type": { "const": "DESIGN_SPEC" },
+        "prospect_id": { "type": "string" },
+        "slug": { "type": "string" },
+        "delivery_mode": { "enum": ["premier", "template"] },
+        "visual_direction": { "type": "string" },
+        "hero_video_query": { "type": "string" },
+        "sections": { "type": "array", "items": { "type": "string" }, "minItems": 3 }
+      },
+      "additionalProperties": true
+    },
+    "WEB_QA_REPORT": {
+      "type": "object",
+      "required": ["type", "prospect_id", "slug", "status", "checks", "summary"],
+      "properties": {
+        "type": { "const": "WEB_QA_REPORT" },
+        "prospect_id": { "type": "string" },
+        "slug": { "type": "string" },
+        "status": { "enum": ["PASS", "FAIL"] },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "result"],
+            "properties": {
+              "name": { "type": "string" },
+              "result": { "enum": ["PASS", "FAIL"] },
+              "detail": { "type": "string" }
+            }
+          }
+        },
+        "summary": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "OUTREACH_DRAFT": {
+      "type": "object",
+      "required": ["type", "prospect_id", "channel", "subject", "message", "cta_url"],
+      "properties": {
+        "type": { "const": "OUTREACH_DRAFT" },
+        "prospect_id": { "type": "string" },
+        "channel": { "enum": ["whatsapp", "email"] },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "cta_url": { "type": "string", "format": "uri" }
+      },
+      "additionalProperties": true
+    },
+    "CLOSER_DECISION": {
+      "type": "object",
+      "required": ["type", "prospect_id", "decision", "reason"],
+      "properties": {
+        "type": { "const": "CLOSER_DECISION" },
+        "prospect_id": { "type": "string" },
+        "decision": { "enum": ["wait", "followup", "request_demo", "close_won", "close_lost"] },
+        "reason": { "type": "string" },
+        "next_action_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

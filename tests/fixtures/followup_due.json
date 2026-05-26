@@ -1,0 +1,11 @@
+{
+  "event_type": "followup_due",
+  "event_id": "evt_01jz_followup_day3_001",
+  "occurred_at": "2026-05-29T14:00:00Z",
+  "prospect_id": "pros_ingenieria_dental_001",
+  "correlation_id": "corr_01jz_demo_001",
+  "source": "followup-scheduler",
+  "followup_kind": "day3",
+  "due_at": "2026-05-29T14:00:00Z",
+  "template_name": "humanio_seguimiento_1"
+}
