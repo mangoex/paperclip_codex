@@ -2,14 +2,14 @@
 
 ## Fecha y Hora
 
-2026-05-26T15:48:23.8610985-07:00
+2026-05-26T15:58:12.5046848-07:00
 
 ## Commit Aplicado
 
 Commit base verificado en el repositorio local:
 
 ```text
-91beb9d Document staging reset completion
+e0299bd Fix staging smoke test upserts
 ```
 
 ## Proyecto Supabase Confirmado Como Staging
@@ -80,34 +80,29 @@ Ejecutado:
 supabase/tests/001_operating_core_smoke.sql
 ```
 
-Resultado: fallo.
+Resultado: correcto.
 
-Error exacto:
-
-```text
-ERROR: 42P10: there is no unique or exclusion constraint matching the ON CONFLICT specification
-```
-
-Causa identificada por verificacion de solo lectura:
-
-El smoke test usa `ON CONFLICT(idempotency_key)` en tablas que tienen indices unicos parciales, por ejemplo:
+El smoke test corregido se ejecuto en Humanio Staging y llego hasta su ultimo `SELECT`.
 
 ```text
-CREATE UNIQUE INDEX agent_runs_idempotency_uidx
-ON public.agent_runs USING btree (idempotency_key)
-WHERE (idempotency_key IS NOT NULL)
+dead_letter_events | 10000000-0000-4000-8000-000000000007 | outbound_prospecting_requested | open
 ```
 
-Postgres no acepta `ON CONFLICT(idempotency_key)` contra ese indice parcial sin una clausula conflict target equivalente. No se hicieron arreglos manuales improvisados.
+Nota: el conector de Supabase devolvio solo el ultimo result set. La llegada a `dead_letter_events` confirma que los inserts y selects previos del smoke test completaron sin error antes del `ROLLBACK`.
 
-Smoke rows esperadas: no se confirmaron porque el script fallo antes de completar sus `SELECT`s.
+Fix aplicado antes del rerun:
+
+- `supabase/tests/001_operating_core_smoke.sql` ya no usa `ON CONFLICT`.
+- El test usa inserts directos dentro de `BEGIN ... ROLLBACK`.
+- La company Humanio se inserta solo si no existe, sin upsert.
 
 ## Rollback del Smoke Test
 
-Verificacion posterior: no quedaron filas de prueba con UUID prefix `10000000-0000-4000-8000-`.
+Verificacion posterior: el seed Humanio existe y no quedaron filas de prueba con UUID prefix `10000000-0000-4000-8000-`.
 
 | Tabla | test_rows |
 | --- | ---: |
+| `companies` slug=`humanio` | 1 |
 | `contacts` | 0 |
 | `prospects` | 0 |
 | `events` | 0 |
@@ -183,30 +178,29 @@ Verificado: existen todos los indices de idempotencia esperados.
 
 ## Errores Encontrados
 
-El schema operativo y el seed se aplicaron correctamente.
+El schema operativo, el seed y el smoke test corregido se validaron correctamente.
 
-El error encontrado esta en el smoke test, no en el schema:
+Error previo resuelto:
 
 ```text
 ERROR: 42P10: there is no unique or exclusion constraint matching the ON CONFLICT specification
 ```
 
-No se aplicaron correcciones manuales. No se cambio n8n, WhatsApp, Chatwoot, workers, secretos, PRs, mensajes ni demos.
+El error era del test, no del schema. Se corrigio eliminando `ON CONFLICT` del smoke test y re-ejecutando solo el smoke autorizado.
+
+No se aplicaron migraciones adicionales. No se cambio n8n, WhatsApp, Chatwoot, workers, secretos, PRs, mensajes ni demos.
 
 ## Recomendacion
 
-SMOKE_TEST_FIX_REQUIRED
+SMOKE_TEST_FIX_APPLIED
 
-Fix preparado:
+Resultado:
 
-- `supabase/tests/001_operating_core_smoke.sql` ya no usa `ON CONFLICT`.
-- El test usa inserts directos dentro de `BEGIN ... ROLLBACK`; la company Humanio se inserta solo si no existe, sin upsert.
-- `docs/SMOKE_TEST_FIX_NOTES.md` documenta causa, correccion y rerun.
-
-No se re-ejecuto el smoke test corregido todavia.
+- Mantener `docs/SMOKE_TEST_FIX_NOTES.md` como referencia del incidente.
+- Usar el smoke test corregido para futuras validaciones manuales de staging.
 
 ## Decision Final
 
-STAGING_SCHEMA_READY_WITH_FIXES
+STAGING_SCHEMA_READY
 
-Las migraciones, seed, tablas, RLS e indices estan aplicados y verificados en STAGING. La validacion final queda pendiente hasta re-ejecutar el smoke test corregido.
+Las migraciones, seed, tablas, RLS, indices y smoke test corregido estan aplicados y verificados en STAGING.
