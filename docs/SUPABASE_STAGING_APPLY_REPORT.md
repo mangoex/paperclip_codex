@@ -2,7 +2,7 @@
 
 ## Fecha y Hora
 
-2026-05-26T15:33:38.7095113-07:00
+2026-05-26T15:40:01.7673955-07:00
 
 ## Commit Aplicado
 
@@ -11,7 +11,7 @@ No aplicado.
 Commit base verificado en el repositorio local:
 
 ```text
-8e6ab46 Add Supabase staging reset plan
+6383842 Handle staging reset legacy view
 ```
 
 ## Proyecto Supabase Confirmado Como Staging
@@ -31,9 +31,9 @@ El conector de Supabase mostro el proyecto esperado:
 
 No se registraron keys ni secretos.
 
-## Reset Controlado
+## Segundo Reset Controlado
 
-Autorizacion recibida para ejecutar reset controlado solo en Supabase STAGING.
+Autorizacion recibida para ejecutar el segundo intento de reset controlado solo en Supabase STAGING, usando el script corregido que trata `pipeline_funnel` como view.
 
 Se ejecuto el reset con la senal requerida en la misma sesion SQL:
 
@@ -47,50 +47,58 @@ Luego se ejecuto:
 supabase/reset/001_reset_staging_legacy.sql
 ```
 
-Resultado: fallo seguro antes de completar el reset.
+Resultado: RESET_COMPLETED.
 
-Error devuelto por Supabase:
+El script corregido:
 
-```text
-ERROR: 42809: "pipeline_funnel" is not a table
-HINT: Use DROP VIEW to remove a view.
+- valido `current_setting('app.environment', true) = 'staging'`;
+- valido tipos esperados antes de borrar;
+- trato `pipeline_funnel` como view;
+- no uso `CASCADE`;
+- no toco `auth`;
+- no toco `storage`;
+- no toco schemas fuera de `public`;
+- no toco funciones ajenas;
+- no toco secretos.
+
+## Verificacion Posterior al Reset
+
+Se ejecuto una consulta de solo lectura sobre `pg_class` para los objetos legacy:
+
+```sql
+select n.nspname as schema_name, c.relname as object_name, c.relkind as object_kind
+from pg_class c
+join pg_namespace n on n.oid = c.relnamespace
+where n.nspname = 'public'
+  and c.relname in (
+    'pipeline_events',
+    'pipeline_funnel',
+    'outreach_log',
+    'proposals',
+    'prospects'
+  )
+order by c.relname;
 ```
 
-El script no usa `CASCADE` y no incluye `DROP VIEW`, por lo que se detuvo como estaba previsto ante un objeto no contemplado.
+Resultado: `[]`.
 
-## Estado Tras el Fallo del Reset
-
-Se hizo una consulta de solo lectura para confirmar si hubo cambios parciales.
-
-Objetos legacy detectados despues del fallo:
-
-| Objeto | Tipo |
-| --- | --- |
-| `outreach_log` | table |
-| `pipeline_events` | table |
-| `pipeline_funnel` | view |
-| `proposals` | table |
-| `prospects` | table |
-
-Conclusion: no se observaron drops parciales; los objetos legacy siguen presentes.
+Conclusion: los cinco objetos legacy ya no existen en `public`.
 
 ## Backup / Restore Path
 
-No se avanzo a migraciones ni seed.
+No se avanzo a migraciones ni seed en esta autorizacion.
 
-El proyecto esta en staging, pero el reset fallo antes de reconstruir el schema. No se intento restauracion porque no se observaron drops parciales.
+El reset fue ejecutado en staging confirmado. Si hiciera falta revertir datos legacy, se requiere restaurar desde export o backup de staging; no se hizo ningun cambio productivo.
 
 ## Migraciones Aplicadas
 
-No aplicadas.
+No aplicadas en esta autorizacion.
 
 Pendientes:
 
 - `supabase/migrations/001_operating_core.sql`
 - `supabase/migrations/002_operating_completion.sql`
 - `supabase/seeds/001_humanio_company.sql`
-
-Motivo: el reset controlado fallo por `pipeline_funnel` siendo una vista, no una tabla.
 
 ## Resultado del Seed
 
@@ -110,7 +118,7 @@ supabase/tests/001_operating_core_smoke.sql
 
 No verificado como schema objetivo.
 
-Motivo: no se aplicaron las migraciones nuevas.
+Motivo: las migraciones nuevas no se aplicaron en esta autorizacion.
 
 ## Resultado de Tablas
 
@@ -157,13 +165,12 @@ Indices esperados pendientes de aplicacion/validacion:
 
 ## Errores Encontrados
 
-El reset controlado fallo porque `pipeline_funnel` es una vista (`relkind = v`), no una tabla.
+Ningun error en el segundo reset controlado.
 
 Accion tomada:
 
-- Se detuvo el proceso.
-- No se uso `CASCADE`.
-- No se uso `DROP VIEW`.
+- Se ejecuto reset corregido solo en `Humanio Staging`.
+- Se verifico que los objetos legacy ya no existen.
 - No se aplicaron migraciones.
 - No se ejecuto seed.
 - No se ejecuto smoke test.
@@ -172,18 +179,12 @@ Accion tomada:
 
 ## Recomendacion
 
-RESET_SCRIPT_FIX_REQUIRED_FOR_VIEW_PIPELINE_FUNNEL
+STAGING_RESET_COMPLETED_APPLY_PENDING
 
-El reset plan debe actualizarse para tratar explicitamente `pipeline_funnel` como vista, con aprobacion manual previa, o para excluirla si no bloquea el rebuild. No se debe improvisar este cambio en ejecucion.
-
-Actualizacion preparada en el repositorio:
-
-- `supabase/reset/001_reset_staging_legacy.sql` distingue tablas y vista legacy.
-- `docs/SUPABASE_STAGING_RESET_PLAN.md` documenta el preflight de `relkind`.
-- No se ejecuto reset corregido todavia.
+Siguiente paso recomendado: aplicar migraciones `001`, `002`, seed y smoke test en staging, con una autorizacion explicita para esa fase.
 
 ## Decision Final
 
-STAGING_SCHEMA_FAILED
+STAGING_SCHEMA_READY_WITH_FIXES
 
-La decision es `STAGING_SCHEMA_FAILED` porque el reset controlado fallo antes de aplicar el schema operativo.
+El reset staging quedo completado, pero el schema operativo completo todavia no esta aplicado.
