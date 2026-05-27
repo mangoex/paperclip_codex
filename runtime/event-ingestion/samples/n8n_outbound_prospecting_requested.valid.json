@@ -1,0 +1,16 @@
+{
+  "request_id": "n8n-staging-shadow-dentistas-culiacan-001",
+  "vertical": "dentistas",
+  "city": "Culiacan",
+  "country": "Mexico",
+  "requested_count": 3,
+  "requested_by": "miguel",
+  "source": "n8n_staging_webhook",
+  "actor": "n8n_staging",
+  "summary": "Staging-only outbound prospecting request from n8n.",
+  "environment": "staging",
+  "external_ids": {
+    "n8n_workflow": "staging-event-ingestion-shadow",
+    "n8n_execution_id": "manual-shadow-sample"
+  }
+}

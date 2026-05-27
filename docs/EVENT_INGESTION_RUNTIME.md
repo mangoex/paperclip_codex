@@ -60,6 +60,59 @@ Ese archivo queda ignorado por `runtime/event-ingestion/.gitignore`. No copiar v
 
 Los scripts locales del runtime cargan explicitamente `.env.local`. El codigo de libreria no carga archivos `.env` por si mismo.
 
+## Escribir Sample n8n a Staging
+
+El script reutilizable para una escritura manual controlada es:
+
+```text
+runtime/event-ingestion/scripts/write-sample-to-staging.ts
+```
+
+Uso:
+
+```text
+cd runtime/event-ingestion
+npm run write:staging
+```
+
+O con otro archivo:
+
+```text
+tsx scripts/write-sample-to-staging.ts samples/n8n_outbound_prospecting_requested.valid.json
+```
+
+El script:
+
+- carga `.env.local` sin imprimir secretos;
+- transforma el payload n8n a `outbound_prospecting_requested`;
+- valida con `event-validator`;
+- escribe con `event-writer`;
+- imprime solo un estado seguro: `inserted`, `replayed`, `conflict` o `dead_letter_prepared`.
+
+Interpretacion:
+
+- `inserted`: se creo una fila en `public.events`;
+- `replayed`: la misma `idempotency_key` ya existia con el mismo payload;
+- `conflict`: la misma `idempotency_key` ya existia con payload distinto;
+- `dead_letter_prepared`: no se pudo escribir y el writer preparo payload de dead letter.
+
+No ejecutar este script contra Supabase sin autorizacion explicita. No commitear `.env.local`.
+
+Para limpiar el evento de prueba, borrar solo por la `idempotency_key` derivada del sample:
+
+```sql
+delete from public.events
+where idempotency_key = 'n8n-staging:outbound_prospecting_requested:n8n-staging-shadow-dentistas-culiacan-001';
+```
+
+Confirmar:
+
+```sql
+select count(*) as remaining_event_rows
+from public.events
+where idempotency_key = 'n8n-staging:outbound_prospecting_requested:n8n-staging-shadow-dentistas-culiacan-001';
+```
+
 ## Shadow Mode
 
 Permitido:

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "tsx --test tests/*.test.ts",
-    "validate:sample": "tsx scripts/validate-sample.ts samples/outbound_prospecting_requested.valid.json"
+    "validate:sample": "tsx scripts/validate-sample.ts samples/outbound_prospecting_requested.valid.json",
+    "write:staging": "tsx scripts/write-sample-to-staging.ts samples/n8n_outbound_prospecting_requested.valid.json"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",

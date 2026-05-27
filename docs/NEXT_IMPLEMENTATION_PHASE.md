@@ -9,6 +9,8 @@ Supabase Staging is ready.
 - Humanio seed: applied in staging.
 - Smoke test: corrected, rerun, and passing.
 - Final schema decision: `STAGING_SCHEMA_READY`.
+- Event ingestion staging test: passed.
+- Event ingestion decision: `EVENT_INGESTION_STAGING_READY`.
 
 The current implementation step is the local event ingestion runtime:
 
@@ -16,7 +18,7 @@ The current implementation step is the local event ingestion runtime:
 runtime/event-ingestion/
 ```
 
-It includes `event-validator`, `event-writer`, local samples, a validation script, and unit tests. It is not deployed.
+It includes `event-validator`, `event-writer`, n8n staging transformation, local samples, validation/write scripts, and unit tests. It is not deployed.
 
 ## Objective
 
@@ -30,7 +32,7 @@ The next phase includes:
 
 - event validator
 - event writer
-- first n8n webhook emitting a structured event
+- first isolated n8n staging webhook emitting a structured event
 - first worker reading that event
 - shadow-mode logging and reporting
 
@@ -71,7 +73,7 @@ outbound_prospecting_requested
 
 ## Step 2: Event Writer
 
-Status: initial local runtime created, with tests using a simulated Supabase client.
+Status: staging-ready runtime created, with local tests and manual Supabase Staging validation complete.
 
 Create a server-side event writer that receives already-validated events and inserts into `events`.
 
@@ -87,7 +89,7 @@ The event writer should not send WhatsApp messages, publish demos, or update cus
 
 ## Step 3: First n8n Staging Webhook
 
-Next step: create a staging-only n8n webhook that emits:
+Next step: create an isolated staging-only n8n webhook that emits:
 
 ```text
 outbound_prospecting_requested
@@ -103,6 +105,15 @@ The webhook should:
 - never trigger real outreach.
 
 This must not modify n8n production.
+
+Still excluded:
+
+- production n8n;
+- WhatsApp;
+- Chatwoot;
+- real customer messages;
+- demos;
+- agent workers.
 
 ## Step 4: First Worker
 
