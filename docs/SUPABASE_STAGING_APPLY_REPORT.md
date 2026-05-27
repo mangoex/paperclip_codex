@@ -2,14 +2,14 @@
 
 ## Fecha y Hora
 
-2026-05-26T15:58:12.5046848-07:00
+2026-05-27T07:03:39.7844511-07:00
 
 ## Commit Aplicado
 
 Commit base verificado en el repositorio local:
 
 ```text
-e0299bd Fix staging smoke test upserts
+36f021f Document staging smoke test success
 ```
 
 ## Proyecto Supabase Confirmado Como Staging
@@ -82,7 +82,7 @@ supabase/tests/001_operating_core_smoke.sql
 
 Resultado: correcto.
 
-El smoke test corregido se ejecuto en Humanio Staging y llego hasta su ultimo `SELECT`.
+Rerun autorizado el 2026-05-27: el smoke test corregido se ejecuto nuevamente en Humanio Staging y llego hasta su ultimo `SELECT`.
 
 ```text
 dead_letter_events | 10000000-0000-4000-8000-000000000007 | outbound_prospecting_requested | open
@@ -98,7 +98,7 @@ Fix aplicado antes del rerun:
 
 ## Rollback del Smoke Test
 
-Verificacion posterior: el seed Humanio existe y no quedaron filas de prueba con UUID prefix `10000000-0000-4000-8000-`.
+Verificacion posterior del rerun: el seed Humanio existe y no quedaron filas de prueba con UUID prefix `10000000-0000-4000-8000-`.
 
 | Tabla | test_rows |
 | --- | ---: |
