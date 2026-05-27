@@ -2,18 +2,12 @@
 
 ## Fecha y Hora
 
-2026-05-27T10:08:02.2745671-07:00
+2026-05-27T10:23:35.3870548-07:00
 
 ## Commit Probado
 
 ```text
-ec520ec Document event ingestion staging credential blocker
-```
-
-Runtime probado:
-
-```text
-ab0f5aa Add shadow event ingestion runtime
+5611045 Add local env loading for event ingestion
 ```
 
 ## Proyecto Supabase Confirmado
@@ -32,35 +26,30 @@ No se registraron keys ni secretos.
 
 ## Entorno Local Seguro
 
-Bloqueo encontrado antes de escribir en Supabase.
+`runtime/event-ingestion/.env.local` existe localmente, esta ignorado por git y contiene las variables requeridas para staging.
 
-Primer intento documentado:
+Verificacion sin imprimir valores:
 
 | Variable | Estado |
 | --- | --- |
-| `SUPABASE_URL` | no disponible en la sesion local |
-| `SUPABASE_SERVICE_ROLE_KEY` | no disponible en la sesion local |
+| `SUPABASE_URL` | disponible |
+| `SUPABASE_URL` coincide con ref `nloytkdjbhoozjrhrpxq` | si |
+| `SUPABASE_SERVICE_ROLE_KEY` | disponible |
 
-Reintento autorizado el 2026-05-27: las variables siguen sin estar visibles para esta sesion de Codex en los ambitos `Process`, `User` y `Machine`.
-
-| Ambito | SUPABASE_URL | URL coincide con staging ref | SUPABASE_SERVICE_ROLE_KEY |
-| --- | --- | --- | --- |
-| `Process` | no disponible | no | no disponible |
-| `User` | no disponible | no | no disponible |
-| `Machine` | no disponible | no | no disponible |
-
-Por esta razon no se ejecuto `event-writer` contra Supabase Staging. No se intento improvisar credenciales, no se escribieron secretos en el repo y no se creo `.env` versionado.
+No se commiteo `.env.local` ni se imprimieron secretos.
 
 ## Idempotency Key Usada
 
-No se uso ninguna `idempotency_key` en Supabase porque la prueba de escritura fue detenida antes de crear el script temporal y antes de llamar al writer.
+```text
+manual-shadow-test:outbound_prospecting_requested:20260527172312-0b65a8
+```
 
 ## Resultado `npm install`
 
 Resultado: correcto.
 
 ```text
-up to date, audited 48 packages
+up to date, audited 49 packages
 found 0 vulnerabilities
 ```
 
@@ -93,52 +82,96 @@ VALID outbound_prospecting_requested local:outbound-prospecting:dentistas-culiac
 
 ## Prueba 1 Insert
 
-No ejecutada.
+Resultado: correcto.
 
-Motivo: faltan `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` en el entorno local seguro.
+```text
+insert_status = inserted
+```
 
-Resultado esperado pendiente: `inserted`.
+Fila creada en `public.events` durante la prueba:
+
+| Campo | Valor |
+| --- | --- |
+| `event_id` | `be2fec6d-b3bd-4fd0-9e70-a71fd2819ebf` |
+| `event_type` | `outbound_prospecting_requested` |
+| `source` | `manual_shadow_test` |
+| `idempotency_key` | `manual-shadow-test:outbound_prospecting_requested:20260527172312-0b65a8` |
 
 ## Prueba 2 Replay
 
-No ejecutada.
+Resultado: correcto.
 
-Motivo: la prueba de insercion fue detenida antes de escribir en Supabase.
+```text
+replay_status = replayed
+```
 
-Resultado esperado pendiente: `replayed`.
+Se ejecuto el mismo evento con la misma `idempotency_key` y el mismo payload. El writer lo trato como replay seguro.
 
 ## Prueba 3 Conflict
 
-No ejecutada.
+Resultado: correcto.
 
-Motivo: la prueba de insercion fue detenida antes de escribir en Supabase.
+```text
+conflict_status = conflict
+```
 
-Resultado esperado pendiente: `conflict`.
+Se ejecuto un evento con la misma `idempotency_key` y un cambio inocuo en `payload.requested_count`. El writer devolvio conflicto y no modifico la fila original.
+
+Verificacion:
+
+```text
+original_payload_unchanged = true
+```
 
 ## Verificacion de Una Sola Fila Durante Prueba
 
-No ejecutada porque no se inserto ninguna fila de prueba.
+Resultado: correcto.
+
+```text
+row_count_during_test = 1
+```
+
+Solo existio una fila en `public.events` para la `idempotency_key` de prueba durante los tres pasos.
 
 ## Verificacion de No Side Effects
 
-No se ejecuto ninguna escritura contra Supabase Staging, por lo que no se crearon filas por esta prueba en:
+Resultado: correcto.
 
-- `messages`
-- `outreach_log`
-- `demo_assets`
-- `followups`
-- `agent_runs`
-- `agent_outputs`
-- `approvals`
-- `dead_letter_events`
+No se crearon filas relacionadas para esta prueba:
+
+| Tabla | Filas |
+| --- | ---: |
+| `messages` | 0 |
+| `outreach_log` | 0 |
+| `demo_assets` | 0 |
+| `followups` | 0 |
+| `agent_runs` | 0 |
+| `agent_outputs` | 0 |
+| `approvals` | 0 |
+| `dead_letter_events` | 0 |
 
 No se activo ningun canal externo.
 
 ## Limpieza Realizada
 
-No hubo fila de prueba que limpiar porque la escritura se detuvo antes de llamar a `event-writer`.
+Resultado: correcto.
 
-No se creo script temporal versionado ni `.env`.
+Se elimino solo la fila de prueba de `public.events` usando la `idempotency_key`:
+
+```text
+cleanup_deleted_idempotency_key = manual-shadow-test:outbound_prospecting_requested:20260527172312-0b65a8
+remaining_event_rows_after_cleanup = 0
+```
+
+Verificacion read-only posterior:
+
+```text
+remaining_event_rows = 0
+```
+
+No se borro ningun otro dato.
+
+El script temporal usado para la prueba fue eliminado y no se commiteo.
 
 ## Restricciones Confirmadas
 
@@ -160,21 +193,18 @@ No se tocaron:
 
 ## Errores Encontrados
 
-La prueba manual contra Supabase Staging quedo bloqueada por entorno local incompleto. El reintento confirma que las variables no estan visibles para esta sesion:
-
-```text
-Process_SUPABASE_URL_SET=False
-Process_SUPABASE_SERVICE_ROLE_KEY_SET=False
-User_SUPABASE_URL_SET=False
-User_SUPABASE_SERVICE_ROLE_KEY_SET=False
-Machine_SUPABASE_URL_SET=False
-Machine_SUPABASE_SERVICE_ROLE_KEY_SET=False
-```
-
-El runtime local esta sano, pero la prueba staging de escritura no puede considerarse ejecutada.
+No hubo errores en el reintento con `.env.local`.
 
 ## Decision Final
 
-EVENT_INGESTION_STAGING_FAILED
+EVENT_INGESTION_STAGING_READY
 
-La decision es `FAILED` porque no se validaron los tres comportamientos requeridos contra Supabase Staging. El bloqueo es de credenciales locales ausentes, no de codigo del runtime.
+La prueba fue exitosa porque:
+
+- `insert = inserted`;
+- `replay = replayed`;
+- `conflict = conflict`;
+- solo hubo una fila para la `idempotency_key` durante la prueba;
+- la fila de prueba fue eliminada;
+- no hubo side effects en tablas operativas;
+- no se activo ningun canal externo.
