@@ -2,9 +2,15 @@
 
 ## Fecha y Hora
 
-2026-05-27T08:42:38.4894688-07:00
+2026-05-27T10:08:02.2745671-07:00
 
 ## Commit Probado
+
+```text
+ec520ec Document event ingestion staging credential blocker
+```
+
+Runtime probado:
 
 ```text
 ab0f5aa Add shadow event ingestion runtime
@@ -26,12 +32,22 @@ No se registraron keys ni secretos.
 
 ## Entorno Local Seguro
 
-Bloqueo encontrado antes de escribir en Supabase:
+Bloqueo encontrado antes de escribir en Supabase.
+
+Primer intento documentado:
 
 | Variable | Estado |
 | --- | --- |
 | `SUPABASE_URL` | no disponible en la sesion local |
 | `SUPABASE_SERVICE_ROLE_KEY` | no disponible en la sesion local |
+
+Reintento autorizado el 2026-05-27: las variables siguen sin estar visibles para esta sesion de Codex en los ambitos `Process`, `User` y `Machine`.
+
+| Ambito | SUPABASE_URL | URL coincide con staging ref | SUPABASE_SERVICE_ROLE_KEY |
+| --- | --- | --- | --- |
+| `Process` | no disponible | no | no disponible |
+| `User` | no disponible | no | no disponible |
+| `Machine` | no disponible | no | no disponible |
 
 Por esta razon no se ejecuto `event-writer` contra Supabase Staging. No se intento improvisar credenciales, no se escribieron secretos en el repo y no se creo `.env` versionado.
 
@@ -144,11 +160,15 @@ No se tocaron:
 
 ## Errores Encontrados
 
-La prueba manual contra Supabase Staging quedo bloqueada por entorno local incompleto:
+La prueba manual contra Supabase Staging quedo bloqueada por entorno local incompleto. El reintento confirma que las variables no estan visibles para esta sesion:
 
 ```text
-SUPABASE_URL_SET=False
-SUPABASE_SERVICE_ROLE_KEY_SET=False
+Process_SUPABASE_URL_SET=False
+Process_SUPABASE_SERVICE_ROLE_KEY_SET=False
+User_SUPABASE_URL_SET=False
+User_SUPABASE_SERVICE_ROLE_KEY_SET=False
+Machine_SUPABASE_URL_SET=False
+Machine_SUPABASE_SERVICE_ROLE_KEY_SET=False
 ```
 
 El runtime local esta sano, pero la prueba staging de escritura no puede considerarse ejecutada.
