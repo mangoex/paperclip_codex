@@ -18,7 +18,7 @@ The current implementation step is the local event ingestion runtime:
 runtime/event-ingestion/
 ```
 
-It includes `event-validator`, `event-writer`, n8n staging transformation, local samples, validation/write scripts, and unit tests. It is not deployed.
+It includes `event-validator`, `event-writer`, n8n staging transformation, local samples, validation/write scripts, an HTTP server scaffold, Dockerfile, and unit tests. It is not deployed.
 
 ## Objective
 
@@ -32,6 +32,7 @@ The next phase includes:
 
 - event validator
 - event writer
+- staging HTTP endpoint deployment
 - first isolated n8n staging webhook emitting a structured event
 - first worker reading that event
 - shadow-mode logging and reporting
@@ -87,9 +88,30 @@ Responsibilities:
 
 The event writer should not send WhatsApp messages, publish demos, or update customer-visible systems.
 
-## Step 3: First n8n Staging Webhook
+## Step 3: Deploy Staging HTTP Endpoint
 
-Next step: create an isolated staging-only n8n webhook that emits:
+Next step: deploy `runtime/event-ingestion` as a staging HTTP service.
+
+Required endpoints:
+
+```text
+GET /health
+POST /events
+```
+
+Required environment variables:
+
+```text
+PORT
+SUPABASE_URL
+SUPABASE_SERVICE_ROLE_KEY
+```
+
+This must be staging only. Do not connect production, WhatsApp, Chatwoot, workers, messages, or demos.
+
+## Step 4: First n8n Staging Webhook
+
+After the staging HTTP endpoint is deployed, connect an isolated staging-only n8n webhook that emits:
 
 ```text
 outbound_prospecting_requested
@@ -115,7 +137,7 @@ Still excluded:
 - demos;
 - agent workers.
 
-## Step 4: First Worker
+## Step 5: First Worker
 
 Create one worker that reads new `outbound_prospecting_requested` events and records a shadow `agent_run`.
 
@@ -127,7 +149,7 @@ Responsibilities:
 - never contact prospects;
 - never create `outreach_log` provider evidence unless a real provider send happened.
 
-## Step 5: Shadow Mode Rules
+## Step 6: Shadow Mode Rules
 
 Shadow mode means:
 

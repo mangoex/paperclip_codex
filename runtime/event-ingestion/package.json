@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/src/server.js",
     "test": "tsx --test tests/*.test.ts",
     "validate:sample": "tsx scripts/validate-sample.ts samples/outbound_prospecting_requested.valid.json",
     "write:staging": "tsx scripts/write-sample-to-staging.ts samples/n8n_outbound_prospecting_requested.valid.json"

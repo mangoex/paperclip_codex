@@ -97,7 +97,19 @@ export function loadSchema(schemaPath = defaultSchemaPath()): EventSchema {
 
 function defaultSchemaPath(): string {
   const currentDir = path.dirname(fileURLToPath(import.meta.url));
-  return path.resolve(currentDir, "../../../contracts/events.schema.json");
+  const candidates = [
+    process.env.EVENT_SCHEMA_PATH,
+    path.resolve(process.cwd(), "../../contracts/events.schema.json"),
+    path.resolve(currentDir, "../../../contracts/events.schema.json"),
+    path.resolve(currentDir, "../../contracts/events.schema.json")
+  ].filter((candidate): candidate is string => Boolean(candidate));
+
+  const found = candidates.find((candidate) => fs.existsSync(candidate));
+  if (!found) {
+    throw new Error("Could not find contracts/events.schema.json. Set EVENT_SCHEMA_PATH if needed.");
+  }
+
+  return found;
 }
 
 function extractEventTypes(schema: EventSchema): string[] {
