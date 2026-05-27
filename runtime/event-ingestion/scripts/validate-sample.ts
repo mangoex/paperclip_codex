@@ -1,6 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
+import dotenv from "dotenv";
 import { createEventValidator } from "../src/event-validator.js";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local"), quiet: true });
 
 const sampleArg = process.argv[2];
 

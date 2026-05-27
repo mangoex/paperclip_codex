@@ -43,6 +43,23 @@ SUPABASE_SERVICE_ROLE_KEY
 
 No se deben commitear valores reales. No usar anon key para escritura server-side. No guardar service role en samples, docs con valores reales ni archivos `.env` versionados.
 
+Para pruebas manuales locales del runtime, crear un archivo no versionado:
+
+```text
+runtime/event-ingestion/.env.local
+```
+
+Con este formato:
+
+```text
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+```
+
+Ese archivo queda ignorado por `runtime/event-ingestion/.gitignore`. No copiar valores reales a `.env.example`, docs, samples ni reportes.
+
+Los scripts locales del runtime cargan explicitamente `.env.local`. El codigo de libreria no carga archivos `.env` por si mismo.
+
 ## Shadow Mode
 
 Permitido:

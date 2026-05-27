@@ -10,7 +10,8 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
     "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1"
+    "ajv-formats": "^3.0.1",
+    "dotenv": "^17.4.2"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
