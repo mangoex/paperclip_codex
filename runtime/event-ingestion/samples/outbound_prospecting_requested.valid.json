@@ -1,0 +1,19 @@
+{
+  "event_type": "outbound_prospecting_requested",
+  "source": "local_shadow_cli",
+  "idempotency_key": "local:outbound-prospecting:dentistas-culiacan:001",
+  "occurred_at": "2026-05-27T14:00:00.000Z",
+  "actor": "miguel",
+  "summary": "Local shadow request for dentist prospecting validation.",
+  "payload": {
+    "request_id": "local-shadow-request-001",
+    "vertical": "dentistas",
+    "city": "Culiacan",
+    "country": "Mexico",
+    "requested_count": 3,
+    "requested_by": "miguel",
+    "external_ids": {
+      "environment": "local"
+    }
+  }
+}

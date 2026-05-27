@@ -1,0 +1,20 @@
+{
+  "name": "@humanio/event-ingestion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "tsx --test tests/*.test.ts",
+    "validate:sample": "tsx scripts/validate-sample.ts samples/outbound_prospecting_requested.valid.json"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
