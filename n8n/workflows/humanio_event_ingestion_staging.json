@@ -1,0 +1,233 @@
+{
+  "name": "Humanio Event Ingestion Staging",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "humanio/staging/outbound-prospecting-requested",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "7c70f86b-0c97-44b2-92ac-b4f30b8531bd",
+      "name": "Webhook - Staging Outbound Prospecting",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -780,
+        0
+      ],
+      "notes": "Internal staging only. Do not connect production, WhatsApp, Chatwoot, email, messages, demos, or agent workers."
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "field-vertical",
+              "name": "vertical",
+              "value": "={{ $json.body.vertical }}",
+              "type": "string"
+            },
+            {
+              "id": "field-city",
+              "name": "city",
+              "value": "={{ $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "field-country",
+              "name": "country",
+              "value": "={{ $json.body.country }}",
+              "type": "string"
+            },
+            {
+              "id": "field-requested-count",
+              "name": "requested_count",
+              "value": "={{ Number($json.body.requested_count || 1) }}",
+              "type": "number"
+            },
+            {
+              "id": "field-requested-by",
+              "name": "requested_by",
+              "value": "={{ $json.body.requested_by }}",
+              "type": "string"
+            },
+            {
+              "id": "field-request-id",
+              "name": "request_id",
+              "value": "={{ $json.body.request_id || 'n8n-staging-' + $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "field-source",
+              "name": "source",
+              "value": "n8n_staging",
+              "type": "string"
+            },
+            {
+              "id": "field-environment",
+              "name": "environment",
+              "value": "staging",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1f7d3f25-3a3e-4c3e-b446-6ca7f517aa6d",
+      "name": "Normalize Staging Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -540,
+        0
+      ],
+      "notes": "Normalize the internal staging request. No external channel calls happen here."
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const input = $json;\nconst requestId = String(input.request_id);\nconst event = {\n  event_type: 'outbound_prospecting_requested',\n  source: 'n8n_staging',\n  idempotency_key: `n8n-staging:outbound_prospecting_requested:${requestId}`,\n  occurred_at: new Date().toISOString(),\n  actor: 'n8n_staging',\n  summary: 'n8n staging outbound prospecting request.',\n  payload: {\n    request_id: requestId,\n    vertical: input.vertical,\n    city: input.city,\n    country: input.country,\n    requested_count: Number(input.requested_count),\n    requested_by: input.requested_by,\n    external_ids: {\n      n8n_execution_id: $execution.id\n    }\n  }\n};\n\nreturn {\n  json: {\n    event,\n    event_type: event.event_type,\n    idempotency_key: event.idempotency_key,\n    environment: 'staging'\n  }\n};"
+      },
+      "id": "15904fb1-0cc4-49fd-9e56-b6dd7477a3d2",
+      "name": "Build Operating Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        0
+      ],
+      "notes": "Build the canonical event envelope for event-ingestion. Shadow mode only."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.HUMANIO_EVENT_INGESTION_URL }}/events",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Humanio-Environment",
+              "value": "staging"
+            },
+            {
+              "name": "X-Humanio-Source",
+              "value": "n8n"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.event }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "4dc64e28-d692-4f97-9768-70a875ff3c10",
+      "name": "POST Event Ingestion",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -60,
+        0
+      ],
+      "notes": "Future endpoint only. Uses HUMANIO_EVENT_INGESTION_URL and no real credentials in this JSON."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  status: $json.status || ($json.body && $json.body.status) || ($json.data && $json.data.status) || 'unknown',\n  idempotency_key: $('Build Operating Event').item.json.idempotency_key,\n  event_type: $('Build Operating Event').item.json.event_type,\n  environment: 'staging'\n} }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "292194b7-181b-4730-929f-7ddf5a347359",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        180,
+        0
+      ],
+      "notes": "Return only safe metadata from event-ingestion."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Staging Outbound Prospecting": {
+      "main": [
+        [
+          {
+            "node": "Normalize Staging Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Staging Payload": {
+      "main": [
+        [
+          {
+            "node": "Build Operating Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Operating Event": {
+      "main": [
+        [
+          {
+            "node": "POST Event Ingestion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Event Ingestion": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "68f86f06-5c40-4fcb-90a5-08af932a2627",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "description": "Staging-only Humanio event ingestion webhook export. Do not import into production or connect external channels."
+  },
+  "tags": [
+    {
+      "name": "humanio"
+    },
+    {
+      "name": "staging"
+    },
+    {
+      "name": "shadow-mode"
+    }
+  ]
+}
