@@ -2,22 +2,19 @@ FROM node:22-bookworm-slim AS base
 
 WORKDIR /app
 
-COPY runtime/event-ingestion/package*.json ./runtime/event-ingestion/
+COPY package*.json ./
 
-RUN cd runtime/event-ingestion && npm ci
+RUN npm ci
 
-COPY contracts ./contracts
-COPY runtime/event-ingestion/tsconfig*.json ./runtime/event-ingestion/
-COPY runtime/event-ingestion/src ./runtime/event-ingestion/src
+COPY tsconfig*.json ./
+COPY src ./src
 
-RUN cd runtime/event-ingestion \
-  && npm run build \
+RUN npm run build \
   && npm prune --omit=dev
-
-WORKDIR /app/runtime/event-ingestion
 
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV HOST=0.0.0.0
 
 EXPOSE 3000
 
